@@ -21,6 +21,7 @@ has '_actions' => (
   },
 );
 
+
 method setup_actions($meta) {
   ## TODO: move this to a Module::Plugable system
   for my $action_name (qw( list )){
@@ -34,5 +35,6 @@ method setup_actions($meta) {
   }
 }
 
-  no Moose;
+
+__PACKAGE__->meta->make_immutable;
 1;
