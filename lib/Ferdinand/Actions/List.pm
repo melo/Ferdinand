@@ -53,6 +53,11 @@ method setup ($class:, $meta) {
 }
 
 
+method render ($params) {
+  return 'Listed!'
+}
+
+
 __PACKAGE__->meta->make_immutable;
 1;
 

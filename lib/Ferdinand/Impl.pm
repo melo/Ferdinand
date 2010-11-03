@@ -36,5 +36,20 @@ method setup_actions($meta) {
 }
 
 
+method render ($action_name, $params) {
+  confess "No action named '$action_name', "
+    unless $self->has_action_for($action_name);
+
+  my $action = $self->action_for($action_name);
+  my $output = $action->render($params);
+
+  return {
+    output      => $output,
+    action      => $action,
+    action_name => $action_name,
+  };
+}
+
+
 __PACKAGE__->meta->make_immutable;
 1;
