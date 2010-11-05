@@ -60,24 +60,3 @@ method render ($params) {
 
 __PACKAGE__->meta->make_immutable;
 1;
-
-
-__DATA__
-  title => 'Artigos',
-  columns => [
-    artigo_id => { linked => 'view' },
-    titulo    => { linked => 'view' },
-
-    slug => {
-      link_to => sub {
-        my ($c, $i) = @_;
-        
-        ## FIXME: move URI creation to Root::auto, stash it, use it here
-        ## return $c->stash->{uri}->cat_not_artigo($item);
-        return 'http://www.stage.e5.evolui.com/noticias/'.$i->slug
-      },
-    },
-    
-    'publicado_em',
-    'visibilidade',
-  ],
