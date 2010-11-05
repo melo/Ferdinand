@@ -2,9 +2,11 @@ package Ferdinand::Utils;
 
 use strict;
 use warnings;
+use Tenjin;
+use Carp 'confess';
 use parent 'Exporter';
 
-our @EXPORT_OK = qw( read_data_files get_data_files );
+our @EXPORT_OK = qw( read_data_files get_data_files render_template );
 
 sub get_data_files {
   my ($class) = @_;
@@ -54,6 +56,26 @@ sub read_data_files {
   }
 
   return \%all;
+}
+
+sub render_template {
+  my ($tmpl, $data, $class) = @_;
+
+  if (ref $tmpl) {
+    $tmpl = $$tmpl;
+  }
+  else {
+    $class ||= caller();
+    my $files = get_data_files($class);
+    confess "Template '$tmpl' not found in class '$class', "
+      unless exists $files->{$tmpl};
+
+    $tmpl = $files->{$tmpl};
+  }
+
+  local $Tenjin::USE_STRICT = 1;
+  my $engine = Tenjin::Engine->new({cache => 0});
+  return $engine->render(\$tmpl, $data);
 }
 
 1;

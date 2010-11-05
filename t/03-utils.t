@@ -6,7 +6,7 @@ use lib 't/tlib';
 use Test::More;
 use Test::Fatal;
 use Test::Deep;
-use Ferdinand::Utils 'read_data_files', 'get_data_files';
+use Ferdinand::Utils 'read_data_files', 'get_data_files', 'render_template';
 use Sample;
 
 ## Read __DATA__ files
@@ -14,7 +14,7 @@ my $files = Sample->load_them;
 ok($files, 'Got some files');
 cmp_deeply(
   [keys %$files],
-  bag('file1.txt', 'file2.html'),
+  bag('file1.txt', 'file2.html', 'list.pltj'),
   '... looks like the expected filenames'
 );
 
@@ -60,5 +60,42 @@ cmp_deeply($cached_files1, $files,
 my $cached_files2 = get_data_files('Sample');
 is("$cached_files1", "$cached_files2",
   'Second call to get_data_files() returns same structure');
+
+
+subtest 'Template processing', sub {
+  my $data = {
+    title => 'Me',
+    items => [
+      {rank => 1, name => 'First'},
+      {rank => 2, name => 'Second'},
+      {rank => 3, name => 'Third'},
+    ]
+  };
+
+  my $expected = <<EOF;
+title Me
+  1. First
+  2. Second
+  3. Third
+
+EOF
+
+  my $output;
+  is(
+    exception { $output = Sample->render('list.pltj', $data) },
+    undef, 'no exception for render_template()',
+  );
+
+  is($output, $expected, 'Expected output from template rendering');
+  is(render_template('list.pltj', $data, 'Sample'),
+    $expected, '... also if called with specific Class');
+
+  like(
+    exception { render_template('no_such_template', {}, 'Sample') },
+    qr/Template 'no_such_template' not found in class 'Sample',/,
+    'render_template() died properly if template not found'
+  );
+};
+
 
 done_testing();
