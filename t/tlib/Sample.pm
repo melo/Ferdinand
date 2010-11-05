@@ -2,10 +2,14 @@ package Sample;
 
 use strict;
 use warnings;
-use Ferdinand::Utils 'read_data_files';
+use Ferdinand::Utils 'read_data_files', 'get_data_files';
 
 sub load_them {
   return read_data_files();
+}
+
+sub cache_them {
+  return get_data_files();
 }
 
 1;

@@ -4,7 +4,18 @@ use strict;
 use warnings;
 use parent 'Exporter';
 
-our @EXPORT_OK = qw( read_data_files );
+our @EXPORT_OK = qw( read_data_files get_data_files );
+
+sub get_data_files {
+  my ($class) = @_;
+  $class ||= caller;
+
+  my $cache = "${class}::Ferdinand_Utils_get_data_files";
+
+  no strict 'refs';
+  return $$cache if $$cache;
+  return $$cache = read_data_files($class);
+}
 
 sub read_data_files {
   my ($class) = @_;
