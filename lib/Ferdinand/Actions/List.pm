@@ -53,7 +53,7 @@ method setup ($class:, $meta) {
 }
 
 
-method render ($params) {
+method render ($impl, $ctx) {
   return 'Listed!'
 }
 
