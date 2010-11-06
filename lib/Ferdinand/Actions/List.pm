@@ -30,44 +30,38 @@ __PACKAGE__->meta->make_immutable;
 __DATA__
 
 @@ list.pltj
-<?pl #@ARGS cols, col_names, rows, ctx ?>
+<?pl #@ARGS action, cols, col_names, rows, ctx ?>
 
 <table cellspacing="1" class="ordenada1">
   <thead>
     <tr>
 <?pl
-     for my $col (@$col_names) {
-       my $ci = $cols->{$col};
+  for my $col (@$col_names) {
+    my $ci = $cols->{$col};
 ?>
       <th[== $ci->{cls_list_html} =]>[= $ci->{label} =]</th>
 <?pl } ?>
     </tr>
   </thead>
   <tbody>
-<?pl if (@$rows) { ?>
-<?pl   for my $row (@$rows) { ?>
+<?pl  if (@$rows) { ?>
+<?pl    for my $row (@$rows) { ?>
     <tr>
-<?pl
-       for my $col (@$col_names) {
-         my $ci = $cols->{$col};
-         my $v = $row->{$col};
-         $v = $ci->{formatter}->($v) if $ci->{formatter};
+<?pl      for my $col (@$col_names) {
+            my $html = $action->render_field(
+             col      => $col,
+             row      => $row,
+             col_info => $cols->{$col},
+             ctx      => $ctx
+            );
 ?>
-<?pl       if (my $l = $ci->{linked}) { ?>
-      <td><a href="[= $ctx->{uri_helper}->($l, $row->{_id}) =]">[= $v =]</a></td>
-<?pl       } ?>
-<?pl       elsif (my $l = $ci->{link_to}) { ?>
-      <td><a href="[= $l->($row, $ctx) =]">[= $v =]</a></td>
-<?pl       } ?>
-<?pl       else { ?>
-      <td>[= $v =]</td>
-<?pl       } ?>
-<?pl     } ?>
+      <td>[== $html =]</td>
+<?pl      } ?>
     </tr>
-<?pl   } ?>
-<?pl } ?>
-<?pl else { my $n_cols = @$cols; ?>
+<?pl    } ?>
+<?pl  } ?>
+<?pl  else { my $n_cols = @$cols; ?>
     <tr colspan="[= $n_cols =]">Não existem registos para listar</tr>
-<?pl } ?>
+<?pl  } ?>
   </tbody>
 </table>
