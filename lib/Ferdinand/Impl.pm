@@ -36,17 +36,18 @@ method setup_actions($meta) {
 }
 
 
-method render ($action_name, $params) {
+method render ($action_name, $ctx = {}) {
   confess "No action named '$action_name', "
     unless $self->has_action_for($action_name);
 
   my $action = $self->action_for($action_name);
-  my $output = $action->render($params);
+  my $output = $action->render($ctx);
 
   return {
     output      => $output,
     action      => $action,
     action_name => $action_name,
+    ctx         => $ctx,
   };
 }
 
