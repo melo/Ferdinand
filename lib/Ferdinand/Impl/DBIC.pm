@@ -41,6 +41,13 @@ method column_meta_fixup ($name, $info) {
     }
   }
   $info->{label} = $label;
+
+  my $classes = $ci->{extra}{classes} || {};
+  for my $t (qw(list)) {
+    my $cls = $classes->{$t} || [];
+    $cls = [$cls] unless ref $cls;
+    $info->{"cls_$t"} = $cls;
+  }
 }
 
 
