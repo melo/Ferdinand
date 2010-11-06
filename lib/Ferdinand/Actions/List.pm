@@ -82,8 +82,12 @@ __DATA__
 <table cellspacing="1" class="ordenada1">
   <thead>
     <tr>
-<?pl for my $col (@$col_names) { ?>
-      <th>[= $cols->{$col}{label} =]</th>
+<?pl
+     for my $col (@$col_names) {
+       my $ci = $cols->{$col};
+       my $cls = join(' ', @{$ci->{cls_list}});
+?>
+      <th[== $cls? qq{ class="$cls"} : '' =]>[= $ci->{label} =]</th>
 <?pl } ?>
     </tr>
   </thead>
