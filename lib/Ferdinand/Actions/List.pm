@@ -9,8 +9,8 @@ use namespace::clean -except => 'meta';
 extends 'Ferdinand::Action';
 
 
-method render ($impl, $ctx) {
-  my $rows = $impl->fetch_rows($self, $ctx);
+method render ($ctx) {
+  my $rows = $self->impl->fetch_rows($self, $ctx);
 
   return render_template(
     'list.pltj',

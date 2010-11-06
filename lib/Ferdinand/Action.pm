@@ -5,6 +5,8 @@ use Ferdinand::Moose;
 use Method::Signatures;
 use namespace::clean -except => 'meta';
 
+has 'impl' => (isa => 'Ferdinand::Impl', is => 'ro', required => 1);
+
 has 'title' => ( isa => 'Str', is  => 'ro' );
 
 has 'column_names' => (
@@ -49,6 +51,7 @@ method setup ($class:, $impl, $meta) {
     %clean,
     column_names => \@col_order,
     columns      => \%col_meta,
+    impl         => $impl,
   );
 }
 
