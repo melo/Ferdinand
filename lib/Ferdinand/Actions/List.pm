@@ -83,7 +83,7 @@ __DATA__
   <thead>
     <tr>
 <?pl for my $col (@$col_names) { ?>
-      <th>[= $col =]</th>
+      <th>[= $cols->{$col}{label} =]</th>
 <?pl } ?>
     </tr>
   </thead>

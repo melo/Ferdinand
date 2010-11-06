@@ -25,6 +25,22 @@ method column_meta_fixup ($name, $info) {
 
   $info->{formatter} = $ci->{extra}{formatter}
     if exists $ci->{extra}{formatter};
+  
+  my $label = $name;
+  if (exists $ci->{extra}{label}) {
+    $label = $ci->{extra}{label};
+  }
+  else {
+    if ($name =~ m/_id$/) {
+      $label = 'ID';
+    }
+    else {
+      $label = $name;
+      $label =~ s/_/ /g;
+      $label =~ s/\b(\w)/uc($1)/ge;
+    }
+  }
+  $info->{label} = $label;
 }
 
 
