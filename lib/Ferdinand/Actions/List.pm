@@ -38,9 +38,8 @@ __DATA__
 <?pl
      for my $col (@$col_names) {
        my $ci = $cols->{$col};
-       my $cls = join(' ', @{$ci->{cls_list}});
 ?>
-      <th[== $cls? qq{ class="$cls"} : '' =]>[= $ci->{label} =]</th>
+      <th[== $ci->{cls_list_html} =]>[= $ci->{label} =]</th>
 <?pl } ?>
     </tr>
   </thead>

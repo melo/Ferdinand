@@ -59,8 +59,8 @@ subtest 'List action', sub {
     [qw( id title slug created_at last_update_at is_visible )]);
 
   my $cols = $action->columns;
-  cmp_deeply($cols->{id}, {linked => 'view', label => 'Id', cls_list => []});
-  cmp_deeply($cols->{is_visible}, {label => 'Is Visible', cls_list => []});
+  cmp_deeply($cols->{id}, {linked => 'view', label => 'Id', cls_list => [], cls_list_html => ''});
+  cmp_deeply($cols->{is_visible}, {label => 'Is Visible', cls_list => [], cls_list_html => ''});
 };
 
 done_testing();
