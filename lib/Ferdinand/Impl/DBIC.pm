@@ -18,6 +18,21 @@ method setup ($class:, $meta) {
   return $class->new(\%fields);
 }
 
+method fetch_rows ($action, $ctx) {
+  my $cols = $action->columns;
+  ## TODO: how to let $ctx influence the resultset?
+  my @rows = $self->source->resultset->all;
+  for my $r (@rows) {
+    my %info = (_id => $r->id, _row => $r);
+    for my $col (keys %$cols) {
+      $info{$col} = $r->$col();
+    }
+    $r = \%info;
+  }
+
+  return \@rows;
+}
+
 
 __PACKAGE__->meta->make_immutable;
 1;
