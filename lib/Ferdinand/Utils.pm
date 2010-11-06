@@ -3,10 +3,11 @@ package Ferdinand::Utils;
 use strict;
 use warnings;
 use Tenjin;
+use XML::Generator;
 use Carp 'confess';
 use parent 'Exporter';
 
-our @EXPORT_OK = qw( read_data_files get_data_files render_template );
+our @EXPORT_OK = qw( read_data_files get_data_files render_template ghtml );
 
 sub get_data_files {
   my ($class) = @_;
@@ -76,6 +77,10 @@ sub render_template {
   local $Tenjin::USE_STRICT = 1;
   my $engine = Tenjin::Engine->new({cache => 0});
   return $engine->render(\$tmpl, $data);
+}
+
+sub ghtml {
+  return XML::Generator->new(':pretty');
 }
 
 1;

@@ -6,7 +6,7 @@ use lib 't/tlib';
 use Test::More;
 use Test::Fatal;
 use Test::Deep;
-use Ferdinand::Utils 'read_data_files', 'get_data_files', 'render_template';
+use Ferdinand::Utils qw(read_data_files get_data_files render_template ghtml);
 use Sample;
 
 ## Read __DATA__ files
@@ -95,6 +95,12 @@ EOF
     qr/Template 'no_such_template' not found in class 'Sample',/,
     'render_template() died properly if template not found'
   );
+};
+
+
+subtest 'Generate HTML', sub {
+  my $html = ghtml->a({href => 'url', class => undef}, 'test &');
+  is($html, '<a href="url">test &amp;</a>', 'HTML generated properly');
 };
 
 
