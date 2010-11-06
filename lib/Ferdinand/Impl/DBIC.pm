@@ -18,6 +18,16 @@ method setup ($class:, $meta) {
   return $class->new(\%fields);
 }
 
+
+method column_meta_fixup ($name, $info) {
+  my $ci = $self->source->column_info($name);
+  return unless $ci;
+
+  $info->{formatter} = $ci->{extra}{formatter}
+    if exists $ci->{extra}{formatter};
+}
+
+
 method fetch_rows ($action, $ctx) {
   my $cols = $action->columns;
   ## TODO: how to let $ctx influence the resultset?

@@ -5,10 +5,17 @@ use warnings;
 use Test::More;
 use Test::Fatal;
 use Test::Deep;
+use Test::MockObject;
 use Ferdinand;
 
+my $source = bless {}, 'DBIx::Class::ResultSource';
+{
+  no strict 'refs';
+  *{'DBIx::Class::ResultSource::column_info'} = sub { {} };
+}
+
 my %meta = (
-  source => bless({}, 'DBIx::Class::ResultSource'),
+  source => $source,
 
   list => {
     title   => 'Articles',

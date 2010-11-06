@@ -29,7 +29,7 @@ method setup_actions($meta) {
     next unless $info;
     
     my $action_class = "Ferdinand::Actions::".ucfirst($action_name);
-    my $action = $action_class->setup($info);
+    my $action = $action_class->setup($self, $info);
     
     $self->add_action($action_name => $action);
   }
@@ -50,6 +50,9 @@ method render ($action_name, $ctx = {}) {
     ctx         => $ctx,
   };
 }
+
+
+method column_meta_fixup ($name, $info) {}
 
 
 __PACKAGE__->meta->make_immutable;

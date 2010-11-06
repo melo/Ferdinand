@@ -23,7 +23,7 @@ has 'columns' => (
 );
 
 
-method setup ($class:, $meta) {
+method setup ($class:, $impl, $meta) {
   my %clean;
 
   ## Remove known attributes
@@ -44,6 +44,8 @@ method setup ($class:, $meta) {
 
     push @col_order, $name;
     $col_meta{$name} = $info;
+    
+    $impl->column_meta_fixup($name, $info);
   }
 
   return $class->new(
