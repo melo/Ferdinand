@@ -6,7 +6,8 @@ use lib 't/tlib';
 use Test::More;
 use Test::Fatal;
 use Test::Deep;
-use Ferdinand::Utils qw(read_data_files get_data_files render_template ghtml);
+use Ferdinand::Utils
+  qw(read_data_files get_data_files render_template ghtml ehtml);
 use Sample;
 
 ## Read __DATA__ files
@@ -98,9 +99,15 @@ EOF
 };
 
 
-subtest 'Generate HTML', sub {
+subtest 'Generate/Escape HTML', sub {
   my $html = ghtml->a({href => 'url', class => undef}, 'test &');
   is($html, '<a href="url">test &amp;</a>', 'HTML generated properly');
+
+  is(
+    ehtml('cool > cold & everything else <'),
+    'cool &gt; cold &amp; everything else &lt;',
+    'HTML escaped properly'
+  );
 };
 
 

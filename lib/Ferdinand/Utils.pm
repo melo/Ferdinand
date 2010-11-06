@@ -7,7 +7,8 @@ use XML::Generator;
 use Carp 'confess';
 use parent 'Exporter';
 
-our @EXPORT_OK = qw( read_data_files get_data_files render_template ghtml );
+our @EXPORT_OK =
+  qw( read_data_files get_data_files render_template ghtml ehtml );
 
 sub get_data_files {
   my ($class) = @_;
@@ -81,6 +82,17 @@ sub render_template {
 
 sub ghtml {
   return XML::Generator->new(':pretty');
+}
+
+sub ehtml {
+  my ($value) = @_;
+
+  XML::Generator::util::escape($value,
+    XML::Generator::util::ESCAPE_ALWAYS()
+      | XML::Generator::util::ESCAPE_EVEN_ENTITIES()
+      | XML::Generator::util::ESCAPE_GT());
+
+  return $value;
 }
 
 1;
