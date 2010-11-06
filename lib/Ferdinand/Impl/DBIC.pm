@@ -25,7 +25,7 @@ method column_meta_fixup ($name, $info) {
 
   $info->{formatter} = $ci->{extra}{formatter}
     if exists $ci->{extra}{formatter};
-  
+
   my $label = $name;
   if (exists $ci->{extra}{label}) {
     $label = $ci->{extra}{label};
