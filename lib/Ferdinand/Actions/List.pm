@@ -91,15 +91,20 @@ __DATA__
 <?pl if (@$rows) { ?>
 <?pl   for my $row (@$rows) { ?>
     <tr>
-<?pl     for my $col (@$col_names) { my $ci = $cols->{$col}; ?>
+<?pl
+       for my $col (@$col_names) {
+         my $ci = $cols->{$col};
+         my $v = $row->{$col};
+         $v = $ci->{formatter}->($v) if $ci->{formatter};
+?>
 <?pl       if (my $l = $ci->{linked}) { ?>
-      <td><a href="[= $ctx->{uri_helper}->($l, $row->{_id}) =]">[= $row->{$col} =]</a></td>
+      <td><a href="[= $ctx->{uri_helper}->($l, $row->{_id}) =]">[= $v =]</a></td>
 <?pl       } ?>
 <?pl       elsif (my $l = $ci->{link_to}) { ?>
-      <td><a href="[= $l->($row, $ctx) =]">[= $row->{$col} =]</a></td>
+      <td><a href="[= $l->($row, $ctx) =]">[= $v =]</a></td>
 <?pl       } ?>
 <?pl       else { ?>
-      <td>[= $row->{$col} =]</td>
+      <td>[= $v =]</td>
 <?pl       } ?>
 <?pl     } ?>
     </tr>
