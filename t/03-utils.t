@@ -6,8 +6,11 @@ use lib 't/tlib';
 use Test::More;
 use Test::Fatal;
 use Test::Deep;
-use Ferdinand::Utils
-  qw(read_data_files get_data_files render_template ghtml ehtml);
+use Ferdinand::Utils qw(
+  read_data_files get_data_files
+  render_template
+  ghtml ehtml
+);
 use Sample;
 
 ## Read __DATA__ files

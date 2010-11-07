@@ -5,8 +5,12 @@ use Tenjin;
 use XML::Generator;
 use Carp 'confess';
 
-our @EXPORT_OK =
-  qw( read_data_files get_data_files render_template ghtml ehtml );
+our @EXPORT_OK = qw(
+  read_data_files get_data_files
+  render_template
+  ghtml ehtml
+);
+
 
 sub get_data_files {
   my ($class) = @_;
