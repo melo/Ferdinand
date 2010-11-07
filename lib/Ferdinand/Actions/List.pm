@@ -12,14 +12,16 @@ extends 'Ferdinand::Action';
 method render ($ctx) {
   my $rows = $self->impl->fetch_rows($self, $ctx);
 
-  return render_template(
-    'list.pltj',
-    { action    => $self,
-      col_names => $self->column_names,
-      cols      => $self->columns,
-      rows      => $rows,
-      ctx       => $ctx,
-    }
+  return (
+    output => render_template(
+      'list.pltj',
+      { action    => $self,
+        col_names => $self->column_names,
+        cols      => $self->columns,
+        rows      => $rows,
+        ctx       => $ctx,
+      }
+    )
   );
 }
 

@@ -41,13 +41,14 @@ method render ($action_name, $ctx = {}) {
     unless $self->has_action_for($action_name);
 
   my $action = $self->action_for($action_name);
-  my $output = $action->render($ctx);
+  my %output = $action->render($ctx);
 
   return {
-    output      => $output,
+    title       => $action->page_title($ctx),
     action      => $action,
     action_name => $action_name,
-    ctx         => $ctx,
+    %output,
+    ctx => $ctx,
   };
 }
 
