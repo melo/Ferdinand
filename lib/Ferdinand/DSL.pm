@@ -3,7 +3,7 @@ package Ferdinand::DSL;
 use Ferdinand::Setup 'library';
 
 our @EXPORT = qw(
-  ferdinand_setup
+  ferdinand_setup cat_ferdinand_setup
   dbic_source
   list view
   title columns
@@ -31,7 +31,8 @@ our @EXPORT = qw(
 
 
 ### Ferdinand global setup
-sub ferdinand_setup (&) { caller()->ferdinand(_cb_setup(@_)) }
+sub cat_ferdinand_setup (&) { caller()->ferdinand(_cb_setup(@_)) }
+sub ferdinand_setup (&)     { _cb_setup(@_) }
 
 ### Picking an implementation
 sub dbic_source (&) { _cur_setup()->{source} = $_[0]->() }
