@@ -1,10 +1,9 @@
 package Ferdinand::Action;
 # ABSTRACT: a very cool module
 
-use Ferdinand::Moose;
+use Ferdinand::Setup 'class';
 use Ferdinand::Utils qw( ehtml ghtml );
 use Method::Signatures;
-use namespace::clean -except => 'meta';
 
 has 'impl' => (isa => 'Ferdinand::Impl', is => 'ro', required => 1);
 

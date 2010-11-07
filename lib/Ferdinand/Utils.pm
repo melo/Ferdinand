@@ -1,11 +1,9 @@
 package Ferdinand::Utils;
 
-use strict;
-use warnings;
+use Ferdinand::Setup 'library';
 use Tenjin;
 use XML::Generator;
 use Carp 'confess';
-use parent 'Exporter';
 
 our @EXPORT_OK =
   qw( read_data_files get_data_files render_template ghtml ehtml );

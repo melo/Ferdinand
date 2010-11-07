@@ -1,8 +1,6 @@
 package Ferdinand::DSL;
 
-use strict;
-use warnings;
-use parent 'Exporter';
+use Ferdinand::Setup 'library';
 
 our @EXPORT = qw(
   ferdinand_setup

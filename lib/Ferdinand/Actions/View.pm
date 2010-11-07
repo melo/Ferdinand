@@ -1,10 +1,9 @@
 package Ferdinand::Actions::View;
 # ABSTRACT: a very cool module
 
-use Ferdinand::Moose;
+use Ferdinand::Setup 'class';
 use Method::Signatures;
 use Ferdinand::Utils 'render_template';
-use namespace::clean -except => 'meta';
 
 extends 'Ferdinand::Action';
 

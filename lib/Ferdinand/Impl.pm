@@ -2,11 +2,10 @@ package Ferdinand::Impl;
 
 # ABSTRACT: Base class for Ferdinand implementations
 
-use Ferdinand::Moose;
+use Ferdinand::Setup 'class';
 use Ferdinand::Actions::List;
 use Ferdinand::Actions::View;
 use Method::Signatures;
-use namespace::clean -except => 'meta';
 
 has '_actions' => (
   traits      => ['Hash'],

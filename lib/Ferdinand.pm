@@ -1,10 +1,9 @@
 package Ferdinand;
 # ABSTRACT: a very cool module
 
-use Ferdinand::Moose;
+use Ferdinand::Setup 'class';
 use Ferdinand::Impl::DBIC;
 use Method::Signatures;
-use namespace::clean -except => 'meta';
 
 method setup($class:, $meta) {
   ## Pick our implementation class

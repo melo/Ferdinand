@@ -1,9 +1,8 @@
 package Ferdinand::Impl::DBIC;
 # ABSTRACT: Ferdinand Implementation for DBIx::Class Result Sources
 
-use Ferdinand::Moose;
+use Ferdinand::Setup 'class';
 use Method::Signatures;
-use namespace::clean -except => 'meta';
 
 extends 'Ferdinand::Impl';
 
