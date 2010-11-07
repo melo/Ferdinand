@@ -4,6 +4,7 @@ package Ferdinand::Impl;
 
 use Ferdinand::Moose;
 use Ferdinand::Actions::List;
+use Ferdinand::Actions::View;
 use Method::Signatures;
 use namespace::clean -except => 'meta';
 
@@ -24,7 +25,7 @@ has '_actions' => (
 
 method setup_actions($meta) {
   ## TODO: move this to a Module::Plugable system
-  for my $action_name (qw( list )){
+  for my $action_name (qw( list view )){
     my $info = delete $meta->{$action_name};
     next unless $info;
     
