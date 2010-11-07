@@ -8,7 +8,7 @@ use namespace::clean -except => 'meta';
 
 has 'impl' => (isa => 'Ferdinand::Impl', is => 'ro', required => 1);
 
-has 'title' => ( isa => 'Str', is  => 'ro' );
+has 'title' => (isa => 'Str|CodeRef', is => 'ro');
 
 has 'column_names' => (
   isa      => 'ArrayRef',
@@ -56,6 +56,7 @@ method setup ($class:, $impl, $meta) {
   );
 }
 
+
 method render_field (:$col, :$ctx, :$row, :$col_info) {
   my $v = $row->{$col};
   $v = $col_info->{formatter}->($v) if $col_info->{formatter};
@@ -78,6 +79,13 @@ method render_field (:$col, :$ctx, :$row, :$col_info) {
   return $v;
 }
 
+
+method page_title ($ctx, $r?) {
+  my $title = $self->title;
+  $title = $title->($ctx, $r) if ref $title;
+
+  return $title;
+}
 
 
 __PACKAGE__->meta->make_immutable;
