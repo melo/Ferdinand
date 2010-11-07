@@ -53,18 +53,31 @@ method column_meta_fixup ($name, $info) {
 
 
 method fetch_rows ($action, $ctx) {
-  my $cols = $action->columns;
+  my $cols = $action->column_names;
+
   ## TODO: how to let $ctx influence the resultset?
   my @rows = $self->source->resultset->all;
-  for my $r (@rows) {
-    my %info = (_id => $r->id, _row => $r);
-    for my $col (keys %$cols) {
-      $info{$col} = $r->$col();
-    }
-    $r = \%info;
-  }
+  map { $_ = _load_row($_, $cols) } @rows;
 
   return \@rows;
+}
+
+
+method fetch_row ($action, $ctx) {
+  my $row = $self->source->resultset->find(@{$ctx->{id}});
+  return unless $row;
+
+  return _load_row($row, $action->column_names);
+}
+
+
+func _load_row ($r, $cols) {
+  my %info = (_id => $r->id, _row => $r);
+  for my $col (@$cols) {
+    $info{$col} = $r->$col();
+  }
+
+  return \%info;
 }
 
 
