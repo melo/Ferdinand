@@ -5,7 +5,6 @@ package Ferdinand::Setup;
 use strict;
 use warnings;
 use utf8;
-use feature              ();
 use Carp                 ();
 use namespace::autoclean ();
 
@@ -16,7 +15,6 @@ sub import {
 
   return $into unless $command;
 
-  feature->import(':5.12');
   utf8->import();
 
   if ($command eq 'class') {
