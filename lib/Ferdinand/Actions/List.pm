@@ -3,25 +3,15 @@ package Ferdinand::Actions::List;
 
 use Ferdinand::Setup 'class';
 use Method::Signatures;
-use Ferdinand::Utils 'render_template';
+use Ferdinand::Utils qw(render_template new_context);
 
 extends 'Ferdinand::Action';
 
 
 method render ($ctx) {
-  my $rows = $self->impl->fetch_rows($self, $ctx);
+  $ctx = new_context($ctx, rows => $self->impl->fetch_rows($self, $ctx));
 
-  return (
-    output => render_template(
-      'list.pltj',
-      { action    => $self,
-        col_names => $self->column_names,
-        cols      => $self->columns,
-        rows      => $rows,
-        ctx       => $ctx,
-      }
-    )
-  );
+  return (output => render_template('list.pltj', $ctx));
 }
 
 
@@ -31,7 +21,9 @@ __PACKAGE__->meta->make_immutable;
 __DATA__
 
 @@ list.pltj
-<?pl #@ARGS action, cols, col_names, rows, ctx ?>
+<?pl #@ARGS action, rows ?>
+<?pl my $cols = $action->columns; ?>
+<?pl my $col_names = $action->column_names; ?>
 
 <table cellspacing="1" class="ordenada1">
   <thead>
@@ -53,7 +45,7 @@ __DATA__
              col      => $col,
              row      => $row,
              col_info => $cols->{$col},
-             ctx      => $ctx
+             ctx      => $_context,
             );
 ?>
       <td>[== $html =]</td>

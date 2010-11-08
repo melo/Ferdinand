@@ -3,7 +3,7 @@ package Ferdinand::Actions::View;
 
 use Ferdinand::Setup 'class';
 use Method::Signatures;
-use Ferdinand::Utils 'render_template';
+use Ferdinand::Utils qw(render_template new_context);
 
 extends 'Ferdinand::Action';
 
@@ -12,17 +12,10 @@ method render ($ctx) {
   my $row = $self->impl->fetch_row($self, $ctx);
   return unless $row;
 
+  $ctx = new_context($ctx, row => $row);
   return (
-    title  => $self->page_title($ctx, $row),
-    output => render_template(
-      'view.pltj',
-      { action    => $self,
-        col_names => $self->column_names,
-        cols      => $self->columns,
-        row       => $row,
-        ctx       => $ctx,
-      }
-    )
+    title  => $self->page_title($ctx,      $row),
+    output => render_template('view.pltj', $ctx),
   );
 }
 
@@ -33,7 +26,9 @@ __PACKAGE__->meta->make_immutable;
 __DATA__
 
 @@ view.pltj
-<?pl #@ARGS action, cols, col_names, row, ctx ?>
+<?pl #@ARGS action, row ?>
+<?pl my $cols = $action->columns; ?>
+<?pl my $col_names = $action->column_names; ?>
 
 <table cellspacing="1">   
 	<colgroup>
@@ -47,7 +42,7 @@ __DATA__
          col      => $col,
          row      => $row,
          col_info => $ci,
-         ctx      => $ctx,
+         ctx      => $_context,
         );
 ?>
         <tr> 
