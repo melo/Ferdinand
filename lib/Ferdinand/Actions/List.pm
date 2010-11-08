@@ -9,7 +9,7 @@ extends 'Ferdinand::Action';
 
 
 method render ($ctx) {
-  $ctx = new_context($ctx, rows => $self->impl->fetch_rows($self, $ctx));
+  $ctx = new_context($ctx, rows => $ctx->{impl}->fetch_rows($self, $ctx));
 
   return (output => render_template('list.pltj', $ctx));
 }

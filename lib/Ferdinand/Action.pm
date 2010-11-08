@@ -7,14 +7,12 @@ use Method::Signatures;
 
 with 'Ferdinand::Roles::ColumnSet';
 
-
-has 'impl' => (isa => 'Ferdinand::Impl', is => 'ro', required => 1);
 has 'title' => (isa => 'Str|CodeRef', is => 'ro');
 
 
-method setup ($class:, $impl, $meta) {
+method setup ($class:) {
   $class->setup_attrs(\my %attrs, @_);
-  return $class->new(%attrs, impl => $impl);
+  return $class->new(%attrs);
 }
 
 

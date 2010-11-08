@@ -9,7 +9,7 @@ extends 'Ferdinand::Action';
 
 
 method render ($ctx) {
-  my $row = $self->impl->fetch_row($self, $ctx);
+  my $row = $ctx->{impl}->fetch_row($self, $ctx);
   return unless $row;
 
   $ctx = new_context($ctx, row => $row);

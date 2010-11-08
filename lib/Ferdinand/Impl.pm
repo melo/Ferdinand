@@ -40,6 +40,7 @@ method render ($action_name, $ctx = {}) {
   confess "No action named '$action_name', "
     unless $self->has_action_for($action_name);
 
+  $ctx->{impl} = $self;
   my $action = $ctx->{action} = $self->action_for($action_name);
   my %output = $action->render($ctx);
 
