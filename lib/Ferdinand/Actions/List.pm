@@ -21,7 +21,7 @@ __PACKAGE__->meta->make_immutable;
 __DATA__
 
 @@ list.pltj
-<?pl #@ARGS action, rows ?>
+<?pl #@ARGS impl, action, rows ?>
 <?pl my $cols = $action->columns; ?>
 <?pl my $col_names = $action->column_names; ?>
 
@@ -41,7 +41,7 @@ __DATA__
 <?pl    for my $row (@$rows) { ?>
     <tr>
 <?pl      for my $col (@$col_names) {
-            my $html = $action->render_field(
+            my $html = $impl->render_field(
              col      => $col,
              row      => $row,
              col_info => $cols->{$col},
