@@ -4,15 +4,11 @@ package Ferdinand::Action;
 use Ferdinand::Setup 'class';
 use Method::Signatures;
 
-with 'Ferdinand::Roles::ColumnSet';
+with
+  'Ferdinand::Roles::Setup',
+  'Ferdinand::Roles::ColumnSet';
 
 has 'title' => (isa => 'Str|CodeRef', is => 'ro');
-
-
-method setup ($class:) {
-  $class->setup_attrs(\my %attrs, @_);
-  return $class->new(%attrs);
-}
 
 
 method setup_attrs ($class:, $attrs, $impl, $meta) {
