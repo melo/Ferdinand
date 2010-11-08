@@ -6,11 +6,25 @@ use XML::Generator;
 use Carp 'confess';
 
 our @EXPORT_OK = qw(
+  new_context
   read_data_files get_data_files
   render_template
   ghtml ehtml
 );
 
+
+sub new_context {
+  my %ctx = %{(shift)};
+
+  while (@_) {
+    my ($k, $v) = splice(@_, 0, 2);
+
+    if (defined $v) { $ctx{$k} = $v }
+    else            { delete $ctx{$k} }
+  }
+
+  return \%ctx;
+}
 
 sub get_data_files {
   my ($class) = @_;
