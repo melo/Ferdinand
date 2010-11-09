@@ -97,6 +97,9 @@ subtest 'field shortcuts' => sub {
   $c1->fields(id => 42);
   is($c1->id, 42, '... and now it has the expected value');
 
+  $c1->fields(id => ['a', 'b', 'c']);
+  cmp_deeply([$c1->id],       ['a', 'b', 'c'], 'id() in list context ok');
+  cmp_deeply(scalar($c1->id), ['a', 'b', 'c'], 'id() in scalar context ok');
 };
 
 

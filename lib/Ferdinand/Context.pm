@@ -93,8 +93,15 @@ method rows ($rows?) {
 }
 
 method id () {
-  return $self->{fields}{id} if exists $self->{fields}{id};
-  return;
+  my $f = $self->{fields};
+  return unless exists $f->{id};
+
+  my $id = $f->{id};
+  if (wantarray()) {
+    return @$id if ref($id) eq 'ARRAY';
+    return ($id);
+  }
+  return $id;
 }
 
 method params () {
