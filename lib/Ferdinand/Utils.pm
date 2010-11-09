@@ -9,6 +9,7 @@ our @EXPORT_OK = qw(
   read_data_files get_data_files
   render_template
   ghtml ehtml
+  hash_merge
 );
 
 
@@ -96,5 +97,19 @@ sub ehtml {
 
   return $value;
 }
+
+sub hash_merge {
+  my $h = shift;
+
+  while (@_) {
+    my ($k, $v) = splice(@_, 0, 2);
+
+    if (defined $v) { $h->{$k} = $v }
+    else            { delete $h->{$k} }
+  }
+
+  return;
+}
+
 
 1;

@@ -10,6 +10,7 @@ use Ferdinand::Utils qw(
   read_data_files get_data_files
   render_template
   ghtml ehtml
+  hash_merge
 );
 use Sample;
 
@@ -111,6 +112,14 @@ subtest 'Generate/Escape HTML', sub {
     'cool &gt; cold &amp; everything else &lt;',
     'HTML escaped properly'
   );
+};
+
+
+subtest 'Merge hashref with a hash' => sub {
+  my $h = {a => 1, b => 2};
+
+  hash_merge($h, a => 2, b => undef, c => 3);
+  cmp_deeply($h, {a => 2, c => 3}, 'hash_merge works');
 };
 
 
