@@ -98,8 +98,9 @@ method id () {
 }
 
 method params () {
-  return $self->{fields}{params} if exists $self->{fields}{params};
-  return;
+  my $f = $self->{fields};
+  return unless exists $f->{params};
+  return $f->{params};
 }
 
 
