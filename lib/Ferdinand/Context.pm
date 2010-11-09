@@ -4,60 +4,52 @@ use Ferdinand::Setup 'class';
 use Ferdinand::Utils qw( ehtml ghtml );
 use Method::Signatures;
 
-has 'impl'        => (isa => 'Ferdinand::Impl',   is => 'ro', required => 1);
-has 'action'      => (isa => 'Ferdinand::Action', is => 'ro', required => 1);
-has 'action_name' => (isa => 'Str',               is => 'ro', required => 1);
-has 'widget'      => (isa => 'Ferdinand::Widget', is => 'rw');
+#################
+# Main attributes
 
-has 'buffer' => (
-  isa     => 'Str',
-  is      => 'ro',
-  default => '',
-  reader  => '_buffer',
-  clearer => 'clear_buffer',
-);
+has 'ferdinand' => (isa => 'Ferdinand',         is => 'ro', required => 1);
+has 'action'    => (isa => 'Ferdinand::Action', is => 'ro', required => 1);
+has 'widget'    => (isa => 'Ferdinand::Widget', is => 'rw');
 
-has 'stash' => (
-  isa     => 'HashRef',
-  is      => 'ro',
-  default => sub { {} },
-  reader  => '_stash',
-);
+has 'params' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
-has 'fields' => (
-  isa     => 'HashRef',
-  is      => 'ro',
-  default => sub { {} },
-  reader  => '_fields',
-);
 
-has 'uri_helper' => (
-  isa    => 'CodeRef',
-  is     => 'ro',
-  reader => '_uri_helper',
-);
+#################
+# Clone a context
 
+has 'parent' => (isa => 'Ferdinand::Context', is => 'ro');
 
 method clone () {
-  my $attrs  = ref($_[0]) ? shift : {};
-  my $fields = $self->{fields};
-  my $ctx    = ref($self)->new(%$self, %$attrs, fields => {%$fields});
-  $ctx->fields(@_);
-
-  return $ctx;
+  return ref($self)->new(%$self, @_, buffer => '', parent => $self);
 }
 
-method uri_helper () {
+method DEMOLISH () {
+  $self->parent->buffer($self->buffer);
+}
+
+
+###############
+# Generate URIs
+
+has 'uri_helper' => (
+  isa => 'CodeRef',
+  is  => 'ro',
+);
+
+method uri () {
   return unless exists $self->{uri_helper};
   return $self->{uri_helper}->($self, @_);
 }
 
-method fields () {
-  my $f = $self->{fields};
-  _merge($f, @_) if @_;
 
-  return $f;
-}
+############################
+# Context stash manipulation
+
+has 'stash' => (
+  isa     => 'HashRef',
+  is      => 'bare',
+  default => sub { {} },
+);
 
 method stash () {
   my $s = $self->{stash};
@@ -66,69 +58,62 @@ method stash () {
   return $s;
 }
 
-method page_title () {
-  my $title = $self->action->title;
-  $title = $title->($self, @_) if ref $title;
 
-  return $title;
+###################
+# Buffer management
+
+has 'buffer' => (
+  isa     => 'Str',
+  is      => 'bare',
+  default => '',
+);
+
+method clear_buffer () {
+  $self->{buffer} = '';
+}
+
+method buffer () {
+  if (@_) {
+    local $" = '';
+    $self->{buffer} .= "@_";
+  }
+
+  return $self->{buffer};
 }
 
 
-#################
-# Field shortcuts
+#############
+# Model links Moose
 
-method row ($row?) {
-  my $f = $self->{fields};
+has 'item' => (isa => 'HashRef',  is => 'rw');
+has 'set'  => (isa => 'ArrayRef', is => 'rw');
 
-  $f->{row} = $row if @_;
-  return $f->{row} if exists $f->{row};
-  return;
-}
-
-method rows ($rows?) {
-  my $f = $self->{fields};
-
-  $f->{rows} = $rows if @_;
-  return $f->{rows} if exists $f->{rows};
-  return;
-}
+has 'id' => (isa => 'ArrayRef', is => 'bare');
 
 method id () {
-  my $f = $self->{fields};
-  return unless exists $f->{id};
-
-  my $id = $f->{id};
-  if (wantarray()) {
-    return @$id if ref($id) eq 'ARRAY';
-    return ($id);
-  }
-  return $id;
-}
-
-method params () {
-  my $f = $self->{fields};
-  return unless exists $f->{params};
-  return $f->{params};
+  return unless exists $self->{id};
+  return @{$self->{id}};
 }
 
 
 ##################
 # Render of fields
 
-method render_field (:$col, :$row, :$col_info) {
-  my $v = $row->{$col};
+# TODO: is this the proper place for this code? No better place for it *yet*...
+method render_field (:$field, :$item, :$meta) {
+  my $v = $item->{$field};
 
-  if (my $f = $col_info->{formatter}) {
+  if (my $f = $meta->{formatter}) {
     local $_ = $v;
     $v = $f->($self);
   }
 
   my $url;
-  if ($url = $col_info->{linked}) {
-    $url = $self->uri_helper($url);
+  if ($url = $meta->{linked}) {
+    $url = $self->uri($url);
   }
-  elsif ($url = $col_info->{link_to}) {
-    local $_ = $row;
+  elsif ($url = $meta->{link_to}) {
+    local $_ = $item;
     $url = $url->($self);
   }
 
@@ -140,15 +125,6 @@ method render_field (:$col, :$row, :$col_info) {
   }
 
   return $v;
-}
-
-
-###################
-# Buffer management
-
-method buffer () {
-  local $" = '';
-  $self->{buffer} .= "@_";
 }
 
 
