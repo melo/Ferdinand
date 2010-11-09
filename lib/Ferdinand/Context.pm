@@ -3,9 +3,10 @@ package Ferdinand::Context;
 use Ferdinand::Setup 'class';
 use Method::Signatures;
 
-has 'impl'   => ( isa => 'Ferdinand::Impl',   is  => 'ro', required => 1);
-has 'action' => ( isa => 'Ferdinand::Action', is  => 'ro', required => 1);
-has 'widget' => ( isa => 'Ferdinand::Widget', is  => 'rw');
+has 'impl'        => (isa => 'Ferdinand::Impl',   is => 'ro', required => 1);
+has 'action'      => (isa => 'Ferdinand::Action', is => 'ro', required => 1);
+has 'action_name' => (isa => 'Str',               is => 'ro', required => 1);
+has 'widget'      => (isa => 'Ferdinand::Widget', is => 'rw');
 
 has 'stash' => (
   isa     => 'HashRef',
@@ -43,6 +44,47 @@ method stash () {
 
   return $s;
 }
+
+method page_title () {
+  my $title = $self->action->title;
+  $title = $title->($self, @_) if ref $title;
+
+  return $title;
+}
+
+
+#################
+# Field shortcuts
+
+method row () {
+  return $self->{fields}{row} if exists $self->{fields}{row};
+  return;
+}
+
+method rows () {
+  return $self->{fields}{rows} if exists $self->{fields}{rows};
+  return;
+}
+
+method id () {
+  return $self->{fields}{id} if exists $self->{fields}{id};
+  return;
+}
+
+method params () {
+  return $self->{fields}{params} if exists $self->{fields}{params};
+  return;
+}
+
+method uri_helper () {
+  return $self->{fields}{uri_helper}->($self, @_)
+    if exists $self->{fields}{uri_helper};
+  return;
+}
+
+
+#######
+# Utils
 
 sub _merge {
   my $h = shift;
