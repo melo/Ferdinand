@@ -13,6 +13,7 @@ has 'buffer' => (
   is      => 'ro',
   default => '',
   reader  => '_buffer',
+  clearer => 'clear_buffer',
 );
 
 has 'stash' => (
