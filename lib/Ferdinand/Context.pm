@@ -1,6 +1,7 @@
 package Ferdinand::Context;
 
 use Ferdinand::Setup 'class';
+use Ferdinand::Utils qw( ehtml ghtml );
 use Method::Signatures;
 
 has 'impl'        => (isa => 'Ferdinand::Impl',   is => 'ro', required => 1);
@@ -111,6 +112,34 @@ method params () {
 }
 
 
+##################
+# Render of fields
+
+method render_field (:$col, :$row, :$col_info) {
+  my $v = $row->{$col};
+
+  if (my $f = $col_info->{formatter}) {
+    local $_ = $v;
+    $v = $f->($self);
+  }
+
+  my $url;
+  if ($url = $col_info->{linked}) {
+    $url = $self->uri_helper($url);
+  }
+  elsif ($url = $col_info->{link_to}) {
+    local $_ = $row;
+    $url = $url->($self);
+  }
+
+  if ($url) {
+    $v = ghtml()->a({href => $url}, $v);
+  }
+  else {
+    $v = ehtml($v);
+  }
+
+  return $v;
 }
 
 

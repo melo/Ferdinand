@@ -153,4 +153,48 @@ subtest 'buffer management' => sub {
 };
 
 
+subtest 'render_field output' => sub {
+  my $c1 = Ferdinand::Context->new(
+    impl        => $impl,
+    action      => Ferdinand::Action->new,
+    action_name => 'view',
+  );
+
+  my %args = (
+    row      => {v => '<abcd & efgh>', e => '!!'},
+    col      => 'v',
+    col_info => {},
+  );
+
+  is($c1->render_field(%args), '&lt;abcd &amp; efgh&gt;', 'Single row value');
+
+  $args{col_info}{formatter} = sub { return uc($_) };
+  is(
+    $c1->render_field(%args),
+    '&lt;ABCD &amp; EFGH&gt;',
+    'Single row value, with formatter'
+  );
+
+  $args{col_info}{link_to} = sub { $_->{e} };
+  is(
+    $c1->render_field(%args),
+    '<a href="!!">&lt;ABCD &amp; EFGH&gt;</a>',
+    'link_to value'
+  );
+
+  $args{col_info}{linked} = ['view', 'me'];
+  is($c1->render_field(%args), '&lt;ABCD &amp; EFGH&gt;', 'linked value');
+
+  $c1 = $c1->clone(
+    { uri_helper => sub { return join('/', @{$_[1]}) }
+    }
+  );
+  is(
+    $c1->render_field(%args),
+    '<a href="view/me">&lt;ABCD &amp; EFGH&gt;</a>',
+    'link_to value, with formatter'
+  );
+};
+
+
 done_testing();
