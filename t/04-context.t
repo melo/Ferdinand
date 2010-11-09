@@ -81,6 +81,12 @@ subtest 'field shortcuts' => sub {
   is($c1->row,  1, 'row() as expected');
   is($c1->rows, 2, 'rows() as expected');
 
+  $c1->row(8);
+  is($c1->row, 8, 'row() updated as expected');
+
+  $c1->rows(9);
+  is($c1->rows, 9, 'rows() updated as expected');
+
   is($c1->params, undef, 'Field params is undef by default');
   $c1->fields(params => {x => 1, y => 2});
   cmp_deeply($c1->params, {x => 1, y => 2}, '... and now it has something');

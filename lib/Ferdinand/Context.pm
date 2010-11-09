@@ -65,13 +65,19 @@ method page_title () {
 #################
 # Field shortcuts
 
-method row () {
-  return $self->{fields}{row} if exists $self->{fields}{row};
+method row ($row?) {
+  my $f = $self->{fields};
+
+  $f->{row} = $row if @_;
+  return $f->{row} if exists $f->{row};
   return;
 }
 
-method rows () {
-  return $self->{fields}{rows} if exists $self->{fields}{rows};
+method rows ($rows?) {
+  my $f = $self->{fields};
+
+  $f->{rows} = $rows if @_;
+  return $f->{rows} if exists $f->{rows};
   return;
 }
 
