@@ -7,7 +7,6 @@ use Test::More;
 use Test::Fatal;
 use Test::Deep;
 use Ferdinand::Utils qw(
-  new_context
   read_data_files get_data_files
   render_template
   ghtml ehtml
@@ -111,21 +110,6 @@ subtest 'Generate/Escape HTML', sub {
     ehtml('cool > cold & everything else <'),
     'cool &gt; cold &amp; everything else &lt;',
     'HTML escaped properly'
-  );
-};
-
-
-subtest 'Context Mgmt', sub {
-  my $ctx = {
-    a => 1,
-    b => 2,
-  };
-
-  cmp_deeply(new_context($ctx, a => undef), {b => 2}, 'Delete keys works');
-  cmp_deeply(
-    new_context($ctx, b => 3, c => 4, a => undef),
-    {b => 3, c => 4},
-    'Mix add/delete keys works'
   );
 };
 
