@@ -24,8 +24,9 @@ has 'fields' => (
 
 
 method clone () {
+  my $attrs  = ref($_[0]) ? shift : {};
   my $fields = $self->{fields};
-  my $ctx = ref($self)->new(%$self, fields => {%$fields});
+  my $ctx    = ref($self)->new(%$self, %$attrs, fields => {%$fields});
   $ctx->fields(@_);
 
   return $ctx;

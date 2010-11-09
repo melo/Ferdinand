@@ -32,11 +32,19 @@ is($ctx->widget,      undef,  'Widget is undef');
 
 
 subtest 'context cloning' => sub {
-  my $new = $ctx->clone(a => undef, c => 3);
-  isnt($ctx, $new, 'Clone returns a new object');
-  isa_ok($new, 'Ferdinand::Context');
+  my $c1 = $ctx->clone(a => undef, c => 3);
+  isnt($ctx, $c1, 'Clone returns a new object');
+  isa_ok($c1, 'Ferdinand::Context');
 
-  cmp_deeply($new->fields, {b => 2, c => 3}, 'Cloning replaces fields');
+  cmp_deeply($c1->fields, {b => 2, c => 3}, 'Cloning replaces fields');
+  is($c1->buffer, '', 'Buffer is empty');
+
+  my $c2 = $c1->clone({buffer => 'fgh'}, a => 4, c => undef);
+  isnt($c2, $c1, 'Clone returns a new object');
+  isa_ok($c2, 'Ferdinand::Context');
+
+  cmp_deeply($c2->fields, {a => 4, b => 2}, 'Cloning replaces fields');
+  is($c2->buffer, 'fgh', 'Buffer is not empty');
 };
 
 
