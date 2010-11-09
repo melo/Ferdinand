@@ -126,4 +126,21 @@ subtest 'page title' => sub {
 };
 
 
+subtest 'buffer management' => sub {
+  my $c1 = Ferdinand::Context->new(
+    impl        => $impl,
+    action      => Ferdinand::Action->new,
+    action_name => 'view',
+  );
+
+  is($c1->buffer, '', 'Buffer is empty from the start');
+
+  $c1->buffer('a', 'b', 'c');
+  is($c1->buffer, 'abc', '... and now its no longer empty');
+
+  $c1->buffer('A', 'B', 'C');
+  is($c1->buffer, 'abcABC', '... concat works');
+};
+
+
 done_testing();

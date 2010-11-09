@@ -8,6 +8,13 @@ has 'action'      => (isa => 'Ferdinand::Action', is => 'ro', required => 1);
 has 'action_name' => (isa => 'Str',               is => 'ro', required => 1);
 has 'widget'      => (isa => 'Ferdinand::Widget', is => 'rw');
 
+has 'buffer' => (
+  isa     => 'Str',
+  is      => 'ro',
+  default => '',
+  reader  => '_buffer',
+);
+
 has 'stash' => (
   isa     => 'HashRef',
   is      => 'ro',
@@ -81,6 +88,15 @@ method uri_helper () {
   return $self->{fields}{uri_helper}->($self, @_)
     if exists $self->{fields}{uri_helper};
   return;
+}
+
+
+###################
+# Buffer management
+
+method buffer () {
+  local $" = '';
+  $self->{buffer} .= "@_";
 }
 
 
