@@ -30,6 +30,12 @@ has 'fields' => (
   reader  => '_fields',
 );
 
+has 'uri_helper' => (
+  isa    => 'CodeRef',
+  is     => 'ro',
+  reader => '_uri_helper',
+);
+
 
 method clone () {
   my $attrs  = ref($_[0]) ? shift : {};
@@ -38,6 +44,11 @@ method clone () {
   $ctx->fields(@_);
 
   return $ctx;
+}
+
+method uri_helper () {
+  return unless exists $self->{uri_helper};
+  return $self->{uri_helper}->($self, @_);
 }
 
 method fields () {
@@ -91,10 +102,7 @@ method params () {
   return;
 }
 
-method uri_helper () {
-  return $self->{fields}{uri_helper}->($self, @_)
-    if exists $self->{fields}{uri_helper};
-  return;
+
 }
 
 

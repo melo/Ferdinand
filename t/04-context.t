@@ -18,6 +18,7 @@ is(
       action      => bless({}, 'Ferdinand::Action'),
       action_name => 'view',
       fields      => {a => 1, b => 2},
+      uri_helper => sub { join(' ', @_) },
     );
   },
   undef,
@@ -27,8 +28,9 @@ is(
 
 isa_ok($ctx->impl,   'Ferdinand::Impl');
 isa_ok($ctx->action, 'Ferdinand::Action');
-is($ctx->action_name, 'view', 'action_name as expected');
-is($ctx->widget,      undef,  'Widget is undef');
+is($ctx->action_name,   'view',   'action_name as expected');
+is($ctx->widget,        undef,    'Widget is undef');
+is($ctx->uri_helper(5), "$ctx 5", 'uri_helper works');
 
 
 subtest 'context cloning' => sub {
@@ -95,10 +97,6 @@ subtest 'field shortcuts' => sub {
   $c1->fields(id => 42);
   is($c1->id, 42, '... and now it has the expected value');
 
-  is($c1->uri_helper, undef, 'Field uri_helper is undef by default');
-  $c1->fields(uri_helper => sub { join(' ', @_) });
-  is($c1->uri_helper(5), "$c1 5",
-    '... and now it has the expected behaviour');
 };
 
 
