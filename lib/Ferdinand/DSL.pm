@@ -3,11 +3,15 @@ package Ferdinand::DSL;
 use Ferdinand::Setup 'library';
 
 our @EXPORT = qw(
-  ferdinand_setup cat_ferdinand_setup
-  dbic_source
-  list view
-  title columns
+  ferdinand_setup
+  actions list view
+  action name layout
+  title
+  widget type
+  columns
   linked link_to col
+
+  cat_ferdinand_setup dbic_source
 );
 
 
@@ -31,23 +35,57 @@ our @EXPORT = qw(
 
 
 ### Ferdinand global setup
-sub cat_ferdinand_setup (&) { caller()->ferdinand(_cb_setup(@_)) }
-sub ferdinand_setup (&)     { _cb_setup(@_) }
+sub ferdinand_setup (&) { _cb_setup(@_) }
 
-### Picking an implementation
-sub dbic_source (&) { _cur_setup()->{source} = $_[0]->() }
 
 ### Action setup
-sub list (&) { _cur_setup()->{list} = _cb_setup(@_) }
-sub view (&) { _cur_setup()->{view} = _cb_setup(@_) }
+sub actions (&) { _cur_setup()->{actions} = _cb_setup(@_, []) }
+
+sub list (&) {
+  my $list = _cur_setup();
+  push @$list, {name => 'list', layout => _cb_setup(@_, [])};
+}
+
+sub view (&) {
+  my $list = _cur_setup();
+  push @$list, {name => 'view', layout => _cb_setup(@_, [])};
+}
+
+sub action (&) { my $l = _cur_setup(); push @$l, _cb_setup(@_) }
+
 
 ### Action attributes
-sub title ($) { _cur_setup()->{title} = $_[0] }
-sub columns (&) { _cur_setup()->{columns} = _cb_setup(@_, []) }
+sub name ($) { _cur_setup()->{name} = $_[0] }
+sub layout (&) { _cur_setup()->{layout} = _cb_setup(@_, []) }
+
+
+### Widget shortcuts
+sub title ($) {
+  my $list = _cur_setup();
+  push @$list, {title => $_[0], type => 'Title'};
+}
+
+sub nest (&) {
+  my $list = _cur_setup();
+  push @$list, {type => 'Layout', clone => 1, layout => _cb_setup(@_, [])};
+}
+
+
+### Widget setup and main attributes
+sub widget (&) { my $l = _cur_setup(); push @$l, _cb_setup(@_) }
+sub type ($) { _cur_setup()->{type} = $_[0] }
+
 
 ### Column definition
+sub columns (&) { _cur_setup()->{columns} = _cb_setup(@_, []) }
 sub linked ($$)  { my $l = _cur_setup(); push @$l, $_[0], {linked  => $_[1]} }
 sub link_to ($$) { my $l = _cur_setup(); push @$l, $_[0], {link_to => $_[1]} }
 sub col ($)      { my $l = _cur_setup(); push @$l, $_[0] }
+
+
+### Extras
+sub cat_ferdinand_setup (&) { caller()->ferdinand(_cb_setup(@_)) }
+sub dbic_source (&) { _cur_setup()->{source} = $_[0]->() }
+
 
 1;
