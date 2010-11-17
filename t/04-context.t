@@ -69,10 +69,19 @@ subtest 'context cloning' => sub {
     is($c1->parent->buffer, 'a1', 'Parent ctx still has the original buffer');
   };
 
+  subtest 'test cloned with args' => sub {
+    my $c1 = $ctx->clone(params => {p1 => 1, p2 => 2});
+
+    cmp_deeply($c1->params, {p1 => 1, p2 => 2}, 'cloned params with new values');
+    cmp_deeply($c1->stash,  {x => 9, y => 8}, 'cloned stash as previous');
+  };
+
   is($ctx->buffer, 'a1a2', 'Cloned context updated');
 
   is($ctx->item, undef, 'Item is undef again');
   is($ctx->set,  undef, 'Set is undef again');
+
+  cmp_deeply($ctx->params, {a => 1, b => 2}, 'params still as expected');
 };
 
 
