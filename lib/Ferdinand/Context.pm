@@ -1,7 +1,7 @@
 package Ferdinand::Context;
 
 use Ferdinand::Setup 'class';
-use Ferdinand::Utils qw( ehtml ghtml );
+use Ferdinand::Utils qw( ehtml ghtml hash_merge );
 use Method::Signatures;
 
 #################
@@ -54,7 +54,7 @@ has 'stash' => (
 
 method stash () {
   my $s = $self->{stash};
-  _merge($s, @_) if @_;
+  hash_merge($s, @_) if @_;
 
   return $s;
 }
@@ -126,23 +126,6 @@ method render_field (:$field, :$item, :$meta) {
   }
 
   return $v;
-}
-
-
-#######
-# Utils
-
-sub _merge {
-  my $h = shift;
-
-  while (@_) {
-    my ($k, $v) = splice(@_, 0, 2);
-
-    if (defined $v) { $h->{$k} = $v }
-    else            { delete $h->{$k} }
-  }
-
-  return;
 }
 
 
