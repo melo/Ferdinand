@@ -5,13 +5,13 @@ use Method::Signatures;
 
 requires 'setup_attrs';
 
-has 'column_names' => (
+has 'col_names' => (
   isa      => 'ArrayRef',
   is       => 'ro',
   required => 1,
 );
 
-has 'columns' => (
+has 'col_meta' => (
   isa      => 'HashRef',
   is       => 'ro',
   required => 1,
@@ -19,26 +19,24 @@ has 'columns' => (
 
 
 after setup_attrs => sub {
-  my ($class, $attrs, $impl, $meta) = @_;
+  my ($class, $attrs, $meta, $sys) = @_;
 
-  my $col_spec = delete($meta->{columns}) || [];
+  my $cols_spec = delete($meta->{columns}) || [];
   confess "Requires a 'columns' specification, "
-    unless @$col_spec;
+    unless @$cols_spec;
 
-  my @col_order;
-  my %col_meta;
-  while (@$col_spec) {
-    my $name = shift @$col_spec;
-    my $info = ref($col_spec->[0]) eq 'HASH' ? shift @$col_spec : {};
+  my @names;
+  my %meta;
+  while (@$cols_spec) {
+    my $name = shift @$cols_spec;
+    my $info = ref($cols_spec->[0]) eq 'HASH' ? shift @$cols_spec : {};
 
-    push @col_order, $name;
-    $col_meta{$name} = $info;
-
-    $impl->column_meta_fixup($name, $info);
+    push @names, $name;
+    $meta{$name} = $info;
   }
 
-  $attrs->{column_names} = \@col_order;
-  $attrs->{columns}      = \%col_meta;
+  $attrs->{col_names}  = \@names;
+  $attrs->{col_meta}   = \%meta;
 };
 
 
