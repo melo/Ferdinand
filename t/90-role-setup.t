@@ -23,13 +23,13 @@ use Test::Deep;
 use Scalar::Util 'blessed';
 
 my $m = {str => 'aa', ypt => 'bb'};
-my $x = X->setup($m, 'XX');
+my $x = X->setup($m);
 
 ok(blessed($x), 'Got a blessed object');
 isa_ok($x, 'X', '... of the expected class X');
 
 is($x->str, 'aa', "Attribute 'str' is 'aa'");
-cmp_deeply($m, {ypt => 'bb', sys => 'XX'}, "Final meta hashref as expected");
+cmp_deeply($m, {ypt => 'bb', sys => 'X'}, "Final meta hashref as expected");
 
 
 done_testing();
