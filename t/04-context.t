@@ -8,14 +8,14 @@ use Test::Fatal;
 use Ferdinand::Context;
 use Ferdinand::Action;
 
-my $ferdinand = bless {}, 'Ferdinand';
-my $action    = bless {}, 'Ferdinand::Action';
+my $map    = bless {}, 'Ferdinand::Map';
+my $action = bless {}, 'Ferdinand::Action';
 
 my $ctx;
 is(
   exception {
     $ctx = Ferdinand::Context->new(
-      ferdinand  => $ferdinand,
+      map        => $map,
       action     => $action,
       uri_helper => sub { join(' ', @_) },
       params     => {a => 1, b => 2},
@@ -26,8 +26,8 @@ is(
   'Created context and lived'
 );
 
-isa_ok($ctx->ferdinand, 'Ferdinand');
-isa_ok($ctx->action,    'Ferdinand::Action');
+isa_ok($ctx->map,    'Ferdinand::Map');
+isa_ok($ctx->action, 'Ferdinand::Action');
 
 is($ctx->widget, undef,    'Widget is undef');
 is($ctx->uri(5), "$ctx 5", 'uri_helper works');
@@ -53,7 +53,7 @@ subtest 'context cloning' => sub {
     cmp_deeply($c1->params, {a => 1, b => 2}, 'cloned param as expected');
     cmp_deeply($c1->stash,  {x => 9, y => 8}, 'cloned stash as expected');
 
-    for my $attr (qw( ferdinand action widget uri_helper )) {
+    for my $attr (qw( map action widget uri_helper )) {
       is($c1->$attr, $ctx->$attr, "Cloned context '$attr' is the same");
     }
 
@@ -98,8 +98,8 @@ subtest 'context stash' => sub {
 
 subtest 'buffer management' => sub {
   my $c1 = Ferdinand::Context->new(
-    ferdinand => $ferdinand,
-    action    => $action,
+    map    => $map,
+    action => $action,
   );
 
   is($c1->buffer, '', 'Buffer is empty from the start');
@@ -117,8 +117,8 @@ subtest 'buffer management' => sub {
 
 subtest 'render_field output' => sub {
   my $c1 = Ferdinand::Context->new(
-    ferdinand => $ferdinand,
-    action    => $action,
+    map    => $map,
+    action => $action,
   );
 
   my %args = (
