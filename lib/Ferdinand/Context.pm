@@ -24,7 +24,8 @@ method clone () {
 }
 
 method DEMOLISH () {
-  $self->parent->buffer($self->buffer);
+  my $b = $self->buffer;
+  $self->parent->buffer($b) if $b;
 }
 
 
