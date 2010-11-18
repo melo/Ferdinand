@@ -71,6 +71,23 @@ sub nest (&) {
 }
 
 
+### DBIC widgets shortcuts
+sub dbic_source (&) {
+  my $list = _cur_setup();
+  push @$list, {type => 'DBIC::Source', source => $_[0]};
+}
+
+sub dbic_item (&) {
+  my $list = _cur_setup();
+  push @$list, {type => 'DBIC::Item', item => $_[0]};
+}
+
+sub dbic_set (&) {
+  my $list = _cur_setup();
+  push @$list, {type => 'DBIC::Set', set => $_[0]};
+}
+
+
 ### Widget setup and main attributes
 sub widget (&) { my $l = _cur_setup(); push @$l, _cb_setup(@_) }
 sub type ($) { _cur_setup()->{type} = $_[0] }
@@ -85,7 +102,6 @@ sub col ($)      { my $l = _cur_setup(); push @$l, $_[0] }
 
 ### Extras
 sub cat_ferdinand_setup (&) { caller()->ferdinand(_cb_setup(@_)) }
-sub dbic_source (&) { _cur_setup()->{source} = $_[0]->() }
 
 
 1;
