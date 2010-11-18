@@ -6,24 +6,17 @@ use Method::Signatures;
 
 with
   'Ferdinand::Roles::Setup',
-  'Ferdinand::Roles::ColumnSet';
+  'Ferdinand::Roles::Renderer',
+  'Ferdinand::Roles::WidgetContainer';
 
-has 'title' => (isa => 'Str|CodeRef', is => 'ro');
+has 'name' => (isa => 'Str', is => 'ro', required => 1);
 
 
-method setup_attrs ($class:, $attrs, $impl, $meta) {
+method setup_attrs ($class:, $attrs, $meta) {
   ## Remove known attributes
-  for my $f (qw( title )) {
+  for my $f (qw( name )) {
     $attrs->{$f} = delete $meta->{$f} if exists $meta->{$f};
   }
-}
-
-
-method page_title ($ctx, $r?) {
-  my $title = $self->title;
-  $title = $title->($ctx, $r) if ref $title;
-
-  return $title;
 }
 
 

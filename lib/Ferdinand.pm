@@ -2,32 +2,25 @@ package Ferdinand;
 # ABSTRACT: a very cool module
 
 use Ferdinand::Setup 'class';
-use Ferdinand::Impl::DBIC;
+use Carp 'confess';
 use Method::Signatures;
 
-method setup($class:, $meta) {
+sub map_class_name    {'Ferdinand::Map'}
+sub action_class_name {'Ferdinand::Action'}
+
+method setup($class:, :$meta, :$map_class) {
   ## Pick our implementation class
-  $class = delete($meta->{impl}) || _pick_implementation($meta);
+  $map_class = $class->map_class_name unless $map_class;
+  eval "require $map_class";
+  confess($@) if $@;
 
   ## Let our implementation parse the specification
-  my $self = $class->setup($meta);
-  $self->setup_actions($meta);
+  my $self = $map_class->setup($meta, $class);
 
   confess('Could not understand attribures: ' . join(', ', sort keys %$meta))
     if %$meta;
 
   return $self;
-}
-
-
-## TODO: move this to a plugin system in the Ferdinand::SourceTypes::* namespace
-func _pick_implementation ($meta) {
-  my $source = $meta->{source};
-  confess "No source found, "
-    unless $source;
-  
-  return 'Ferdinand::Impl::DBIC' if $source->isa('DBIx::Class::ResultSource');
-  confess "Could not determine implementation class for '$source', ";
 }
 
 __PACKAGE__->meta->make_immutable;
