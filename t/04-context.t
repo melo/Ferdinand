@@ -57,10 +57,10 @@ subtest 'context cloning' => sub {
       is($c1->$attr, $ctx->$attr, "Cloned context '$attr' is the same");
     }
 
-    $c1->item({a => 1, b => 2});
-    $c1->set([{a => 1}, {a => 2}]);
-    cmp_deeply($c1->item, {a => 1, b => 2}, 'Item set as expected');
-    cmp_deeply($c1->set, [{a => 1}, {a => 2}], 'Set updated as expected');
+    $c1->item(bless({a => 1, b => 2}, 'X'));
+    $c1->set(bless([{a => 1}, {a => 2}], 'X'));
+    cmp_deeply($c1->item, bless({a => 1, b => 2}, 'X'), 'Item set as expected');
+    cmp_deeply($c1->set, bless([{a => 1}, {a => 2}], 'X'), 'Set updated as expected');
 
     is($c1->buffer, '', 'Cloned context buffer is empty');
     $c1->buffer('a2');

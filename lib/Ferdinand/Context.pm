@@ -86,8 +86,10 @@ method buffer () {
 #############
 # Model links Moose
 
-has 'item' => (isa => 'HashRef',  is => 'rw');
-has 'set'  => (isa => 'ArrayRef', is => 'rw');
+has 'model' => (isa => 'Ferdinand::Model', is => 'rw');
+
+has 'item' => (isa => 'Object', is => 'rw');
+has 'set'  => (isa => 'Object', is => 'rw');
 
 has 'id' => (isa => 'ArrayRef', is => 'bare');
 

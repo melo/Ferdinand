@@ -13,7 +13,7 @@ subtest 'layout no clone' => sub {
   my $l   = Ferdinand::Widgets::Layout->setup(
     { layout => [
         { type => 'CB',
-          cb   => sub { $_[1]->item({x => 1}) },
+          cb   => sub { $_[1]->item(bless({x => 1}, 'X')) },
         },
       ],
     }
@@ -23,7 +23,7 @@ subtest 'layout no clone' => sub {
     'Class name for Layout widget object ok');
 
   $l->render($ctx);
-  cmp_deeply($ctx->item, {x => 1}, "Item as expected");
+  cmp_deeply($ctx->item, bless({x => 1}, 'X'), "Item as expected");
 };
 
 subtest 'layout with clone' => sub {
@@ -33,7 +33,7 @@ subtest 'layout with clone' => sub {
     { clone  => 1,
       layout => [
         { type => 'CB',
-          cb   => sub { $_[1]->item({x => 1}) }
+          cb   => sub { $_[1]->item(bless({x => 1}, 'X')) }
         },
       ],
     }
