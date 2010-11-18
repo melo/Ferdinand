@@ -13,11 +13,23 @@ has 'source' => (
 
 
 method column_meta_fixup ($name, $defs) {
-  my %info = %$defs;
+  my %info   = %$defs;
   my $source = $self->source;
   return \%info unless $source->has_column($name);
 
   my $ci = $source->column_info($name);
+
+  my @fields = qw(
+    data_type
+    size
+    is_nullable
+    is_currency is_uri
+    default_value
+    currency_code
+  );
+  for my $f (@fields) {
+    $info{$f} = $ci->{$f} if exists $ci->{$f};
+  }
 
   $info{formatter} = $ci->{extra}{formatter}
     if exists $ci->{extra}{formatter};
@@ -39,8 +51,10 @@ method column_meta_fixup ($name, $defs) {
     my $cls = $classes->{$t} || [];
     $cls = [$cls] unless ref $cls;
     $info{"cls_$t"} = $cls;
-    $info{"cls_${t}_html"} = @$cls? ' class="' . join(' ', @$cls) . '"' : '';
+    $info{"cls_${t}_html"} = @$cls ? ' class="' . join(' ', @$cls) . '"' : '';
   }
+  
+  return \%info;
 }
 
 
