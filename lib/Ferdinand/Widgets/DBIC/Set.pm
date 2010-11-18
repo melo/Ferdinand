@@ -17,7 +17,8 @@ method setup_attrs ($class:, $attrs, $meta) {
 }
 
 method render_self ($ctx) {
-  $ctx->set($self->set->($self, $ctx));
+  my $rs = $self->set->($self, $ctx);
+  $ctx->set($rs) if $rs;
 }
 
 
