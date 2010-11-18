@@ -19,11 +19,13 @@ has 'col_meta' => (
 
 
 after setup_attrs => sub {
-  my ($class, $attrs, $meta, $sys) = @_;
+  my ($class, $attrs, $meta, $sys, $stash) = @_;
 
   my $cols_spec = delete($meta->{columns}) || [];
   confess "Requires a 'columns' specification, "
     unless @$cols_spec;
+
+  my $model = $stash->{model};
 
   my @names;
   my %meta;
@@ -31,12 +33,14 @@ after setup_attrs => sub {
     my $name = shift @$cols_spec;
     my $info = ref($cols_spec->[0]) eq 'HASH' ? shift @$cols_spec : {};
 
+    $info = $model->column_meta_fixup($name, $info) if $model;
+
     push @names, $name;
     $meta{$name} = $info;
   }
 
-  $attrs->{col_names}  = \@names;
-  $attrs->{col_meta}   = \%meta;
+  $attrs->{col_names} = \@names;
+  $attrs->{col_meta}  = \%meta;
 };
 
 
