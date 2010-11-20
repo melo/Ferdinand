@@ -135,6 +135,56 @@ subtest 'Render Field' => sub {
     '<a href="http://example.com/title_1">title_1</a>',
     'Field slug ok'
   );
+
+  cmp_deeply(
+    [keys(%$cm)],
+    bag(qw(published_at slug title visible)),
+    'Expected fields'
+  );
+  cmp_deeply(
+    $cm->{title},
+    { cls_list      => [],
+      cls_list_html => "",
+      data_type     => "varchar",
+      label         => "Title",
+      size          => 100,
+    },
+    "... meta for field 'title' ok"
+  );
+  cmp_deeply(
+    $cm->{visible},
+    { cls_list      => [],
+      cls_list_html => "",
+      data_type     => "char",
+      is_nullable   => 0,
+      label         => "Visible",
+      size          => 1,
+    },
+    "... meta for field 'visible' ok"
+  );
+  cmp_deeply(
+    $cm->{published_at},
+    { cls_list      => ["{sorter: 'eu_date'}"],
+      cls_list_html => " class=\"{sorter: 'eu_date'}\"",
+      data_type     => "date",
+      formatter     => ignore(),
+      is_nullable   => 0,
+      label         => "Published At",
+    },
+    "... meta for field 'published_at' ok"
+  );
+  cmp_deeply(
+    $cm->{slug},
+    { cls_list      => [],
+      cls_list_html => "",
+      data_type     => "varchar",
+      is_nullable   => 0,
+      label         => "Slug",
+      link_to       => ignore(),
+      size          => 100,
+    },
+    "... meta for field 'slug' ok"
+  );
 };
 
 
