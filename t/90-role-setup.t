@@ -20,12 +20,11 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Deep;
-use Scalar::Util 'blessed';
 
 my $m = {str => 'aa', ypt => 'bb'};
 my $x = X->setup($m);
 
-ok(blessed($x), 'Got a blessed object');
+ok($x, 'Got something');
 isa_ok($x, 'X', '... of the expected class X');
 
 is($x->str, 'aa', "Attribute 'str' is 'aa'");
