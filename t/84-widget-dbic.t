@@ -77,14 +77,64 @@ subtest 'Live DB' => sub {
   my $i = $ctx->item;
   ok($i, 'Got an item');
   isa_ok($i, 'TDB::Result::I', '... of the expected type');
-  is($i->id,    1,         '... expected ID');
-  is($i->title, 'Title 1', '... expected title');
+  is($i->id, 1, '... expected ID');
+  is($i->title, 'Title 1 & me', '... expected title');
   isa_ok($i->published_at, 'DateTime', '... expected type of published_at');
 
   my $t = $ctx->set;
   ok($t, 'Got a set');
   isa_ok($t, 'DBIx::Class::ResultSet', '... of the expected type');
   is($t->count, 2, '... with the expected count of results');
+};
+
+
+subtest 'Render Field' => sub {
+  eval "require TDB";
+  plan skip_all => "Could not load test database, probably missing DBIC"
+    if $@;
+
+  my ($db, $tfh) = TDB->test_deploy;
+
+  my $l = Ferdinand::Widgets::Layout->setup(
+    { layout => [
+        { type   => 'DBIC::Source',
+          source => sub { $db->source('I') },
+        },
+        { type => 'DBIC::Item',
+          item => sub { $db->resultset('I')->find(1) },
+        },
+        { type    => '+TestRenderField',
+          columns => [
+            'slug' => {
+              link_to => sub { 'http://example.com/' . $_->slug }
+            },
+            'published_at',
+            'visible',
+            'title',
+          ],
+        },
+      ],
+    }
+  );
+
+  my $ctx = _ctx();
+  $l->render($ctx);
+
+  my $cm = $ctx->stash->{col_meta};
+  is($ctx->render_field(field => 'visible', meta => $cm),
+    'V', 'Field visible ok');
+  is(
+    $ctx->render_field(field => 'title', meta => $cm),
+    'Title 1 &amp; me',
+    'Field title ok'
+  );
+  is($ctx->render_field(field => 'published_at', meta => $cm),
+    '10/10/2010', 'Field published_at ok');
+  is(
+    $ctx->render_field(field => 'slug', meta => $cm),
+    '<a href="http://example.com/title_1">title_1</a>',
+    'Field slug ok'
+  );
 };
 
 
