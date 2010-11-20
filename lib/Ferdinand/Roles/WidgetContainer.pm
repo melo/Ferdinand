@@ -33,10 +33,11 @@ after setup_attrs => sub {
     confess "Missing widget 'type', "
       unless $widget_class;
 
-    $widget_class = "Ferdinand::Widgets::$widget_class";
+    $widget_class = "Ferdinand::Widgets::$widget_class"
+      unless $widget_class =~ s/^\+//;
     eval "require $widget_class";
     confess("Could not load widget '$widget_class': $@, ") if $@;
-    
+
     push @widgets, $widget_class->setup($widget_spec, $stash, $sys);
   }
 

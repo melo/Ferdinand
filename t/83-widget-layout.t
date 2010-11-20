@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use lib 't/tlib';
 use Test::More;
 use Test::Deep;
 use Ferdinand::Widgets::CB;
@@ -15,6 +16,7 @@ subtest 'layout no clone' => sub {
         { type => 'CB',
           cb   => sub { $_[1]->item(bless({x => 1}, 'X')) },
         },
+        {type => '+TestWidget'},
       ],
     }
   );
@@ -24,6 +26,8 @@ subtest 'layout no clone' => sub {
 
   $l->render($ctx);
   cmp_deeply($ctx->item, bless({x => 1}, 'X'), "Item as expected");
+
+  is($ctx->stash->{titi}, "TestWidget $$", 'Support for +WidgetClass');
 };
 
 subtest 'layout with clone' => sub {
