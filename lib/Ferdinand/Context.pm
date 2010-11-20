@@ -103,8 +103,12 @@ method id () {
 # Render of fields
 
 # TODO: is this the proper place for this code? No better place for it *yet*...
-method render_field (:$field, :$item, :$meta) {
-  my $v = $item->{$field};
+method render_field (:$field, :$meta) {
+  my $v = $self->item->$field();
+  return '' unless defined $v;
+
+  $meta = $meta->{$field};
+  $meta = {} unless $meta;
 
   if (my $f = $meta->{formatter}) {
     local $_ = $v;
@@ -116,7 +120,7 @@ method render_field (:$field, :$item, :$meta) {
     $url = $self->uri($url);
   }
   elsif ($url = $meta->{link_to}) {
-    local $_ = $item;
+    local $_ = $self->item;
     $url = $url->($self);
   }
 

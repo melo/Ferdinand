@@ -5,6 +5,7 @@ use warnings;
 use Test::More;
 use Test::Deep;
 use Test::Fatal;
+use Test::MockObject;
 use Ferdinand::Context;
 use Ferdinand::Action;
 
@@ -116,34 +117,38 @@ subtest 'buffer management' => sub {
 
 
 subtest 'render_field output' => sub {
+  my $i = Test::MockObject->new;
+  $i->set_always(v => '<abcd & efgh>');
+  $i->set_always(e => '!!');
+
   my $c1 = Ferdinand::Context->new(
     map    => $map,
     action => $action,
+    item   => $i,
   );
 
   my %args = (
-    item  => {v => '<abcd & efgh>', e => '!!'},
     field => 'v',
     meta  => {},
   );
 
   is($c1->render_field(%args), '&lt;abcd &amp; efgh&gt;', 'Single row value');
 
-  $args{meta}{formatter} = sub { return uc($_) };
+  $args{meta}{v}{formatter} = sub { return uc($_) };
   is(
     $c1->render_field(%args),
     '&lt;ABCD &amp; EFGH&gt;',
     'Single row value, with formatter'
   );
 
-  $args{meta}{link_to} = sub { $_->{e} };
+  $args{meta}{v}{link_to} = sub { $_->e };
   is(
     $c1->render_field(%args),
     '<a href="!!">&lt;ABCD &amp; EFGH&gt;</a>',
     'link_to value'
   );
 
-  $args{meta}{linked} = ['view', 'me'];
+  $args{meta}{v}{linked} = ['view', 'me'];
   is($c1->render_field(%args), '&lt;ABCD &amp; EFGH&gt;', 'linked value');
 
   $c1 = $c1->clone(uri_helper => sub { return join('/', @{$_[1]}) });
