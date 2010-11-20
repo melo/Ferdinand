@@ -111,15 +111,11 @@ subtest 'List actions', sub {
   cmp_deeply($col_names,
     [qw( id title slug created_at last_update_at is_visible )]);
 
-TODO: {
-    local $TODO = 'columns() not implemented yet';
-
-    my $cols = $l->col_meta;
-    cmp_deeply($cols->{id},
-      {linked => 'view', label => 'Id'});
-    cmp_deeply($cols->{is_visible},
-      {label => 'Is Visible', cls_list => [], cls_list_html => ''});
-  }
+  my $cols = $l->col_meta;
+  cmp_deeply($cols->{id},    {linked  => 'view'},   'Meta for id ok');
+  cmp_deeply($cols->{title}, {linked  => 'view'},   'Meta for title ok');
+  cmp_deeply($cols->{slug},  {link_to => $slug_cb}, 'Meta for slug ok');
+  cmp_deeply($cols->{is_visible}, {}, 'Meta for is_visible ok');
 };
 
 done_testing();
