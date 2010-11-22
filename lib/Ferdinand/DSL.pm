@@ -6,12 +6,14 @@ our @EXPORT = qw(
   ferdinand_setup
   actions list view
   action name layout
-  title
+  title nest
   widget type
   columns
   linked link_to col
 
-  cat_ferdinand_setup dbic_source
+  dbic_source dbic_item dbic_set
+
+  cat_ferdinand_setup
 );
 
 
