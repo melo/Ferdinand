@@ -60,8 +60,16 @@ subtest 'context cloning' => sub {
 
     $c1->item(bless({a => 1, b => 2}, 'X'));
     $c1->set(bless([{a => 1}, {a => 2}], 'X'));
-    cmp_deeply($c1->item, bless({a => 1, b => 2}, 'X'), 'Item set as expected');
-    cmp_deeply($c1->set, bless([{a => 1}, {a => 2}], 'X'), 'Set updated as expected');
+    cmp_deeply(
+      $c1->item,
+      bless({a => 1, b => 2}, 'X'),
+      'Item set as expected'
+    );
+    cmp_deeply(
+      $c1->set,
+      bless([{a => 1}, {a => 2}], 'X'),
+      'Set updated as expected'
+    );
 
     is($c1->buffer, '', 'Cloned context buffer is empty');
     $c1->buffer('a2');
@@ -73,8 +81,12 @@ subtest 'context cloning' => sub {
   subtest 'test cloned with args' => sub {
     my $c1 = $ctx->clone(params => {p1 => 1, p2 => 2});
 
-    cmp_deeply($c1->params, {p1 => 1, p2 => 2}, 'cloned params with new values');
-    cmp_deeply($c1->stash,  {x => 9, y => 8}, 'cloned stash as previous');
+    cmp_deeply(
+      $c1->params,
+      {p1 => 1, p2 => 2},
+      'cloned params with new values'
+    );
+    cmp_deeply($c1->stash, {x => 9, y => 8}, 'cloned stash as previous');
   };
 
   is($ctx->buffer, 'a1a2', 'Cloned context updated');
