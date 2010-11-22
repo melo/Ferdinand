@@ -103,8 +103,9 @@ method id () {
 # Render of fields
 
 # TODO: is this the proper place for this code? No better place for it *yet*...
-method render_field (:$field, :$meta) {
-  my $v = $self->item->$field();
+method render_field (:$field, :$meta, :$item) {
+  $item = $self->item unless $item;
+  my $v = $item->$field();
   return '' unless defined $v;
 
   $meta = $meta->{$field};
@@ -120,7 +121,7 @@ method render_field (:$field, :$meta) {
     $url = $self->uri($url);
   }
   elsif ($url = $meta->{link_to}) {
-    local $_ = $self->item;
+    local $_ = $item;
     $url = $url->($self);
   }
 

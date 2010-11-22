@@ -169,6 +169,14 @@ subtest 'render_field output' => sub {
     '<a href="view/me">&lt;ABCD &amp; EFGH&gt;</a>',
     'link_to value, with formatter'
   );
+
+  $i = Test::MockObject->new;
+  $i->set_always(x => '<ABCD & EFGH>');
+  is(
+    $c1->render_field(field => 'x', meta => {}, item => $i),
+    '&lt;ABCD &amp; EFGH&gt;',
+    'Override item on render_field ok'
+  );
 };
 
 
