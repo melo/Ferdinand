@@ -146,21 +146,21 @@ subtest 'render_field output' => sub {
 
   is($c1->render_field(%args), '&lt;abcd &amp; efgh&gt;', 'Single row value');
 
-  $args{meta}{v}{formatter} = sub { return uc($_) };
+  $args{meta}{formatter} = sub { return uc($_) };
   is(
     $c1->render_field(%args),
     '&lt;ABCD &amp; EFGH&gt;',
     'Single row value, with formatter'
   );
 
-  $args{meta}{v}{link_to} = sub { $_->e };
+  $args{meta}{link_to} = sub { $_->e };
   is(
     $c1->render_field(%args),
     '<a href="!!">&lt;ABCD &amp; EFGH&gt;</a>',
     'link_to value'
   );
 
-  $args{meta}{v}{linked} = ['view', 'me'];
+  $args{meta}{linked} = ['view', 'me'];
   is($c1->render_field(%args), '&lt;ABCD &amp; EFGH&gt;', 'linked value');
 
   $c1 = $c1->clone(uri_helper => sub { return join('/', @{$_[1]}) });

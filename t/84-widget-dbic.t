@@ -121,17 +121,17 @@ subtest 'Render Field' => sub {
   $l->render($ctx);
 
   my $cm = $ctx->stash->{col_meta};
-  is($ctx->render_field(field => 'visible', meta => $cm),
+  is($ctx->render_field(field => 'visible', meta => $cm->{visible}),
     'V', 'Field visible ok');
   is(
-    $ctx->render_field(field => 'title', meta => $cm),
+    $ctx->render_field(field => 'title', meta => $cm->{title}),
     'Title 1 &amp; me',
     'Field title ok'
   );
-  is($ctx->render_field(field => 'published_at', meta => $cm),
+  is($ctx->render_field(field => 'published_at', meta => $cm->{published_at}),
     '10/10/2010', 'Field published_at ok');
   is(
-    $ctx->render_field(field => 'slug', meta => $cm),
+    $ctx->render_field(field => 'slug', meta => $cm->{slug}),
     '<a href="http://example.com/title_1">title_1</a>',
     'Field slug ok'
   );
