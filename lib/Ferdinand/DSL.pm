@@ -3,7 +3,7 @@ package Ferdinand::DSL;
 use Ferdinand::Setup 'library';
 
 our @EXPORT = qw(
-  ferdinand_setup
+  ferdinand_setup ferdinand_map
   actions list view
   action name layout
   title nest
@@ -38,6 +38,7 @@ our @EXPORT = qw(
 
 ### Ferdinand global setup
 sub ferdinand_setup (&) { _cb_setup(@_) }
+sub ferdinand_map (&) { Ferdinand->setup(meta => _cb_setup(@_)) }
 
 
 ### Action setup
