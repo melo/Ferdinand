@@ -3,6 +3,7 @@ package Ferdinand::Map;
 # ABSTRACT: Base class for Ferdinand implementations
 
 use Ferdinand::Setup 'class';
+use Ferdinand::Context;
 use Method::Signatures;
 
 with 'Ferdinand::Roles::Setup';
