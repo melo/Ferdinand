@@ -17,7 +17,7 @@ my $source = bless {}, 'DBIx::Class::ResultSource';
 }
 
 
-my $title_cb = sub { join(' ', 'View for', $_[1]->id) };
+my $title_cb = sub { join(' ', 'View for', $_->id) };
 my $slug_cb = sub { 'http://example.com/items/' . $_->slug };
 
 my $meta;
@@ -42,6 +42,9 @@ my $excp = exception {
 
       view {
         title($title_cb);
+
+        dbic_item { $_->stash->{item} = $_ };
+        dbic_set { $_->stash->{set} = $_ };
       };
 
       action {
@@ -79,7 +82,17 @@ cmp_deeply(
         ]
       },
       { name   => 'view',
-        layout => [{title => $title_cb, type => 'Title'}],
+        layout => [
+          { type  => 'Title',
+            title => $title_cb,
+          },
+          { type => 'DBIC::Item',
+            item => ignore(),
+          },
+          { type => 'DBIC::Set',
+            set  => ignore(),
+          },
+        ],
       },
       { name   => 'pop',
         layout => [{title => 'My pop title', type => 'Title'}],
@@ -117,5 +130,39 @@ subtest 'List actions', sub {
   cmp_deeply($cols->{slug},  {link_to => $slug_cb}, 'Meta for slug ok');
   cmp_deeply($cols->{is_visible}, {}, 'Meta for is_visible ok');
 };
+
+subtest 'Pop action' => sub {
+  ok($m->has_action_for('pop'), 'Our Ferdinand has a pop action');
+  my $action = $m->action_for('pop');
+  isa_ok($action, 'Ferdinand::Action', '... proper class for action');
+
+  my @widgets = $action->widgets;
+  is(scalar(@widgets), 1, 'One widget in this layout');
+  is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
+    'Expected type for widget');
+  is($widgets[0]->title, 'My pop title', 'Title text is ok');
+};
+
+
+subtest 'View action' => sub {
+  ok($m->has_action_for('view'), 'Our Ferdinand has a view action');
+  my $action = $m->action_for('view');
+  isa_ok($action, 'Ferdinand::Action', '... proper class for action');
+
+  my @widgets = $action->widgets;
+  is(scalar(@widgets), 3, 'Three widgets in this layout');
+  is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
+    'Expected type for widget');
+  is($widgets[0]->title, $title_cb, 'Title cb is ok');
+
+  my $ctx;
+  is(exception { $ctx = $m->render('view', {id => ['yuppii']}) },
+    undef, "Render didn't die");
+
+  is($ctx->stash->{title}, 'View for yuppii', 'Dynamic title as expected');
+  is($ctx->stash->{item}, $ctx, 'dbic_item() called with the expected $_');
+  is($ctx->stash->{set},  $ctx, 'dbic_set() called with the expected $_');
+};
+
 
 done_testing();

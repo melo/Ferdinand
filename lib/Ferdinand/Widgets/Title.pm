@@ -19,7 +19,10 @@ method setup_attrs ($class:, $attrs, $meta) {
 
 method render_self ($ctx) {
   my $title = $self->title;
-  $title = $title->($self, $ctx) if ref($title) eq 'CODE';
+  if (ref($title) eq 'CODE') {
+    local $_ = $ctx;
+    $title = $title->($self, $ctx) ;
+  }
   $ctx->stash(title => $title) if $title;
 }
 
