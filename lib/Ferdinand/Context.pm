@@ -115,6 +115,7 @@ method render_field (:$field, :$meta = {}, :$item) {
 
   my $url;
   if ($url = $meta->{linked}) {
+    local $_ = $item;
     $url = $self->uri($url);
   }
   elsif ($url = $meta->{link_to}) {
