@@ -69,7 +69,7 @@ is("$cached_files1", "$cached_files2",
 
 subtest 'Template processing', sub {
   eval "require Tenjin::Engine";
-  plan skip_all => "Original plTenjin not available, skipping tests" if $@;
+  plan skip_all => "Original plTenjin not available, skipping tests: $@" if $@;
 
   my $data = {
     title => 'Me',
