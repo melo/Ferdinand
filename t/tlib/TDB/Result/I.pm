@@ -24,6 +24,10 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
 
+  'body' => {
+    data_type   => 'text',
+  },
+
   'published_at' => {
     data_type   => 'date',
     is_nullable => 0,

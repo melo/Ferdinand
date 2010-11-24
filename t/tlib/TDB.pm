@@ -16,9 +16,27 @@ sub test_deploy {
 
   $db->populate(
     'I',
-    [ [qw/id title slug published_at visible/],
-      [1, 'Title 1 & me', 'title_1', '2010-10-10 10:10:10', 'V'],
-      [2, 'Title 2',      'title_2', '2010-11-11 11:11:11', 'H'],
+    [ [qw/id title slug body published_at visible/],
+      [ 1, 'Title 1 & me', 'title_1', '
+testing
+=======
+
+ * first
+ * second
+ * third
+
+', '2010-10-10 10:10:10', 'V'
+      ],
+      [ 2, 'Title 2', 'title_2', '
+more stuff
+----------
+
+ 1. one
+ 2. two
+ 3. three
+
+', '2010-11-11 11:11:11', 'H'
+      ],
     ]
   );
 
