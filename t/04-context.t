@@ -36,6 +36,8 @@ is($ctx->uri(5), "$ctx 5", 'uri_helper works');
 cmp_deeply($ctx->params, {a => 1, b => 2}, 'param as expected');
 cmp_deeply($ctx->stash,  {x => 9, y => 8}, 'stash as expected');
 
+is($ctx->mode, 'view', 'mode as expected');
+
 
 subtest 'context cloning' => sub {
   is($ctx->parent, undef, 'parent is undef');

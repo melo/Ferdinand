@@ -52,6 +52,7 @@ method render ($action_name, $args = {}) {
     action => $action,
   );
   $ctx_args{id}         = $args->{id}         if exists $args->{id};
+  $ctx_args{mode}       = $args->{mode}       if exists $args->{mode};
   $ctx_args{params}     = $args->{params}     if exists $args->{params};
   $ctx_args{uri_helper} = $args->{uri_helper} if exists $args->{uri_helper};
 

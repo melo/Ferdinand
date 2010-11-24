@@ -13,6 +13,8 @@ has 'widget' => (isa => 'Ferdinand::Widget', is => 'rw');
 
 has 'params' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
+has 'mode' => (isa => 'Str', is => 'ro', default => 'view');
+
 
 #################
 # Clone a context
