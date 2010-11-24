@@ -21,7 +21,7 @@ has 'clone' => (
 
 
 after setup_attrs => sub {
-  my ($class, $attrs, $meta, $stash, $sys) = @_;
+  my ($class, $attrs, $meta, $sys, $stash) = @_;
 
   my $layout = delete $meta->{layout};
   confess "Requires 'layout' section but none found, "
@@ -38,7 +38,7 @@ after setup_attrs => sub {
     eval "require $widget_class";
     confess("Could not load widget '$widget_class': $@, ") if $@;
 
-    push @widgets, $widget_class->setup($widget_spec, $stash, $sys);
+    push @widgets, $widget_class->setup($widget_spec, $sys, $stash);
   }
 
   $attrs->{layout} = \@widgets;
