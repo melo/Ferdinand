@@ -33,6 +33,7 @@ method setup_attrs ($class:, $attrs, $meta, $sys, $stash) {
 
   my %map;
   for my $action_meta (@$action_list) {
+    delete $stash->{widget_ids};
     my $action = $a_class->setup($action_meta, $sys, $stash);
     $map{$action->name} = $action;
   }

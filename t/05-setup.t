@@ -61,6 +61,7 @@ my $excp = exception {
 
       edit {
         title 'Edit me';
+        title 'Second edit me';
       };
     };
   };
@@ -109,7 +110,10 @@ cmp_deeply(
         layout => [{title => 'Create me', type => 'Title'}],
       },
       { name   => 'edit',
-        layout => [{title => 'Edit me', type => 'Title'}],
+        layout => [
+          {title => 'Edit me',        type => 'Title'},
+          {title => 'Second edit me', type => 'Title'}
+        ],
       },
     ],
   },
@@ -131,7 +135,8 @@ subtest 'List actions', sub {
   is(scalar($action->widgets), 2, 'Has two widgets');
   my ($t, $l) = $action->widgets;
 
-  is($t->title, 'My list title');
+  is($t->title, 'My list title', 'Title title is ok');
+  is($t->id,    'w_1',           '... and ID matches');
 
   my $col_names = $l->col_names;
   is(scalar(@$col_names), 6, 'Number of columns is ok');
@@ -143,6 +148,10 @@ subtest 'List actions', sub {
   cmp_deeply($cols->{title}, {linked  => 'view'},   'Meta for title ok');
   cmp_deeply($cols->{slug},  {link_to => $slug_cb}, 'Meta for slug ok');
   cmp_deeply($cols->{is_visible}, {}, 'Meta for is_visible ok');
+
+  is($l->id, 'w_2', 'List widget ID matches');
+  
+  ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
 };
 
 subtest 'Pop action' => sub {
@@ -155,6 +164,8 @@ subtest 'Pop action' => sub {
   is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
     'Expected type for widget');
   is($widgets[0]->title, 'My pop title', 'Title text is ok');
+
+  ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
 };
 
 
@@ -176,6 +187,8 @@ subtest 'View action' => sub {
   is($ctx->stash->{title}, 'View for yuppii', 'Dynamic title as expected');
   is($ctx->stash->{item}, $ctx, 'dbic_item() called with the expected $_');
   is($ctx->stash->{set},  $ctx, 'dbic_set() called with the expected $_');
+
+  ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
 };
 
 
@@ -189,6 +202,8 @@ subtest 'Create action' => sub {
   is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
     'Expected type for widget');
   is($widgets[0]->title, 'Create me', 'Title text is ok');
+
+  ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
 };
 
 
@@ -198,11 +213,26 @@ subtest 'Edit action' => sub {
   isa_ok($action, 'Ferdinand::Action', '... proper class for action');
 
   my @widgets = $action->widgets;
-  is(scalar(@widgets), 1, 'One widget in this layout');
-  is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
-    'Expected type for widget');
-  is($widgets[0]->title, 'Edit me', 'Title text is ok');
+  is(scalar(@widgets), 2, 'Two widget in this layout');
+
+  my ($w1, $w2) = @widgets;
+
+  is(ref($w1),   'Ferdinand::Widgets::Title', 'Expected type for widget 1');
+  is($w1->title, 'Edit me',                   '... title matches');
+  is($w1->id,    'w_1',                       '... id matches');
+
+  is(ref($w2),   'Ferdinand::Widgets::Title', 'Expected type for widget 2');
+  is($w2->title, 'Second edit me',            '... title matches');
+  is($w2->id,    'w_2',                       '... id matches');
+
+  ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
 };
 
 
 done_testing();
+
+sub all_unique {
+  my %unique;
+  @unique{@_} = @_;
+  return scalar(@_) == scalar(keys %unique);
+}

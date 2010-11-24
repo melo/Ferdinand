@@ -7,6 +7,7 @@ method setup ($class:, $meta, $sys?, $stash = {}) {
   my %attrs;
   $class->setup_attrs(\%attrs, $meta, ($sys || $class), $stash);
 
+  $attrs{id} = 'w_' . ++$stash->{widget_ids} unless exists $attrs{id};
   return $class->new(%attrs);
 }
 
