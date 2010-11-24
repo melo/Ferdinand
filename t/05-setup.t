@@ -54,6 +54,14 @@ my $excp = exception {
           title('My pop title');
         };
       };
+
+      create {
+        title 'Create me';
+      };
+
+      edit {
+        title 'Edit me';
+      };
     };
   };
 };
@@ -96,6 +104,12 @@ cmp_deeply(
       },
       { name   => 'pop',
         layout => [{title => 'My pop title', type => 'Title'}],
+      },
+      { name   => 'create',
+        layout => [{title => 'Create me', type => 'Title'}],
+      },
+      { name   => 'edit',
+        layout => [{title => 'Edit me', type => 'Title'}],
       },
     ],
   },
@@ -162,6 +176,32 @@ subtest 'View action' => sub {
   is($ctx->stash->{title}, 'View for yuppii', 'Dynamic title as expected');
   is($ctx->stash->{item}, $ctx, 'dbic_item() called with the expected $_');
   is($ctx->stash->{set},  $ctx, 'dbic_set() called with the expected $_');
+};
+
+
+subtest 'Create action' => sub {
+  ok($m->has_action_for('create'), 'Our Ferdinand has a create action');
+  my $action = $m->action_for('create');
+  isa_ok($action, 'Ferdinand::Action', '... proper class for action');
+
+  my @widgets = $action->widgets;
+  is(scalar(@widgets), 1, 'One widget in this layout');
+  is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
+    'Expected type for widget');
+  is($widgets[0]->title, 'Create me', 'Title text is ok');
+};
+
+
+subtest 'Edit action' => sub {
+  ok($m->has_action_for('edit'), 'Our Ferdinand has a edit action');
+  my $action = $m->action_for('edit');
+  isa_ok($action, 'Ferdinand::Action', '... proper class for action');
+
+  my @widgets = $action->widgets;
+  is(scalar(@widgets), 1, 'One widget in this layout');
+  is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
+    'Expected type for widget');
+  is($widgets[0]->title, 'Edit me', 'Title text is ok');
 };
 
 

@@ -4,7 +4,7 @@ use Ferdinand::Setup 'library';
 
 our @EXPORT = qw(
   ferdinand_setup ferdinand_map
-  actions list view
+  actions list view create edit
   action name layout
   title nest
   widget type
@@ -52,6 +52,16 @@ sub list (&) {
 sub view (&) {
   my $list = _cur_setup();
   push @$list, {name => 'view', layout => _cb_setup(@_, [])};
+}
+
+sub create (&) {
+  my $list = _cur_setup();
+  push @$list, {name => 'create', layout => _cb_setup(@_, [])};
+}
+
+sub edit (&) {
+  my $list = _cur_setup();
+  push @$list, {name => 'edit', layout => _cb_setup(@_, [])};
 }
 
 sub action (&) { my $l = _cur_setup(); push @$l, _cb_setup(@_) }
