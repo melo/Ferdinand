@@ -2,6 +2,7 @@ package Ferdinand::Context;
 
 use Ferdinand::Setup 'class';
 use Ferdinand::Utils qw( ehtml ghtml hash_merge );
+use Guard 'guard';
 use Method::Signatures;
 
 #################
@@ -18,8 +19,8 @@ has 'action' => (isa => 'Ferdinand::Action', is => 'ro', required => 1);
 has 'action_uri' => (isa => 'URI', is => 'ro');
 
 
-#################
-# Clone a context
+##########################
+# Clone/overlay a context
 
 has 'parent' => (isa => 'Ferdinand::Context', is => 'ro');
 
@@ -30,6 +31,16 @@ method clone () {
 method DEMOLISH () {
   my $b = $self->buffer;
   $self->parent->buffer($b) if $b;
+}
+
+method overlay () {
+  my @saved;
+  while (my ($k, $v) = splice(@_, 0, 2)) {
+    push @saved, $k, $self->{$k};
+    $self->{$k} = $v;
+  }
+
+  return guard { hash_merge($self, @saved) };
 }
 
 
