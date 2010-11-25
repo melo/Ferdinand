@@ -8,6 +8,7 @@ use Test::Fatal;
 use Test::MockObject;
 use Ferdinand::Context;
 use Ferdinand::Action;
+use URI;
 
 my $map    = bless {}, 'Ferdinand::Map';
 my $action = bless {}, 'Ferdinand::Action';
@@ -18,6 +19,7 @@ is(
     $ctx = Ferdinand::Context->new(
       map        => $map,
       action     => $action,
+      action_uri => URI->new('http://example.com/something'),
       uri_helper => sub { join(' ', @_) },
       params     => {a => 1, b => 2},
       stash      => {x => 9, y => 8},
@@ -27,11 +29,14 @@ is(
   'Created context and lived'
 );
 
-isa_ok($ctx->map,    'Ferdinand::Map');
-isa_ok($ctx->action, 'Ferdinand::Action');
+isa_ok($ctx->map,        'Ferdinand::Map');
+isa_ok($ctx->action,     'Ferdinand::Action');
+isa_ok($ctx->action_uri, 'URI');
 
 is($ctx->widget, undef,    'Widget is undef');
 is($ctx->uri(5), "$ctx 5", 'uri_helper works');
+
+is($ctx->action_uri->path, '/something', 'action_uri works');
 
 cmp_deeply($ctx->params, {a => 1, b => 2}, 'param as expected');
 cmp_deeply($ctx->stash,  {x => 9, y => 8}, 'stash as expected');

@@ -56,6 +56,7 @@ method render ($action_name, $args = {}) {
   $ctx_args{mode}       = $args->{mode}       if exists $args->{mode};
   $ctx_args{params}     = $args->{params}     if exists $args->{params};
   $ctx_args{uri_helper} = $args->{uri_helper} if exists $args->{uri_helper};
+  $ctx_args{action_uri} = $args->{action_uri} if exists $args->{action_uri};
 
   my $ctx = Ferdinand::Context->new(%ctx_args);
   $action->render($ctx);
