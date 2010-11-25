@@ -14,7 +14,7 @@ subtest 'layout no clone' => sub {
   my $l   = Ferdinand::Widgets::Layout->setup(
     { layout => [
         { type => 'CB',
-          cb   => sub { $_[1]->item(bless({x => 1}, 'X')) },
+          cb   => sub { $_->item(bless({x => 1}, 'X')) },
         },
         {type => '+TestWidget'},
       ],
@@ -37,7 +37,7 @@ subtest 'layout with clone' => sub {
     { clone  => 1,
       layout => [
         { type => 'CB',
-          cb   => sub { $_[1]->item(bless({x => 1}, 'X')) }
+          cb   => sub { $_->item(bless({x => 1}, 'X')) }
         },
       ],
     }

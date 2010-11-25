@@ -15,10 +15,10 @@ my $ctx = Ferdinand::Context->new(
 
 my $c = Ferdinand::Widgets::CB->setup(
   { cb => sub {
-      my ($self, $ctx) = @_;
-      my $p = $ctx->params;
+      my ($self) = @_;
+      my $p = $_->params;
 
-      $ctx->stash(xpto => $p->{xpto}, wg => $self);
+      $_->stash(xpto => $p->{xpto}, wg => $self);
       }
   }
 );

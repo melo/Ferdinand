@@ -18,7 +18,8 @@ method setup_attrs ($class:, $attrs, $meta) {
 }
 
 method render_self ($ctx) {
-  $self->cb->($self, $ctx);
+  local $_ = $ctx;
+  $self->cb->($self);
 }
 
 
