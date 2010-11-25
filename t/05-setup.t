@@ -45,6 +45,8 @@ my $excp = exception {
 
         dbic_item { $_->stash->{item} = $_ };
         dbic_set { $_->stash->{set} = $_ };
+
+        execute { $_->stash->{cb_called} = $$ };
       };
 
       action {
@@ -101,6 +103,9 @@ cmp_deeply(
           },
           { type => 'DBIC::Set',
             set  => ignore(),
+          },
+          { type => 'CB',
+            cb   => ignore(),
           },
         ],
       },
@@ -179,7 +184,7 @@ subtest 'View action' => sub {
   isa_ok($action, 'Ferdinand::Action', '... proper class for action');
 
   my @widgets = $action->widgets;
-  is(scalar(@widgets), 3, 'Three widgets in this layout');
+  is(scalar(@widgets), 4, 'Three widgets in this layout');
   is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
     'Expected type for widget');
   is($widgets[0]->title, $title_cb, 'Title cb is ok');
@@ -191,6 +196,7 @@ subtest 'View action' => sub {
   is($ctx->stash->{title}, 'View for yuppii', 'Dynamic title as expected');
   is($ctx->stash->{item}, $ctx, 'dbic_item() called with the expected $_');
   is($ctx->stash->{set},  $ctx, 'dbic_set() called with the expected $_');
+  is($ctx->stash->{cb_called}, $$, 'execute() called with the expected $_');
 
   ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
 };
