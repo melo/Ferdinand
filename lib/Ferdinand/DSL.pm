@@ -33,6 +33,20 @@ our @EXPORT = qw(
 
     return $def;
   }
+
+  sub _add_setup {
+    my ($name, $info) = @_;
+
+    if ($info) {
+      $stack[-1]{$name} = $info;
+    }
+    elsif (ref($name) eq 'ARRAY') {
+      push @{$stack[-1]}, @$name;
+    }
+    else {
+      push @{$stack[-1]}, $name;
+    }
+  }
 }
 
 
@@ -42,80 +56,45 @@ sub ferdinand_map (&) { Ferdinand->setup(meta => _cb_setup(@_)) }
 
 
 ### Action setup
-sub actions (&) { _cur_setup()->{actions} = _cb_setup(@_, []) }
+sub actions (&) { _add_setup actions => _cb_setup(@_, []) }
+sub action (&) { _add_setup _cb_setup(@_) }
 
-sub list (&) {
-  my $list = _cur_setup();
-  push @$list, {name => 'list', layout => _cb_setup(@_, [])};
-}
-
-sub view (&) {
-  my $list = _cur_setup();
-  push @$list, {name => 'view', layout => _cb_setup(@_, [])};
-}
-
-sub create (&) {
-  my $list = _cur_setup();
-  push @$list, {name => 'create', layout => _cb_setup(@_, [])};
-}
-
-sub edit (&) {
-  my $list = _cur_setup();
-  push @$list, {name => 'edit', layout => _cb_setup(@_, [])};
-}
-
-sub action (&) { my $l = _cur_setup(); push @$l, _cb_setup(@_) }
+sub list (&)   { _add_setup {name => 'list',   layout => _cb_setup(@_, [])} }
+sub view (&)   { _add_setup {name => 'view',   layout => _cb_setup(@_, [])} }
+sub edit (&)   { _add_setup {name => 'edit',   layout => _cb_setup(@_, [])} }
+sub create (&) { _add_setup {name => 'create', layout => _cb_setup(@_, [])} }
 
 
 ### Action attributes
-sub name ($) { _cur_setup()->{name} = $_[0] }
-sub layout (&) { _cur_setup()->{layout} = _cb_setup(@_, []) }
+sub name ($) { _add_setup name => $_[0] }
+sub layout (&) { _add_setup layout => _cb_setup(@_, []) }
 
 
 ### Widget shortcuts
-sub title ($) {
-  my $list = _cur_setup();
-  push @$list, {title => $_[0], type => 'Title'};
-}
+sub title ($) { _add_setup {title => $_[0], type => 'Title'} }
 
 sub nest (&) {
-  my $list = _cur_setup();
-  push @$list, {type => 'Layout', clone => 1, layout => _cb_setup(@_, [])};
+  _add_setup {type => 'Layout', clone => 1, layout => _cb_setup(@_, [])};
 }
 
 
 ### DBIC widgets shortcuts
-sub dbic_source (&) {
-  my $list = _cur_setup();
-  push @$list, {type => 'DBIC::Source', source => $_[0]};
-}
-
-sub dbic_item (&) {
-  my $list = _cur_setup();
-  push @$list, {type => 'DBIC::Item', item => $_[0]};
-}
-
-sub dbic_set (&) {
-  my $list = _cur_setup();
-  push @$list, {type => 'DBIC::Set', set => $_[0]};
-}
-
-sub dbic_create (&) {
-  my $list = _cur_setup();
-  push @$list, {type => 'DBIC::Create', valid => $_[0]};
-}
+sub dbic_source (&) { _add_setup {type => 'DBIC::Source', source => $_[0]} }
+sub dbic_item (&)   { _add_setup {type => 'DBIC::Item',   item   => $_[0]} }
+sub dbic_set (&)    { _add_setup {type => 'DBIC::Set',    set    => $_[0]} }
+sub dbic_create (&) { _add_setup {type => 'DBIC::Create', valid  => $_[0]} }
 
 
 ### Widget setup and main attributes
-sub widget (&) { my $l = _cur_setup(); push @$l, _cb_setup(@_) }
-sub type ($) { _cur_setup()->{type} = $_[0] }
+sub widget (&) { _add_setup _cb_setup(@_) }
+sub type ($) { _add_setup type => $_[0] }
 
 
 ### Column definition
-sub columns (&) { _cur_setup()->{columns} = _cb_setup(@_, []) }
-sub linked ($$)  { my $l = _cur_setup(); push @$l, $_[0], {linked  => $_[1]} }
-sub link_to ($$) { my $l = _cur_setup(); push @$l, $_[0], {link_to => $_[1]} }
-sub col ($)      { my $l = _cur_setup(); push @$l, $_[0] }
+sub columns (&) { _add_setup columns => _cb_setup(@_, []) }
+sub linked ($$)  { _add_setup [$_[0], {linked  => $_[1]}] }
+sub link_to ($$) { _add_setup [$_[0], {link_to => $_[1]}] }
+sub col ($)      { _add_setup $_[0] }
 
 
 ### Extras
