@@ -33,10 +33,7 @@ subtest 'Ferdinand setup' => sub {
             dbic_item { $_->model->source->resultset->find($_->id) };
             widget {
               type 'Text';
-              columns {
-                col 'title';
-                col 'body';
-              };
+              cols 'title', 'body';
             };
           };
         };

@@ -8,7 +8,7 @@ our @EXPORT = qw(
   action name layout
   title nest
   widget type
-  columns
+  columns cols
   linked link_to col
 
   dbic_source dbic_item dbic_set dbic_create
@@ -91,7 +91,10 @@ sub type ($) { _add_setup type => $_[0] }
 
 
 ### Column definition
+sub cols { _add_setup columns => [@_] }
+
 sub columns (&) { _add_setup columns => _cb_setup(@_, []) }
+
 sub linked ($$)  { _add_setup [$_[0], {linked  => $_[1]}] }
 sub link_to ($$) { _add_setup [$_[0], {link_to => $_[1]}] }
 sub col ($)      { _add_setup $_[0] }
