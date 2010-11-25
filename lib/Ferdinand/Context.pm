@@ -74,7 +74,11 @@ has 'buffer' => (
 );
 
 method clear_buffer () {
+  my $b = $self->{buffer};
+
   $self->{buffer} = '';
+
+  return $b;
 }
 
 method buffer () {

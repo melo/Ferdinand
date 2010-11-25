@@ -130,8 +130,9 @@ subtest 'buffer management' => sub {
   $c1->buffer('A', 'B', 'C');
   is($c1->buffer, 'abcABC', '... concat works');
 
-  $c1->clear_buffer;
-  is($c1->buffer, '', 'Buffer is empty again');
+  my $b = $c1->clear_buffer;
+  is($c1->buffer, '',       'Buffer is empty again');
+  is($b,          'abcABC', '... and the old buffer is returned');
 };
 
 
