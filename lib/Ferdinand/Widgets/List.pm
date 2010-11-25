@@ -11,7 +11,6 @@ with 'Ferdinand::Roles::ColumnSet';
 
 method render_self ($ctx) {
   confess('List widget requires a valid set() in Context,') unless $ctx->set;
-  $ctx = $ctx->clone(widget => $self);
   $ctx->buffer(render_template('list.pltj', {ctx => $ctx}));
 }
 

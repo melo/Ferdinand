@@ -12,7 +12,6 @@ with 'Ferdinand::Roles::ColumnSet';
 
 method render_self ($ctx) {
   confess('Record widget requires a valid item() in Context,') unless $ctx->item;
-  $ctx = $ctx->clone(widget => $self);
   $ctx->buffer(render_template('text.pltj', {ctx => $ctx, mkdn => Text::Markdown->new}));
 }
 
