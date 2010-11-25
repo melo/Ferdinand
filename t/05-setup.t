@@ -56,6 +56,7 @@ my $excp = exception {
       };
 
       create {
+        dbic_create { $_->stash->{valid} = 1 };
         title 'Create me';
       };
 
@@ -107,7 +108,10 @@ cmp_deeply(
         layout => [{title => 'My pop title', type => 'Title'}],
       },
       { name   => 'create',
-        layout => [{title => 'Create me', type => 'Title'}],
+        layout => [
+          {valid => ignore(),    type => 'DBIC::Create'},
+          {title => 'Create me', type => 'Title'}
+        ],
       },
       { name   => 'edit',
         layout => [
@@ -150,7 +154,7 @@ subtest 'List actions', sub {
   cmp_deeply($cols->{is_visible}, {}, 'Meta for is_visible ok');
 
   is($l->id, 'w_2', 'List widget ID matches');
-  
+
   ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
 };
 
@@ -198,10 +202,25 @@ subtest 'Create action' => sub {
   isa_ok($action, 'Ferdinand::Action', '... proper class for action');
 
   my @widgets = $action->widgets;
-  is(scalar(@widgets), 1, 'One widget in this layout');
-  is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
-    'Expected type for widget');
-  is($widgets[0]->title, 'Create me', 'Title text is ok');
+  is(scalar(@widgets), 2, 'Two widgets in this layout');
+
+  my ($c, $t) = @widgets;
+
+  is(
+    ref($c),
+    'Ferdinand::Widgets::DBIC::Create',
+    'Expected type for widget 1'
+  );
+
+  is(ref($t), 'Ferdinand::Widgets::Title', 'Expected type for widget 2');
+  is($t->title, 'Create me', 'Title text is ok');
+
+  my $ctx;
+  is(exception { $ctx = $m->render('create') }, undef, "Render didn't die");
+
+  my $s = $ctx->stash;
+  is($s->{title}, 'Create me', 'Stashed title is fine');
+  is($s->{valid}, 1,           'Stashed validation is fine');
 
   ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
 };

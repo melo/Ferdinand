@@ -11,7 +11,7 @@ our @EXPORT = qw(
   columns
   linked link_to col
 
-  dbic_source dbic_item dbic_set
+  dbic_source dbic_item dbic_set dbic_create
 
   cat_ferdinand_setup
 );
@@ -98,6 +98,11 @@ sub dbic_item (&) {
 sub dbic_set (&) {
   my $list = _cur_setup();
   push @$list, {type => 'DBIC::Set', set => $_[0]};
+}
+
+sub dbic_create (&) {
+  my $list = _cur_setup();
+  push @$list, {type => 'DBIC::Create', valid => $_[0]};
 }
 
 
