@@ -6,7 +6,6 @@ use lib 't/tlib';
 use Test::More;
 use Test::Deep;
 use Ferdinand::Context;
-use Ferdinand::Widgets::CB;
 use Ferdinand::Widgets::Layout;
 use Ferdinand::Widgets::DBIC::Source;
 use Ferdinand::Widgets::DBIC::Item;
