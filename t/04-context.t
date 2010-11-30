@@ -258,6 +258,25 @@ subtest 'buffer stack', sub {
   $c1->buffer_merge;
   is($c1->buffer, 'aabbccdd', 'Buffer ok');
 };
+
+
+subtest 'buffer wrap', sub {
+  my $c1 = Ferdinand::Context->new(
+    map    => $map,
+    action => $action,
+  );
+
+  is($c1->buffer,       '',   'Buffer empty at the start');
+  is($c1->buffer('aa'), 'aa', 'Buffer not empty');
+
+  $c1->buffer_wrap('pp');
+  is($c1->buffer, 'ppaa', 'Buffer with prepended stuff');
+
+  $c1->buffer_wrap(undef, 'pp');
+  is($c1->buffer, 'ppaapp', 'Buffer with appended stuff');
+
+  $c1->buffer_wrap('<p>', '</p>');
+  is($c1->buffer, '<p>ppaapp</p>', 'Buffer wrapped');
 };
 
 

@@ -101,6 +101,14 @@ method buffer () {
   return $self->{buffer};
 }
 
+method buffer_wrap ($pre, $post?) {
+  $self->{buffer} = $pre . $self->{buffer} if $pre;
+  $self->{buffer} .= $post if $post;
+
+  return $self->{buffer};
+}
+
+
 
 has 'buffer_stack' => (
   isa => 'ArrayRef',
