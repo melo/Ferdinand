@@ -102,6 +102,24 @@ method buffer () {
 }
 
 
+has 'buffer_stack' => (
+  isa => 'ArrayRef',
+  is  => 'bare',
+  default => sub { [] },
+);
+
+method buffer_stack ($buffer?) {
+  push @{$self->{buffer_stack}}, $self->clear_buffer;
+  $self->buffer($buffer) if $buffer;
+
+  return;
+}
+
+method buffer_merge () {
+  $self->buffer(pop @{$self->{buffer_stack}}, $self->clear_buffer);
+}
+
+
 #############
 # Model links Moose
 

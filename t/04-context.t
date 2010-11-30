@@ -228,4 +228,35 @@ subtest 'render_field output' => sub {
 };
 
 
+subtest 'buffer stack', sub {
+  my $c1 = Ferdinand::Context->new(
+    map    => $map,
+    action => $action,
+  );
+
+  is($c1->buffer, '', 'Buffer empty at the start');
+
+  $c1->buffer('aa');
+  is($c1->buffer, 'aa', 'Buffer modification ok');
+
+  $c1->buffer_stack;
+  is($c1->buffer, '', 'Buffer is empty once more');
+
+  $c1->buffer('bb');
+  $c1->buffer_merge;
+  is($c1->buffer, 'aabb', 'Buffer merging ok');
+
+  $c1->buffer_stack('cc');
+  is($c1->buffer, 'cc', 'Buffer with proper value');
+
+  $c1->buffer_stack('dd');
+  is($c1->buffer, 'dd', 'Buffer with proper value again');
+
+  $c1->buffer_merge;
+  $c1->buffer_merge;
+  is($c1->buffer, 'aabbccdd', 'Buffer ok');
+};
+};
+
+
 done_testing();
