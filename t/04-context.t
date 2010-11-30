@@ -117,7 +117,8 @@ subtest 'context overlay' => sub {
   cmp_deeply($ctx->stash,  {x => 9, y => 8}, 'base stash as expected');
 
   subtest 'test overlay context' => sub {
-    my $g = $ctx->overlay(set => bless([{a => 1}, {a => 2}], 'X'), stash => {});
+    my $g =
+      $ctx->overlay(set => bless([{a => 1}, {a => 2}], 'X'), stash => {});
 
     cmp_deeply(
       $ctx->set,
@@ -140,7 +141,8 @@ subtest 'context overlay' => sub {
     bless({a => 1, b => 2}, 'X'),
     'Item as expected after overlay cleanup'
   );
-  cmp_deeply($ctx->stash,  {x => 9, y => 8}, 'Stash back to pre-overlay value');
+  cmp_deeply($ctx->stash, {x => 9, y => 8},
+    'Stash back to pre-overlay value');
   is($ctx->set, undef, 'Set back to pre-overlay value');
 };
 
