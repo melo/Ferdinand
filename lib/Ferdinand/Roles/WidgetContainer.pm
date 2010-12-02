@@ -19,6 +19,12 @@ has 'clone' => (
   default => 0,
 );
 
+has 'mode_filter' => (
+  isa     => 'Str',
+  is      => 'ro',
+  default => '',
+);
+
 
 after setup_attrs => sub {
   my ($class, $attrs, $meta, $sys, $stash) = @_;
@@ -42,12 +48,18 @@ after setup_attrs => sub {
   }
 
   $attrs->{layout} = \@widgets;
-  $attrs->{clone} = delete $meta->{clone} if exists $meta->{clone};
+
+  for my $attr (qw( clone mode_filter )) {
+    $attrs->{$attr} = delete $meta->{$attr} if exists $meta->{$attr};
+  }
 };
 
 
 after render_self => sub {
   my ($self, $ctx) = @_;
+  my $m = $self->mode_filter;
+  return if $m && $ctx->mode ne $m;
+
   my $c = $ctx;
   $c = $ctx->clone if $self->clone;
 
