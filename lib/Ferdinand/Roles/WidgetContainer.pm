@@ -19,10 +19,10 @@ has 'clone' => (
   default => 0,
 );
 
-has 'mode_filter' => (
-  isa     => 'Str',
+has 'on_demand' => (
+  isa     => 'Bool',
   is      => 'ro',
-  default => '',
+  default => 0,
 );
 
 
@@ -49,7 +49,7 @@ after setup_attrs => sub {
 
   $attrs->{layout} = \@widgets;
 
-  for my $attr (qw( clone mode_filter )) {
+  for my $attr (qw( clone on_demand )) {
     $attrs->{$attr} = delete $meta->{$attr} if exists $meta->{$attr};
   }
 };
@@ -57,14 +57,16 @@ after setup_attrs => sub {
 
 after render_self => sub {
   my ($self, $ctx) = @_;
-  my $m = $self->mode_filter;
-  return if $m && $ctx->mode ne $m;
+  return if $self->on_demand;
 
-  my $c = $ctx;
-  $c = $ctx->clone if $self->clone;
-
-  $_->render($c) for $self->widgets;
+  $self->render_widgets($ctx);
 };
+
+method render_widgets ($ctx) {
+  $ctx = $ctx->clone if $self->clone;
+
+  $_->render($ctx) for $self->widgets;
+}
 
 
 1;

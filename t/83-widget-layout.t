@@ -51,11 +51,11 @@ subtest 'layout with clone' => sub {
   is($ctx->item, undef, "Item as expected");
 };
 
-subtest 'layout with mode filters' => sub {
+subtest 'layout vs on_demand' => sub {
   my $item = bless({x => 1}, 'X');
   my $l = Ferdinand::Widgets::Layout->setup(
-    { mode_filter => 'create',
-      layout      => [
+    { on_demand => 1,
+      layout    => [
         { type => 'CB',
           cb   => sub { $_->item($item) }
         },
@@ -67,8 +67,7 @@ subtest 'layout with mode filters' => sub {
   $l->render($ctx);
   is($ctx->item, undef, "Item empty as expected");
 
-  $ctx = _ctx(mode => 'create');
-  $l->render($ctx);
+  $l->render_widgets($ctx);
   is($ctx->item, $item, "Item as expected");
 };
 
