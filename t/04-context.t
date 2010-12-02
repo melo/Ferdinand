@@ -254,9 +254,9 @@ subtest 'buffer stack', sub {
   $c1->buffer_stack('dd');
   is($c1->buffer, 'dd', 'Buffer with proper value again');
 
+  $c1->buffer_merge('111');
   $c1->buffer_merge;
-  $c1->buffer_merge;
-  is($c1->buffer, 'aabbccdd', 'Buffer ok');
+  is($c1->buffer, 'aabbccdd111', 'Buffer ok');
 };
 
 

@@ -123,7 +123,8 @@ method buffer_stack ($buffer?) {
   return;
 }
 
-method buffer_merge () {
+method buffer_merge ($buffer?) {
+  $self->buffer($buffer) if defined $buffer;
   $self->buffer(pop @{$self->{buffer_stack}}, $self->clear_buffer);
 }
 
