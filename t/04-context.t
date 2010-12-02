@@ -280,4 +280,26 @@ subtest 'buffer wrap', sub {
 };
 
 
+subtest 'buffers and parentage', sub {
+  my $c1 = Ferdinand::Context->new(
+    map    => $map,
+    action => $action,
+  );
+
+  my $c2 = Ferdinand::Context->new(
+    map    => $map,
+    action => $action,
+    parent => $c1,
+  );
+
+  $c1->buffer('aa');
+  $c2->buffer('bb');
+  undef $c2;
+
+  is($c1->buffer, 'aabb', 'Buffer after parent merge ok');
+
+  is(exception { undef $c1 }, undef, 'No parent, no die');
+};
+
+
 done_testing();

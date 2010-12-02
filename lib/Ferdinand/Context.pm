@@ -29,8 +29,13 @@ method clone () {
 }
 
 method DEMOLISH () {
+  my $p = $self->parent;
+  return unless $p;
+
   my $b = $self->buffer;
-  $self->parent->buffer($b) if $b;
+  return unless $b;
+
+  $p->buffer($b);
 }
 
 method overlay () {
@@ -150,6 +155,12 @@ method id () {
 
 # TODO: is this the proper place for this code? No better place for it *yet*...
 method render_field (:$field, :$meta = {}, :$item) {
+  my $m = $self->mode;
+  return $self->render_field_read(@_) if $m eq 'view';
+  return $self->render_field_write(@_) if $m eq 'create' || $m eq 'create_ok';
+}
+
+method render_field_read (:$field, :$meta = {}, :$item) {
   $item = $self->item unless $item;
   my $v = $item->$field();
   return '' unless defined $v;
@@ -177,6 +188,16 @@ method render_field (:$field, :$meta = {}, :$item) {
   }
 
   return $v;
+}
+
+method render_field_write (:$field, :$meta = {}, :$item) {
+  return ghtml()->input(
+    { id    => $field,
+      name  => $field,
+      type  => 'text',
+      value => $item->{$field},
+    }
+  );
 }
 
 
