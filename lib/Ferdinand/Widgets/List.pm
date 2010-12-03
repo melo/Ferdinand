@@ -1,4 +1,5 @@
 package Ferdinand::Widgets::List;
+
 # ABSTRACT: a very cool module
 
 use Ferdinand::Setup 'class';
@@ -9,8 +10,17 @@ use Carp 'confess';
 extends 'Ferdinand::Widget';
 with 'Ferdinand::Roles::ColumnSet';
 
+has 'create_label' => (isa => 'Str', is => 'ro');
+
+method setup_attrs ($class:, $attrs, $meta) {
+  $attrs->{create_label} = delete $meta->{create_label}
+    if exists $meta->{create_label};
+}
+
+
 method render_self ($ctx) {
-  confess('List widget requires a valid set() in Context,') unless $ctx->set;
+  confess('List widget requires a valid set() in Context,')
+    unless $ctx->set;
   $ctx->buffer(render_template('list.pltj', {ctx => $ctx}));
 }
 
@@ -26,6 +36,10 @@ __DATA__
 <?pl my $cols = $widget->col_meta; ?>
 <?pl my $col_names = $widget->col_names; ?>
 <?pl my @rows = $ctx->set->all; ?>
+
+<?pl if (my $cl = $widget->create_label) { ?>
+<a href="[= $ctx->action_uri->as_string =]/novo">[= $cl =]</a>
+<?pl } ?>
 
 <table cellspacing="1" class="ordenada1">
   <thead>
