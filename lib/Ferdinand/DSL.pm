@@ -7,7 +7,7 @@ our @EXPORT = qw(
   actions list view create edit
   action name layout
   title nest execute
-  widget type
+  widget type attr
   columns cols
   linked link_to col
 
@@ -66,7 +66,8 @@ sub create (&) { _add_setup {name => 'create', layout => _cb_setup(@_, [])} }
 
 
 ### Action attributes
-sub name ($) { _add_setup name => $_[0] }
+sub attr ($$)  { _add_setup @_ }
+sub name ($)   { _add_setup name => $_[0] }
 sub layout (&) { _add_setup layout => _cb_setup(@_, []) }
 
 

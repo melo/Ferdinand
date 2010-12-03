@@ -28,7 +28,7 @@ my $excp = exception {
         title('My list title');
 
         widget {
-          type 'List';
+          attr type => 'List';
           columns {
             linked id    => 'view';
             linked title => 'view';
