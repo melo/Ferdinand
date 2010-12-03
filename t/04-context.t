@@ -8,6 +8,7 @@ use Test::Fatal;
 use Test::MockObject;
 use Ferdinand::Context;
 use Ferdinand::Action;
+use DateTime;
 use URI;
 
 my $map    = bless {}, 'Ferdinand::Map';
@@ -299,6 +300,63 @@ subtest 'buffers and parentage', sub {
   is($c1->buffer, 'aabb', 'Buffer after parent merge ok');
 
   is(exception { undef $c1 }, undef, 'No parent, no die');
+};
+
+
+subtest 'field values', sub {
+  my $now  = DateTime->now;
+  my $mock = Test::MockObject->new;
+  $mock->set_always(stamp => $now);
+
+  my $c1 = Ferdinand::Context->new(
+    map    => $map,
+    action => $action,
+  );
+
+  is($c1->field_value('stamp', 'date'), undef, 'Field not present');
+  is($c1->field_value_str('stamp', 'date'),
+    '', '... string version is a empty string');
+
+  is($c1->field_value('stamp2', 'date', $mock),
+    undef, 'Field not found in item arg');
+
+  is($c1->field_value('stamp', 'date', $mock),
+    $now, 'Field found in item arg');
+  is($c1->field_value_str('stamp', 'date', $mock),
+    $now->ymd('/'), '... string version == current date');
+  is(
+    $c1->field_value_str('stamp', 'datetime', $mock),
+    join(' ', $now->ymd('/'), $now->hms),
+    '... string version == current date/time'
+  );
+
+  is($c1->field_value('stamp', 'date', {stamp => $now}),
+    $now, 'Field found in item arg');
+  is($c1->field_value_str('stamp', 'date', {stamp => $now}),
+    $now->ymd('/'), '... string version == current date');
+  is(
+    $c1->field_value_str('stamp', 'datetime', {stamp => $now}),
+    join(' ', $now->ymd('/'), $now->hms),
+    '... string version == current date/time'
+  );
+
+  $c1 = Ferdinand::Context->new(
+    map    => $map,
+    action => $action,
+    item   => $mock,
+  );
+
+  is($c1->field_value('stamp', 'date'), $now, 'Field found in ctx item');
+  is($c1->field_value_str('stamp', 'date'),
+    $now->ymd('/'), '... string version == current date');
+  is(
+    $c1->field_value_str('stamp', 'datetime'),
+    join(' ', $now->ymd('/'), $now->hms),
+    '... string version == current date/time'
+  );
+
+  is($c1->field_value('stamp2', 'date'), undef,
+    'Field not found in ctx item');
 };
 
 

@@ -200,6 +200,27 @@ method render_field_write (:$field, :$meta = {}, :$item) {
   );
 }
 
+method field_value ($field, $type, $item?) {
+  $item = $self->item unless $item;
+  return unless $item;
+
+  return $item->$field() if blessed($item) and $item->can($field);
+  return $item->{$field} if ref($item) eq 'HASH';
+  return;
+}
+
+method field_value_str ($field, $type, $item?) {
+  my $v = $self->field_value(@_);
+  return '' unless ref($v);
+
+  if (blessed($v) eq 'DateTime') {
+    return $v->ymd('/') if $type eq 'date';
+    return $v->ymd('/') . ' ' . $v->hms;
+  }
+
+  return "$v";
+}
+
 
 __PACKAGE__->meta->make_immutable;
 1;
