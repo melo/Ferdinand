@@ -27,6 +27,7 @@ method column_meta_fixup ($name, $defs) {
     default_value
     currency_code
   );
+
   for my $f (@fields) {
     $info{$f} = $ci->{$f} if exists $ci->{$f};
   }
@@ -56,7 +57,7 @@ method column_meta_fixup ($name, $defs) {
     $info{"cls_$t"} = $cls;
     $info{"cls_${t}_html"} = @$cls ? ' class="' . join(' ', @$cls) . '"' : '';
   }
-  
+
   return \%info;
 }
 
