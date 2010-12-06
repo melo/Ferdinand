@@ -383,21 +383,22 @@ subtest 'field values', sub {
   my $now  = DateTime->now;
   my $mock = Test::MockObject->new;
   $mock->set_always(stamp => $now);
+  $mock->set_always(title => 'aa');
 
   my $c1 = Ferdinand::Context->new(
     map    => $map,
     action => $action,
   );
 
-  is($c1->field_value('stamp', 'date'), undef, 'Field not present');
+  is($c1->field_value('stamp', 'date'), undef, 'Field stamp not present');
   is($c1->field_value_str('stamp', 'date'),
     '', '... string version is a empty string');
 
   is($c1->field_value('stamp2', 'date', $mock),
-    undef, 'Field not found in item arg');
+    undef, 'Field stamp2 not found in item arg');
 
   is($c1->field_value('stamp', 'date', $mock),
-    $now, 'Field found in item arg');
+    $now, 'Field stamp found in item arg');
   is($c1->field_value_str('stamp', 'date', $mock),
     $now->ymd('/'), '... string version == current date');
   is(
@@ -405,6 +406,15 @@ subtest 'field values', sub {
     join(' ', $now->ymd('/'), $now->hms),
     '... string version == current date/time'
   );
+
+  is($c1->field_value('title', 'char', $mock),
+    'aa', 'Field title found in item arg');
+  is($c1->field_value_str('title', 'char', $mock),
+    'aa', 'Field title found in item arg');
+  is($c1->field_value('title', 'char', {title => 'aa'}),
+    'aa', 'Field title found in item arg');
+  is($c1->field_value_str('title', 'char', {title => 'aa'}),
+    'aa', 'Field title found in item arg');
 
   is($c1->field_value('stamp', 'date', {stamp => $now}),
     $now, 'Field found in item arg');
@@ -422,7 +432,8 @@ subtest 'field values', sub {
     item   => $mock,
   );
 
-  is($c1->field_value('stamp', 'date'), $now, 'Field found in ctx item');
+  is($c1->field_value('stamp', 'date'), $now,
+    'Field stamp found in ctx item');
   is($c1->field_value_str('stamp', 'date'),
     $now->ymd('/'), '... string version == current date');
   is(
@@ -431,8 +442,13 @@ subtest 'field values', sub {
     '... string version == current date/time'
   );
 
-  is($c1->field_value('stamp2', 'date'), undef,
-    'Field not found in ctx item');
+  is($c1->field_value('stamp2', 'date'),
+    undef, 'Field stamp2 not found in ctx item');
+
+  is($c1->field_value('title', 'char'), 'aa',
+    'Field title found in item arg');
+  is($c1->field_value_str('title', 'char'),
+    'aa', 'Field title found in item arg');
 };
 
 

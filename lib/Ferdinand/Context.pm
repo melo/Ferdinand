@@ -229,7 +229,8 @@ method field_value ($field, $type, $item?) {
 
 method field_value_str ($field, $type, $item?) {
   my $v = $self->field_value(@_);
-  return '' unless ref($v);
+  return '' unless $v;
+  return $v unless ref($v);
 
   if (blessed($v) eq 'DateTime') {
     return $v->ymd('/') if $type eq 'date';
