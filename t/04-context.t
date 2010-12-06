@@ -304,6 +304,45 @@ subtest 'render_field_write', sub {
     qr{name="xpto"},
     qr{id="xpto"},
   );
+
+  like_all(
+    'xpto textarea',
+    $c1->render_field_write(
+      field => 'xpto',
+      meta  => {data_type => 'text'}
+    ),
+    qr{<textarea },
+    qr{></textarea>},
+    qr{cols="100"},
+    qr{rows="6"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+  );
+
+  like_all(
+    'xpto textarea',
+    $c1->render_field_write(
+      field => 'xpto',
+      meta  => {data_type => 'text'},
+      item  => {xpto => 'yyy'},
+    ),
+    qr{<textarea },
+    qr{>yyy</textarea>},
+    qr{cols="100"},
+    qr{rows="6"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+  );
+
+  like_all(
+    'xpto select',
+    $c1->render_field_write(field => 'xpto', meta => {options => ['a', 'b']}),
+    qr{<select },
+    qr{name="xpto"},
+    qr{id="xpto"},
+    qr{<option value="a">a</option>},
+    qr{<option value="b">b</option>},
+  );
 };
 
 

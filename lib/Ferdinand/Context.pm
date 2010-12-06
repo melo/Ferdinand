@@ -190,20 +190,27 @@ method render_field_read (:$field, :$meta = {}, :$item) {
   return $v;
 }
 
-method render_field_write (:$field, :$meta = {}, :$item = {}) {
-  my $type  = $meta->{data_type} || '';
+method render_field_write (:$field, :$meta = {}, :$item) {
+  my $h    = ghtml();
+  my $type = $meta->{data_type} || '';
+  my $val  = $self->field_value_str($field, $type, $item);
+
   my %attrs = (
     id    => $field,
     name  => $field,
     type  => 'text',
-    value => $item->{$field},
+    value => $val,
   );
 
   $attrs{required} = 1 unless $meta->{is_nullable};
 
   if (my $opt = $meta->{options}) {
-    my @inner = map { ghtml()->option({value => $_}, $_) } @$opt;
-    return ghtml()->select({name => $field}, @inner);
+    my @inner = map { $h->option({value => $_}, $_) } @$opt;
+    return $h->select({name => $field, id => $field}, @inner);
+  }
+  elsif ($type eq 'text') {
+    return $h->textarea(
+      {name => $field, id => $field, cols => 100, rows => 6}, $val);
   }
   elsif ($type eq 'char' || $type eq 'varchar') {
     if (my $size = $meta->{size}) {
@@ -215,7 +222,7 @@ method render_field_write (:$field, :$meta = {}, :$item = {}) {
     $attrs{type} = 'date';
   }
 
-  return ghtml()->input(\%attrs);
+  return $h->input(\%attrs);
 }
 
 method field_value ($field, $type, $item?) {
