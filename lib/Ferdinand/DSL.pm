@@ -12,6 +12,7 @@ our @EXPORT = qw(
   linked link_to col
 
   dbic_source dbic_item dbic_set dbic_create
+  form button label on_click
 
   cat_ferdinand_setup
 );
@@ -100,6 +101,18 @@ sub columns (&) { _add_setup columns => _cb_setup(@_, []) }
 sub linked ($$)  { _add_setup [$_[0], {linked  => $_[1]}] }
 sub link_to ($$) { _add_setup [$_[0], {link_to => $_[1]}] }
 sub col ($)      { _add_setup $_[0] }
+
+
+### Forms
+sub form (&) { _add_setup {type => 'Form', layout => _cb_setup(@_, [])} }
+
+sub button (&) { _add_setup _cb_setup(@_, {type => 'Form::Button'}) }
+sub label ($) { _add_setup label => $_[0] }
+
+sub on_click (&) {
+  _add_setup layout => _cb_setup(@_, []);
+  _add_setup on_demand => 1;
+}
 
 
 ### Extras
