@@ -158,6 +158,7 @@ subtest 'Render Field' => sub {
       is_nullable   => 0,
       label         => "Visible",
       size          => 1,
+      options       => [qw( H V )],
     },
     "... meta for field 'visible' ok"
   );

@@ -34,6 +34,9 @@ method column_meta_fixup ($name, $defs) {
   $info{formatter} = $ci->{extra}{formatter}
     if exists $ci->{extra}{formatter};
 
+  $info{options} = $ci->{extra}{options}
+    if exists $ci->{extra}{options};
+
   my $label = $name;
   if (exists $ci->{extra}{label}) {
     $label = $ci->{extra}{label};

@@ -40,7 +40,8 @@ __PACKAGE__->add_columns(
     data_type   => 'char',
     size        => 1,
     is_nullable => 0,
-    default     => 'H'
+    default     => 'H',
+    extra       => {options => [qw( H V )]},
   },
 );
 
