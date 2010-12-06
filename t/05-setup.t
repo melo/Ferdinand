@@ -27,8 +27,10 @@ my $excp = exception {
       list {
         title('My list title');
 
+        header('My list header');
+
         widget {
-          attr type => 'List';
+          attr type         => 'List';
           attr create_label => 'xpto';
           columns {
             linked id    => 'view';
@@ -81,6 +83,9 @@ cmp_deeply(
         layout => [
           { type  => 'Title',
             title => 'My list title',
+          },
+          { type   => 'Header',
+            header => 'My list header',
           },
           { type         => 'List',
             create_label => 'xpto',
@@ -143,11 +148,14 @@ subtest 'List actions', sub {
   isnt($action, undef, '... and seem to have it');
   isa_ok($action, 'Ferdinand::Action');
 
-  is(scalar($action->widgets), 2, 'Has two widgets');
-  my ($t, $l) = $action->widgets;
+  is(scalar($action->widgets), 3, 'Has three widgets');
+  my ($t, $h, $l) = $action->widgets;
 
   is($t->title, 'My list title', 'Title title is ok');
   is($t->id,    'w_1',           '... and ID matches');
+
+  is($h->header, 'My list header', 'Header header is ok');
+  is($h->id,     'w_2',            '... and ID matches');
 
   is($l->create_label, 'xpto', 'Proper label for create link');
 
@@ -162,7 +170,7 @@ subtest 'List actions', sub {
   cmp_deeply($cols->{slug},  {link_to => $slug_cb}, 'Meta for slug ok');
   cmp_deeply($cols->{is_visible}, {}, 'Meta for is_visible ok');
 
-  is($l->id, 'w_2', 'List widget ID matches');
+  is($l->id, 'w_3', 'List widget ID matches');
 
   ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
 };

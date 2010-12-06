@@ -6,7 +6,7 @@ our @EXPORT = qw(
   ferdinand_setup ferdinand_map
   actions list view create edit
   action name layout
-  title nest execute
+  title header nest execute
   widget type attr
   columns cols
   linked link_to col
@@ -73,8 +73,9 @@ sub layout (&) { _add_setup layout => _cb_setup(@_, []) }
 
 
 ### Widget shortcuts
-sub title ($)   { _add_setup {title => $_[0], type => 'Title'} }
-sub execute (&) { _add_setup {cb    => $_[0], type => 'CB'} }
+sub title ($)   { _add_setup {title  => $_[0], type => 'Title'} }
+sub header ($)  { _add_setup {header => $_[0], type => 'Header'} }
+sub execute (&) { _add_setup {cb     => $_[0], type => 'CB'} }
 
 sub nest (&) {
   _add_setup {type => 'Layout', clone => 1, layout => _cb_setup(@_, [])};
