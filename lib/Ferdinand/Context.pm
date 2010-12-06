@@ -190,14 +190,32 @@ method render_field_read (:$field, :$meta = {}, :$item) {
   return $v;
 }
 
-method render_field_write (:$field, :$meta = {}, :$item) {
-  return ghtml()->input(
-    { id    => $field,
-      name  => $field,
-      type  => 'text',
-      value => $item->{$field},
-    }
+method render_field_write (:$field, :$meta = {}, :$item = {}) {
+  my $type  = $meta->{data_type} || '';
+  my %attrs = (
+    id    => $field,
+    name  => $field,
+    type  => 'text',
+    value => $item->{$field},
   );
+
+  $attrs{required} = 1 unless $meta->{is_nullable};
+
+  if (my $opt = $meta->{options}) {
+    my @inner = map { ghtml()->option({value => $_}, $_) } @$opt;
+    return ghtml()->select({name => $field}, @inner);
+  }
+  elsif ($type eq 'char' || $type eq 'varchar') {
+    if (my $size = $meta->{size}) {
+      $attrs{maxlength} = $size;
+      $attrs{size}      = $size;
+    }
+  }
+  elsif ($type eq 'date') {
+    $attrs{type} = 'date';
+  }
+
+  return ghtml()->input(\%attrs);
 }
 
 method field_value ($field, $type, $item?) {

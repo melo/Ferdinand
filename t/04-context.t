@@ -231,6 +231,82 @@ subtest 'render_field output' => sub {
 };
 
 
+subtest 'render_field_write', sub {
+  my $c1 = Ferdinand::Context->new(
+    map    => $map,
+    action => $action,
+  );
+
+  like_all(
+    'xpto bare input',
+    $c1->render_field_write(field => 'xpto'),
+    qr{<input }, qr{type="text"}, qr{name="xpto"}, qr{id="xpto"},
+    qr{required="1"},
+  );
+
+  like_all(
+    'xpto with previous value',
+    $c1->render_field_write(field => 'xpto', item => {xpto => 'aa'}),
+    qr{<input },
+    qr{type="text"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+    qr{required="1"},
+    qr{value="aa"},
+  );
+
+  like_all(
+    'xpto with meta for optional file',
+    $c1->render_field_write(
+      field => 'xpto',
+      meta  => {is_nullable => 1}
+    ),
+    qr{<input },
+    qr{type="text"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+  );
+
+  like_all(
+    'xpto with meta type date',
+    $c1->render_field_write(
+      field => 'xpto',
+      meta  => {data_type => 'date'}
+    ),
+    qr{<input },
+    qr{type="date"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+  );
+
+  like_all(
+    'xpto with meta type char with size',
+    $c1->render_field_write(
+      field => 'xpto',
+      meta  => {data_type => 'char', size => 10}
+    ),
+    qr{<input },
+    qr{type="text"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+    qr{maxlength="10"},
+    qr{size="10"},
+  );
+
+  like_all(
+    'xpto with meta type varchar',
+    $c1->render_field_write(
+      field => 'xpto',
+      meta  => {data_type => 'varchar'}
+    ),
+    qr{<input },
+    qr{type="text"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+  );
+};
+
+
 subtest 'buffer stack', sub {
   my $c1 = Ferdinand::Context->new(
     map    => $map,
@@ -361,3 +437,13 @@ subtest 'field values', sub {
 
 
 done_testing();
+
+sub like_all {
+  my $prefix = shift;
+  my $text   = shift;
+
+  ok($text, "Got $prefix");
+  for my $re (@_) {
+    like($text, $re, "... matches $re");
+  }
+}
