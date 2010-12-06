@@ -173,7 +173,7 @@ method render_field_read (:$field, :$meta = {}, :$item) {
   my $url;
   if ($url = $meta->{linked}) {
     local $_ = $item;
-    $url = $self->uri($url);
+    $url = $self->uri($url, [$item->id]);
   }
   elsif ($url = $meta->{link_to}) {
     local $_ = $item;
