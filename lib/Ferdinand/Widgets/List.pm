@@ -38,7 +38,7 @@ __DATA__
 <?pl my @rows = $ctx->set->all; ?>
 
 <?pl if (my $cl = $widget->create_label) { ?>
-<a href="[= $ctx->action_uri->as_string =]/novo">[= $cl =]</a>
+<a href="[= $ctx->uri('create') =]">[= $cl =]</a>
 <?pl } ?>
 
 <table cellspacing="1" class="ordenada1">
