@@ -181,8 +181,9 @@ subtest 'buffer management' => sub {
 
 subtest 'render_field output' => sub {
   my $i = Test::MockObject->new;
-  $i->set_always(v => '<abcd & efgh>');
-  $i->set_always(e => '!!');
+  $i->set_always(v  => '<abcd & efgh>');
+  $i->set_always(e  => '!!');
+  $i->set_always(id => 1);
 
   my $c1 = Ferdinand::Context->new(
     map    => $map,
