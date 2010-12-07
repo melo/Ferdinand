@@ -12,7 +12,7 @@ has 'source' => (
 );
 
 
-method column_meta_fixup ($name, $defs) {
+method column_meta_fixup ($name, $defs = {}) {
   my %info   = %$defs;
   my $source = $self->source;
   return \%info unless $source->has_column($name);
