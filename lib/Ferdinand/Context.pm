@@ -193,7 +193,8 @@ method render_field_read (:$field, :$meta = {}, :$item) {
 method render_field_write (:$field, :$meta = {}, :$item) {
   my $h    = ghtml();
   my $type = $meta->{data_type} || '';
-  my $val  = $self->field_value_str($field, $meta, $item);
+  my $def  = $self->mode eq 'create'? 1 : 0;
+  my $val  = $self->field_value_str($field, $meta, $item, $def);
 
   my %attrs = (
     id    => $field,

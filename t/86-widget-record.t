@@ -43,6 +43,16 @@ subtest 'Ferdinand setup' => sub {
               };
             };
           };
+
+          create {
+            dbic_source { $db->source('I') };
+            widget {
+              type 'Record';
+              columns {
+                col 'published_at';
+              };
+            };
+          };
         };
       }
     },
@@ -83,6 +93,30 @@ subtest 'View render' => sub {
 
     my $visible = $row->visible;
     like($buffer, qr{<td>$visible</td>}, '... Visibility matches');
+  };
+};
+
+
+subtest 'Create render' => sub {
+  my $ctx;
+
+  is(exception { $ctx = $map->render('create', {mode => 'create'}) },
+    undef, "Rendered create didn't die");
+  ok($ctx->buffer, '... got a buffer with something in it');
+
+  subtest 'Buffer tests' => sub {
+    my $buffer = $ctx->buffer;
+
+    like(
+      $buffer,
+      qr{<th[^>]*>Published At:</th>},
+      "Buffer matches header 'Published At'"
+    );
+
+    my $dmy = DateTime->today->dmy('/');
+    like($buffer, qr{value="$dmy"},
+      '... Default value for published_at matches');
+    like($buffer, qr{type="date"}, '... type for published_at matches');
   };
 };
 
