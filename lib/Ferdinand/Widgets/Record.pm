@@ -7,7 +7,7 @@ use Ferdinand::Utils qw(render_template);
 use Carp 'confess';
 
 extends 'Ferdinand::Widget';
-with 'Ferdinand::Roles::ColumnSet';
+with 'Ferdinand::Roles::ColumnSet', 'Ferdinand::Roles::Title';
 
 method render_self ($ctx) {
   my $m = $ctx->mode;
@@ -40,6 +40,10 @@ __DATA__
 <?pl my $cols = $widget->col_meta; ?>
 <?pl my $col_names = $widget->col_names; ?>
 
+<?pl if (my $title = $widget->title($ctx)) { ?>
+<h1>[= $title =]</h1>
+<?pl } ?>
+
 <table cellspacing="1">
 	<colgroup>
 		<col width="20%"></col>
@@ -68,6 +72,10 @@ __DATA__
 <?pl my $cols = $widget->col_meta; ?>
 <?pl my $col_names = $widget->col_names; ?>
 <?pl my $params = $ctx->params; ?>
+
+<?pl if (my $title = $widget->title($ctx)) { ?>
+<h1>[= $title =]</h1>
+<?pl } ?>
 
 <table cellspacing="1">
 	<colgroup>

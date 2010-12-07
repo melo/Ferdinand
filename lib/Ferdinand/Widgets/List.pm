@@ -8,7 +8,7 @@ use Ferdinand::Utils qw(render_template);
 use Carp 'confess';
 
 extends 'Ferdinand::Widget';
-with 'Ferdinand::Roles::ColumnSet';
+with 'Ferdinand::Roles::ColumnSet', 'Ferdinand::Roles::Title';
 
 has 'create_label' => (isa => 'Str', is => 'ro');
 
@@ -39,6 +39,9 @@ __DATA__
 
 <?pl if (my $cl = $widget->create_label) { ?>
 <a href="[= $ctx->uri('create') =]">[= $cl =]</a>
+
+<?pl if (my $title = $widget->title($ctx)) { ?>
+<h1>[= $title =]</h1>
 <?pl } ?>
 
 <table cellspacing="1" class="ordenada1">
