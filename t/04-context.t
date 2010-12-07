@@ -445,6 +445,18 @@ subtest 'field values', sub {
     '... string version == current date/time'
   );
 
+  is(
+    $c1->field_value_str(
+      'stamp',
+      { data_type => 'datetime',
+        formatter => sub { $_->datetime }
+      },
+      $mock
+    ),
+    $now->datetime,
+    'Formatter works'
+  );
+
   is($c1->field_value('title', $mock), 'aa', 'Field title found in item arg');
   is($c1->field_value_str('title', {data_type => 'char'}, $mock),
     'aa', 'Field title found in item arg');

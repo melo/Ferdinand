@@ -239,13 +239,14 @@ method field_value_str ($field, $meta = {}, $item?, $use_default = 0) {
   my $v = $self->field_value($field, $item);
   $v = $meta->{default_value} if !$v && $use_default;
 
-  return '' unless $v;
-  return $v unless ref($v);
-
-  if (my $f = $meta->{formatter}) {
+  my $f = $meta->{formatter};
+  if ($f && $v) {
     local $_ = $v;
     $v = $f->($self);
   }
+
+  return '' unless $v;
+  return $v unless ref($v);
 
   if (blessed($v) eq 'DateTime') {
     return $v->ymd('/') if $t eq 'date';
