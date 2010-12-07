@@ -135,7 +135,7 @@ method buffer_merge ($buffer?) {
 
 
 #############
-# Model links Moose
+# Model links
 
 has 'model' => (isa => 'Ferdinand::Model', is => 'rw');
 

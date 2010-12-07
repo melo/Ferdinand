@@ -429,16 +429,14 @@ subtest 'field values', sub {
     action => $action,
   );
 
-  is($c1->field_value('stamp'),
-    undef, 'Field stamp not present');
+  is($c1->field_value('stamp'), undef, 'Field stamp not present');
   is($c1->field_value_str('stamp', {data_type => 'date'}),
     '', '... string version is a empty string');
 
   is($c1->field_value('stamp2', $mock),
     undef, 'Field stamp2 not found in item arg');
 
-  is($c1->field_value('stamp', $mock),
-    $now, 'Field stamp found in item arg');
+  is($c1->field_value('stamp', $mock), $now, 'Field stamp found in item arg');
   is($c1->field_value_str('stamp', {data_type => 'date'}, $mock),
     $now->ymd('/'), '... string version == current date');
   is(
@@ -447,8 +445,7 @@ subtest 'field values', sub {
     '... string version == current date/time'
   );
 
-  is($c1->field_value('title', $mock),
-    'aa', 'Field title found in item arg');
+  is($c1->field_value('title', $mock), 'aa', 'Field title found in item arg');
   is($c1->field_value_str('title', {data_type => 'char'}, $mock),
     'aa', 'Field title found in item arg');
   is($c1->field_value('title', {title => 'aa'}),
@@ -472,8 +469,7 @@ subtest 'field values', sub {
     item   => $mock,
   );
 
-  is($c1->field_value('stamp'),
-    $now, 'Field stamp found in ctx item');
+  is($c1->field_value('stamp'), $now, 'Field stamp found in ctx item');
   is($c1->field_value_str('stamp', {data_type => 'date'}),
     $now->ymd('/'), '... string version == current date');
   is(
@@ -482,13 +478,10 @@ subtest 'field values', sub {
     '... string version == current date/time'
   );
 
-  is($c1->field_value('stamp2'),
-    undef, 'Field stamp2 not found in ctx item');
+  is($c1->field_value('stamp2'), undef, 'Field stamp2 not found in ctx item');
 
-  is($c1->field_value('title'),
-    'aa', 'Field title found in item arg');
-  is($c1->field_value_str('title'),
-    'aa', 'Field title found in item arg');
+  is($c1->field_value('title'),     'aa', 'Field title found in item arg');
+  is($c1->field_value_str('title'), 'aa', 'Field title found in item arg');
 
   is($c1->field_value_str('t', {}, {}, 1), '', 'Field t not found');
   is($c1->field_value_str('t', {default_value => 5}, {}, 1),
