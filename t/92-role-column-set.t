@@ -104,6 +104,7 @@ subtest 'Live ColumnSet role tests' => sub {
       cls_list_html => " class=\"{sorter: 'eu_date'}\"",
       data_type     => "date",
       is_nullable   => 0,
+      default_value => DateTime->today(),
       label         => "Published At",
     },
     '... column published_at as expected'

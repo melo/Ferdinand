@@ -10,6 +10,7 @@ use Ferdinand::Widgets::Layout;
 use Ferdinand::Widgets::DBIC::Source;
 use Ferdinand::Widgets::DBIC::Item;
 use Ferdinand::Widgets::DBIC::Set;
+use DateTime;
 
 subtest 'Faked objects' => sub {
   my $l = Ferdinand::Widgets::Layout->setup(
@@ -158,6 +159,7 @@ subtest 'Render Field' => sub {
       is_nullable   => 0,
       label         => "Visible",
       size          => 1,
+      default_value => 'H',
       options       => [qw( H V )],
     },
     "... meta for field 'visible' ok"
@@ -169,6 +171,7 @@ subtest 'Render Field' => sub {
       data_type     => "date",
       formatter     => ignore(),
       is_nullable   => 0,
+      default_value => DateTime->today(),
       label         => "Published At",
     },
     "... meta for field 'published_at' ok"

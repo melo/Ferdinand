@@ -3,6 +3,7 @@ package TDB::Result::I;
 use strict;
 use warnings;
 use base 'DBIx::Class::Core';
+use DateTime;
 
 __PACKAGE__->load_components(qw/InflateColumn::DateTime/);
 __PACKAGE__->table('i');
@@ -24,9 +25,7 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
 
-  'body' => {
-    data_type   => 'text',
-  },
+  'body' => {data_type => 'text'},
 
   'published_at' => {
     data_type   => 'date',
@@ -34,14 +33,15 @@ __PACKAGE__->add_columns(
     extra       => {
       formatter => sub   { $_->dmy('/') },
       classes   => {list => "{sorter: 'eu_date'}"},
+      default   => sub   { DateTime->today() },
     },
   },
   'visible' => {
-    data_type   => 'char',
-    size        => 1,
-    is_nullable => 0,
-    default     => 'H',
-    extra       => {options => [qw( H V )]},
+    data_type     => 'char',
+    size          => 1,
+    is_nullable   => 0,
+    default_value => 'H',
+    extra         => {options => [qw( H V )]},
   },
 );
 
