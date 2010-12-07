@@ -502,6 +502,31 @@ subtest 'field values', sub {
 };
 
 
+subtest 'error mgmt', sub {
+  my $c1 = Ferdinand::Context->new(
+    map    => $map,
+    action => $action,
+  );
+
+  ok(!$ctx->has_errors, 'No errors on new contexts');
+  cmp_deeply([$ctx->errors], [], '... so empty kv for errors');
+  is($ctx->error_for('x'), undef, 'No error for x field');
+
+  $ctx->add_error(x => 42);
+  ok($ctx->has_errors, 'Found errors in context');
+  is($ctx->error_for('x'), 42, '... found error for x field');
+  cmp_deeply([$ctx->errors], [[x => 42]], '... kv has proper errors');
+
+  $ctx->add_error(x => 84);
+  ok($ctx->has_errors, 'Found errors in context');
+  is($ctx->error_for('x'), 84, '... found error for x field');
+  cmp_deeply([$ctx->errors], [[x => 84]], '... kv has proper errors');
+
+  $ctx->clear_errors;
+  ok(!$ctx->has_errors, 'No errors after clear_errors()');
+};
+
+
 done_testing();
 
 sub like_all {

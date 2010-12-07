@@ -151,6 +151,24 @@ method id () {
 
 
 ##################
+# Error management
+
+has 'errors' => (
+  traits  => ['Hash'],
+  is      => 'bare',
+  isa     => 'HashRef',
+  default => sub { {} },
+  handles => {
+    add_error    => 'set',
+    error_for    => 'get',
+    has_errors   => 'count',
+    errors       => 'kv',
+    clear_errors => 'clear',
+  },
+);
+
+
+##################
 # Render of fields
 
 # TODO: is this the proper place for this code? No better place for it *yet*...
