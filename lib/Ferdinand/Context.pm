@@ -234,9 +234,11 @@ method field_value ($field, $item?) {
   return;
 }
 
-method field_value_str ($field, $meta = {}, $item?) {
+method field_value_str ($field, $meta = {}, $item?, $use_default = 0) {
   my $t = $meta->{data_type} || '';
   my $v = $self->field_value($field, $item);
+  $v = $meta->{default_value} if !$v && $use_default;
+
   return '' unless $v;
   return $v unless ref($v);
 

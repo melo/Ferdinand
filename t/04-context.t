@@ -489,6 +489,10 @@ subtest 'field values', sub {
     'aa', 'Field title found in item arg');
   is($c1->field_value_str('title'),
     'aa', 'Field title found in item arg');
+
+  is($c1->field_value_str('t', {}, {}, 1), '', 'Field t not found');
+  is($c1->field_value_str('t', {default_value => 5}, {}, 1),
+    5, 'Field t not found but default value');
 };
 
 
