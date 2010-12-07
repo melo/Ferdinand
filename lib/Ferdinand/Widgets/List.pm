@@ -38,7 +38,12 @@ __DATA__
 <?pl my @rows = $ctx->set->all; ?>
 
 <?pl if (my $cl = $widget->create_label) { ?>
-<a href="[= $ctx->uri('create') =]">[= $cl =]</a>
+<div class="oplinks">
+  <ul>
+    <li><a href="[= $ctx->uri('create') =]">[= $cl =]</a></li>
+  </ul>
+</div>
+<?pl } ?>
 
 <?pl if (my $title = $widget->title($ctx)) { ?>
 <h1>[= $title =]</h1>
