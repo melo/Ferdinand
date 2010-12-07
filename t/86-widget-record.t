@@ -121,4 +121,44 @@ subtest 'Create render' => sub {
 };
 
 
+subtest 'Create render with errors', sub {
+  my $action = $map->action_for('create');
+  my $ctx    = Ferdinand::Context->new(
+    map    => $map,
+    action => $action,
+    mode   => 'create',
+    errors => {published_at => 'error found'},
+  );
+
+  is(
+    exception {
+      $action->render($ctx);
+    },
+    undef,
+    "Rendered create with errors didn't die"
+  );
+  ok($ctx->buffer, '... got a buffer with something in it');
+
+  subtest 'Buffer tests' => sub {
+    my $buffer = $ctx->buffer;
+
+    like(
+      $buffer,
+      qr{<th class="errof">Published At:</th>},
+      "Buffer matches header with error 'Published At'"
+    );
+
+    my $dmy = DateTime->today->dmy('/');
+    like($buffer, qr{value="$dmy"},
+      '... Default value for published_at matches');
+    like($buffer, qr{type="date"}, '... type for published_at matches');
+    like(
+      $buffer,
+      qr{<span class="errom">error found</span>},
+      '... error found for published_at matches'
+    );
+  };
+};
+
+
 done_testing();

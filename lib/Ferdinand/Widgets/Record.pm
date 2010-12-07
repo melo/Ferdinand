@@ -84,7 +84,8 @@ __DATA__
 	</colgroup>
     <tbody>
 <?pl  for my $col (@$col_names) {
-        my $ci = $cols->{$col};
+        my $ci   = $cols->{$col};
+        my $err  = $ctx->error_for($col);
         my $html = $ctx->render_field(
           field => $col,
           meta  => $ci,
@@ -92,8 +93,13 @@ __DATA__
         );
 ?>
         <tr>
-            <th>[= $ci->{label} =]:</th>
+            <th[== $err? ' class="errof"' : '' =]>[= $ci->{label} =]:</th>
+<?pl if ($err) { ?>
+            <td>[== $html =] <span class="errom">[= $err =]</span></td>
+<?pl } ?>
+<?pl else { ?>
             <td>[== $html =]</td>
+<?pl } ?>
         </tr>
 <?pl  } ?>
     </tbody>
