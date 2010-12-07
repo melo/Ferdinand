@@ -27,7 +27,7 @@ subtest 'Ferdinand setup' => sub {
               button {
                 label 'My label';
                 on_click {
-                  execute sub { $_->stash->{clicked} };
+                  execute sub { $_->stash->{clicked} = 1 };
                 };
               };
             };
@@ -53,6 +53,24 @@ subtest 'Render call' => sub {
     "Render create lived"
   );
   ok($ctx->buffer, '... got a buffer with something in it');
+  is($ctx->stash->{clicked}, undef, '... button not submitted');
+
+  is(
+    exception {
+      $ctx = $map->render(
+        'create',
+        { id         => [1],
+          action_uri => URI->new('http://example.com/something'),
+          mode       => 'create_do',
+          params     => {btn_w_2_my_label => 1},
+        }
+      );
+    },
+    undef,
+    "Render create_do lived"
+  );
+  ok($ctx->buffer, '... got a buffer with something in it');
+  is($ctx->stash->{clicked}, 1, '... button submitted');
 };
 
 
