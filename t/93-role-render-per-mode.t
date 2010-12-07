@@ -17,9 +17,9 @@ $ctx = _ctx(mode => 'create');
 $w->render($ctx);
 is($ctx->buffer, 'writer', 'Got the writer part ok create');
 
-$ctx = _ctx(mode => 'create_ok');
+$ctx = _ctx(mode => 'create_do');
 $w->render($ctx);
-is($ctx->buffer, 'writer', 'Got the writer part ok for mode create_ok');
+is($ctx->buffer, 'writer', 'Got the writer part ok for mode create_do');
 
 
 done_testing();

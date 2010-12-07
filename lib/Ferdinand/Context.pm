@@ -157,7 +157,7 @@ method id () {
 method render_field (:$field, :$meta = {}, :$item) {
   my $m = $self->mode;
   return $self->render_field_read(@_) if $m eq 'view';
-  return $self->render_field_write(@_) if $m eq 'create' || $m eq 'create_ok';
+  return $self->render_field_write(@_) if $m eq 'create' || $m eq 'create_do';
 }
 
 method render_field_read (:$field, :$meta = {}, :$item) {
