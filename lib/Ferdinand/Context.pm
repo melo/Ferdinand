@@ -193,7 +193,7 @@ method render_field_read (:$field, :$meta = {}, :$item) {
 method render_field_write (:$field, :$meta = {}, :$item) {
   my $h    = ghtml();
   my $type = $meta->{data_type} || '';
-  my $val  = $self->field_value_str($field, $type, $item);
+  my $val  = $self->field_value_str($field, $meta, $item);
 
   my %attrs = (
     id    => $field,
@@ -225,7 +225,7 @@ method render_field_write (:$field, :$meta = {}, :$item) {
   return $h->input(\%attrs);
 }
 
-method field_value ($field, $type, $item?) {
+method field_value ($field, $item?) {
   $item = $self->item unless $item;
   return unless $item;
 
@@ -234,13 +234,19 @@ method field_value ($field, $type, $item?) {
   return;
 }
 
-method field_value_str ($field, $type, $item?) {
-  my $v = $self->field_value(@_);
+method field_value_str ($field, $meta = {}, $item?) {
+  my $t = $meta->{data_type} || '';
+  my $v = $self->field_value($field, $item);
   return '' unless $v;
   return $v unless ref($v);
 
+  if (my $f = $meta->{formatter}) {
+    local $_ = $v;
+    $v = $f->($self);
+  }
+
   if (blessed($v) eq 'DateTime') {
-    return $v->ymd('/') if $type eq 'date';
+    return $v->ymd('/') if $t eq 'date';
     return $v->ymd('/') . ' ' . $v->hms;
   }
 

@@ -429,38 +429,39 @@ subtest 'field values', sub {
     action => $action,
   );
 
-  is($c1->field_value('stamp', 'date'), undef, 'Field stamp not present');
-  is($c1->field_value_str('stamp', 'date'),
+  is($c1->field_value('stamp'),
+    undef, 'Field stamp not present');
+  is($c1->field_value_str('stamp', {data_type => 'date'}),
     '', '... string version is a empty string');
 
-  is($c1->field_value('stamp2', 'date', $mock),
+  is($c1->field_value('stamp2', $mock),
     undef, 'Field stamp2 not found in item arg');
 
-  is($c1->field_value('stamp', 'date', $mock),
+  is($c1->field_value('stamp', $mock),
     $now, 'Field stamp found in item arg');
-  is($c1->field_value_str('stamp', 'date', $mock),
+  is($c1->field_value_str('stamp', {data_type => 'date'}, $mock),
     $now->ymd('/'), '... string version == current date');
   is(
-    $c1->field_value_str('stamp', 'datetime', $mock),
+    $c1->field_value_str('stamp', {data_type => 'datetime'}, $mock),
     join(' ', $now->ymd('/'), $now->hms),
     '... string version == current date/time'
   );
 
-  is($c1->field_value('title', 'char', $mock),
+  is($c1->field_value('title', $mock),
     'aa', 'Field title found in item arg');
-  is($c1->field_value_str('title', 'char', $mock),
+  is($c1->field_value_str('title', {data_type => 'char'}, $mock),
     'aa', 'Field title found in item arg');
-  is($c1->field_value('title', 'char', {title => 'aa'}),
+  is($c1->field_value('title', {title => 'aa'}),
     'aa', 'Field title found in item arg');
-  is($c1->field_value_str('title', 'char', {title => 'aa'}),
+  is($c1->field_value_str('title', {data_type => 'char'}, {title => 'aa'}),
     'aa', 'Field title found in item arg');
 
-  is($c1->field_value('stamp', 'date', {stamp => $now}),
+  is($c1->field_value('stamp', {stamp => $now}),
     $now, 'Field found in item arg');
-  is($c1->field_value_str('stamp', 'date', {stamp => $now}),
+  is($c1->field_value_str('stamp', {data_type => 'date'}, {stamp => $now}),
     $now->ymd('/'), '... string version == current date');
   is(
-    $c1->field_value_str('stamp', 'datetime', {stamp => $now}),
+    $c1->field_value_str('stamp', {data_type => 'datetime'}, {stamp => $now}),
     join(' ', $now->ymd('/'), $now->hms),
     '... string version == current date/time'
   );
@@ -471,22 +472,22 @@ subtest 'field values', sub {
     item   => $mock,
   );
 
-  is($c1->field_value('stamp', 'date'), $now,
-    'Field stamp found in ctx item');
-  is($c1->field_value_str('stamp', 'date'),
+  is($c1->field_value('stamp'),
+    $now, 'Field stamp found in ctx item');
+  is($c1->field_value_str('stamp', {data_type => 'date'}),
     $now->ymd('/'), '... string version == current date');
   is(
-    $c1->field_value_str('stamp', 'datetime'),
+    $c1->field_value_str('stamp', {data_type => 'datetime'}),
     join(' ', $now->ymd('/'), $now->hms),
     '... string version == current date/time'
   );
 
-  is($c1->field_value('stamp2', 'date'),
+  is($c1->field_value('stamp2'),
     undef, 'Field stamp2 not found in ctx item');
 
-  is($c1->field_value('title', 'char'), 'aa',
-    'Field title found in item arg');
-  is($c1->field_value_str('title', 'char'),
+  is($c1->field_value('title'),
+    'aa', 'Field title found in item arg');
+  is($c1->field_value_str('title'),
     'aa', 'Field title found in item arg');
 };
 
