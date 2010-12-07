@@ -28,10 +28,7 @@ has 'on_demand' => (
 
 after setup_attrs => sub {
   my ($class, $attrs, $meta, $sys, $stash) = @_;
-
-  my $layout = delete $meta->{layout};
-  confess "Requires 'layout' section but none found, "
-    unless $layout && @$layout;
+  my $layout = delete $meta->{layout} || [];
 
   my @widgets;
   for my $widget_spec (@$layout) {
