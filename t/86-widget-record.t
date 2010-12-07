@@ -52,38 +52,38 @@ subtest 'Ferdinand setup' => sub {
 };
 
 
-my $ctx;
-subtest 'Render call' => sub {
+subtest 'View render' => sub {
+  my $ctx;
+
   is(exception { $ctx = $map->render('view', {id => [1]}) },
     undef, "Rendered view didn't die");
   ok($ctx->buffer, '... got a buffer with something in it');
-};
 
+  subtest 'Buffer tests' => sub {
+    my $buffer = $ctx->buffer;
 
-subtest 'Buffer tests' => sub {
-  my $buffer = $ctx->buffer;
+    like($buffer, qr{<th[^>]*>$_:</th>}, "Buffer matches header '$_'")
+      for ('ID', 'Title', 'Slug', 'Published At', 'Visible');
 
-  like($buffer, qr{<th[^>]*>$_:</th>}, "Buffer matches header '$_'")
-    for ('ID', 'Title', 'Slug', 'Published At', 'Visible');
+    my $row = $db->resultset('I')->find(1);
 
-  my $row = $db->resultset('I')->find(1);
+    my $id = $row->id;
+    ok($row, "Got row $id");
+    like($buffer, qr{<td>$id</td>}, '... ID matches');
 
-  my $id = $row->id;
-  ok($row, "Got row $id");
-  like($buffer, qr{<td>$id</td>}, '... ID matches');
+    my $slug = $row->slug;
+    like(
+      $buffer,
+      qr{<td><a href="http://example.com/items/$slug">$slug</a></td>},
+      '... Slug matches'
+    );
 
-  my $slug = $row->slug;
-  like(
-    $buffer,
-    qr{<td><a href="http://example.com/items/$slug">$slug</a></td>},
-    '... Slug matches'
-  );
+    my $dmy = $row->published_at->dmy('/');
+    like($buffer, qr{<td>$dmy</td>}, '... Date published_at matches');
 
-  my $dmy = $row->published_at->dmy('/');
-  like($buffer, qr{<td>$dmy</td>}, '... Date published_at matches');
-
-  my $visible = $row->visible;
-  like($buffer, qr{<td>$visible</td>}, '... Visibility matches');
+    my $visible = $row->visible;
+    like($buffer, qr{<td>$visible</td>}, '... Visibility matches');
+  };
 };
 
 
