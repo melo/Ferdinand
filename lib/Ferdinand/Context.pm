@@ -174,7 +174,7 @@ has 'errors' => (
 # TODO: is this the proper place for this code? No better place for it *yet*...
 method render_field (:$field, :$meta = {}, :$item) {
   my $m = $self->mode;
-  return $self->render_field_read(@_) if $m eq 'view';
+  return $self->render_field_read(@_) if $m eq 'view' || $m eq 'list';
   return $self->render_field_write(@_) if $m eq 'create' || $m eq 'create_do';
 }
 
