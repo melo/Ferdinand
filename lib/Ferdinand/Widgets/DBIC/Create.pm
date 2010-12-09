@@ -3,6 +3,7 @@ package Ferdinand::Widgets::DBIC::Create;
 # ABSTRACT: a very cool module
 
 use Ferdinand::Setup 'class';
+use Ferdinand::Utils 'hash_select';
 use Method::Signatures;
 use DateTime::Format::MySQL;
 
@@ -84,7 +85,24 @@ method _validate ($ctx, $fields) {
       $ctx->add_error($col => "Data inválida ($@)") if $@;
     }
 
+    $self->_check_db_restrictions($ctx, $fields);
+
     $fields->{$col} = $v;
+  }
+}
+
+method _check_db_restrictions ($ctx, $fields) {
+  my $src = $ctx->model->source;
+  my %un  = $src->unique_constraints;
+
+  for my $name (keys %un) {
+    my $flds = $un{$name};
+    my $sel = hash_select($fields, @$flds);
+    next unless scalar(@$flds) == scalar(keys %$sel);
+
+    next unless $src->resultset->count($sel);
+    $ctx->add_error($_, "Elemento duplicado ($name)") for @$flds;
+    last;
   }
 }
 
