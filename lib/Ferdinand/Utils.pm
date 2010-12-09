@@ -9,7 +9,7 @@ our @EXPORT_OK = qw(
   read_data_files get_data_files
   render_template
   ghtml ehtml
-  hash_merge
+  hash_merge hash_select
 );
 
 
@@ -109,6 +109,18 @@ sub hash_merge {
   }
 
   return;
+}
+
+sub hash_select {
+  my $h = shift;
+  my %s;
+
+  for my $k (@_) {
+    $s{$k} = $h->{$k} if exists $h->{$k};
+  }
+
+  return %s if wantarray;
+  return \%s;
 }
 
 

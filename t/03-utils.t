@@ -10,7 +10,7 @@ use Ferdinand::Utils qw(
   read_data_files get_data_files
   render_template
   ghtml ehtml
-  hash_merge
+  hash_merge hash_select
 );
 use Sample;
 
@@ -123,6 +123,15 @@ subtest 'Merge hashref with a hash' => sub {
 
   hash_merge($h, a => 2, b => undef, c => 3);
   cmp_deeply($h, {a => 2, c => 3}, 'hash_merge works');
+};
+
+
+subtest 'Hash select' => sub {
+  my $h = {a => 1, b => 2, c => 3};
+  my %h = hash_select($h, qw(a b d));
+
+  cmp_deeply(scalar(hash_select($h, qw(a b d))), {a => 1, b => 2});
+  cmp_deeply(\%h, {a => 1, b => 2});
 };
 
 
