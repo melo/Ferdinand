@@ -4,6 +4,7 @@ package Ferdinand::Widgets::DBIC::Create;
 
 use Ferdinand::Setup 'class';
 use Method::Signatures;
+use DateTime::Format::MySQL;
 
 extends 'Ferdinand::Widget';
 
@@ -65,9 +66,22 @@ method _validate ($ctx, $fields) {
 
     my $v = $ctx->field_value_str($col, $meta, $fields);
     $v =~ s/^\s+|\s+$//g;
+    my $lv = length($v);
 
-    if ($req && $mt eq 'text' && length($v) == 0) {
+    if ($req && $mt eq 'text' && $lv == 0) {
       $ctx->add_error($col => 'Campo obrigatório');
+    }
+
+    if ($lv > 0 && $t eq 'datetime') {
+      $v =~ s{/}{-}g;
+      eval { $v = DateTime::Format::MySQL->parse_datetime($v) };
+      $ctx->add_error($col => "Data/Hora inválida ($@)") if $@;
+    }
+
+    if ($lv > 0 && $t eq 'date') {
+      $v =~ s{/}{-}g;
+      eval { $v = DateTime::Format::MySQL->parse_date($v) };
+      $ctx->add_error($col => "Data inválida ($@)") if $@;
     }
 
     $fields->{$col} = $v;
