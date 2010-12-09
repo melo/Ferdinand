@@ -60,6 +60,15 @@ method render ($action_name, $args = {}) {
 
   my $ctx = Ferdinand::Context->new(%ctx_args);
   $action->render($ctx);
+
+  my $mode = $ctx->mode;
+  if ($ctx->has_errors && $mode =~ /^(.+)_do$/) {
+    $mode = $1;
+    my $g = $ctx->overlay(mode => $mode);
+    $ctx->clear_buffer;
+    $action->render($ctx);
+  }
+
   return $ctx;
 }
 
