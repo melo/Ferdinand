@@ -31,7 +31,6 @@ my $excp = exception {
 
         widget {
           attr type         => 'List';
-          attr create_label => 'xpto';
           columns {
             linked id    => 'view';
             linked title => 'view';
@@ -88,7 +87,6 @@ cmp_deeply(
             header => 'My list header',
           },
           { type         => 'List',
-            create_label => 'xpto',
             columns      => [
               id    => {linked  => 'view'},
               title => {linked  => 'view'},
@@ -156,8 +154,6 @@ subtest 'List actions', sub {
 
   is($h->header, 'My list header', 'Header header is ok');
   is($h->id,     'w_2',            '... and ID matches');
-
-  is($l->create_label, 'xpto', 'Proper label for create link');
 
   my $col_names = $l->col_names;
   is(scalar(@$col_names), 6, 'Number of columns is ok');
