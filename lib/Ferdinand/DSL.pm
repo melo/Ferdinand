@@ -10,6 +10,7 @@ our @EXPORT = qw(
   widget type attr
   columns cols
   linked link_to col
+  links url
 
   dbic_source dbic_item dbic_set dbic_create
   form button label on_click
@@ -92,6 +93,11 @@ sub dbic_create (&) { _add_setup {type => 'DBIC::Create', valid  => $_[0]} }
 ### Widget setup and main attributes
 sub widget (&) { _add_setup _cb_setup(@_) }
 sub type ($) { _add_setup type => $_[0] }
+
+
+### Link widget
+sub links (&) { _add_setup {type => 'Links', links => _cb_setup(@_, [])} }
+sub url { _add_setup {title => $_[0], url => $_[1]} }
 
 
 ### Column definition
