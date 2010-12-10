@@ -1,6 +1,7 @@
 package Ferdinand::Roles::Title;
 
 use Ferdinand::Setup 'role';
+use Ferdinand::Utils 'ghtml';
 use Method::Signatures;
 
 requires 'setup_attrs';
@@ -21,6 +22,11 @@ method title ($ctx) {
 
   local $_ = $ctx;
   return $t->($self);
+}
+
+method render_title ($ctx) {
+  return unless my $t = $self->title($ctx);
+  return ghtml()->h1($t);
 }
 
 1;

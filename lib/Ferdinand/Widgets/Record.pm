@@ -40,9 +40,7 @@ __DATA__
 <?pl my $cols = $widget->col_meta; ?>
 <?pl my $col_names = $widget->col_names; ?>
 
-<?pl if (my $title = $widget->title($ctx)) { ?>
-<h1>[= $title =]</h1>
-<?pl } ?>
+[== $widget->render_title($ctx) =]
 
 <table cellspacing="1">
 	<colgroup>

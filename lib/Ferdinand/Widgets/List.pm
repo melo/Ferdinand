@@ -16,7 +16,6 @@ method render_self ($ctx) {
   $ctx->buffer(render_template('list.pltj', {ctx => $ctx}));
 }
 
-
 __PACKAGE__->meta->make_immutable;
 1;
 
@@ -29,9 +28,7 @@ __DATA__
 <?pl my $col_names = $widget->col_names; ?>
 <?pl my @rows = $ctx->set->all; ?>
 
-<?pl if (my $title = $widget->title($ctx)) { ?>
-<h1>[= $title =]</h1>
-<?pl } ?>
+[== $widget->render_title($ctx) =]
 
 <table cellspacing="1" class="ordenada1">
   <thead>
