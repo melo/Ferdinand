@@ -58,6 +58,11 @@ sub test_create_form {
   like($buffer, qr{$_="btn_w_2_my_label_create"}, "button with expected $_")
     for ('name', 'id');
   like($buffer, qr{value="My label create"}, 'button with expected label');
+  like(
+    $buffer,
+    qr{<input type="hidden" name="submited" value="1">},
+    'make sure we have the submited marker on forms'
+  );
 }
 
 subtest 'Render create form' => sub {
@@ -106,6 +111,11 @@ sub test_edit_form {
   like($buffer, qr{$_="btn_w_2_my_label_edit"}, "button with expected $_")
     for ('name', 'id');
   like($buffer, qr{value="My label edit"}, 'button with expected label');
+  like(
+    $buffer,
+    qr{<input type="hidden" name="submited" value="1">},
+    'make sure we have the submited marker on forms'
+  );
 }
 
 subtest 'Render edit form' => sub {
