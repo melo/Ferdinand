@@ -10,7 +10,7 @@ use Ferdinand::Utils qw(
   read_data_files get_data_files
   render_template
   ghtml ehtml
-  hash_merge hash_select
+  hash_merge hash_select hash_grep
 );
 use Sample;
 
@@ -133,6 +133,21 @@ subtest 'Hash select' => sub {
 
   cmp_deeply(scalar(hash_select($h, qw(a b d))), {a => 1, b => 2});
   cmp_deeply(\%h, {a => 1, b => 2});
+};
+
+
+subtest 'Hash grep' => sub {
+  my %in = (btn_xpto => 1, text => 'something', radio => 'selected');
+
+  my $hg = hash_grep { !/^btn_/ } \%in;
+  cmp_deeply(
+    $hg,
+    {text => 'something', radio => 'selected'},
+    'hash_grep in scalar context ok'
+  );
+
+  my %hg = hash_grep {/^t/} \%in;
+  cmp_deeply(\%hg, {text => 'something'}, 'hash_grep in list context ok');
 };
 
 

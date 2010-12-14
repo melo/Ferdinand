@@ -9,7 +9,7 @@ our @EXPORT_OK = qw(
   read_data_files get_data_files
   render_template
   ghtml ehtml
-  hash_merge hash_select
+  hash_merge hash_select hash_grep
 );
 
 
@@ -121,6 +121,22 @@ sub hash_select {
 
   return %s if wantarray;
   return \%s;
+}
+
+sub hash_grep (&$) {
+  my ($cb, $in) = @_;
+  my %out;
+
+  for my $k (keys %$in) {
+    my $v = $in->{$k};
+    local $_ = $k;
+    next unless $cb->($v);
+    
+    $out{$k} = $v;
+  }
+  
+  return %out if wantarray;
+  return \%out;
 }
 
 
