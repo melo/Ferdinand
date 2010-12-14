@@ -41,13 +41,18 @@ subtest 'Ferdinand setup' => sub {
 };
 
 
-my $ctx;
-subtest 'Render call' => sub {
+subtest 'Render create form' => sub {
+  my $ctx;
+
   is(
     exception {
-      $ctx =
-        $map->render('create',
-        {id => [1], action_uri => URI->new('http://example.com/something')});
+      $ctx = $map->render(
+        'create',
+        { mode       => 'create',
+          id         => [1],
+          action_uri => URI->new('http://example.com/something')
+        }
+      );
     },
     undef,
     "Render create lived"
@@ -71,20 +76,19 @@ subtest 'Render call' => sub {
   );
   ok($ctx->buffer, '... got a buffer with something in it');
   is($ctx->stash->{clicked}, 1, '... button submitted');
-};
 
+  subtest 'Test create buffer' => sub {
+    my $buffer = $ctx->buffer;
 
-subtest 'Buffer tests' => sub {
-  my $buffer = $ctx->buffer;
+    like($buffer, qr{action="/something"}, 'Form with expected action');
+    like($buffer, qr{method="POST"},       'Form with expected method');
+    like($buffer, qr{accept-charset="utf-8"},
+      'Form with expected accept-encoding');
 
-  like($buffer, qr{action="/something"}, 'Form with expected action');
-  like($buffer, qr{method="POST"},       'Form with expected method');
-  like($buffer, qr{accept-charset="utf-8"},
-    'Form with expected accept-encoding');
-
-  like($buffer, qr{type="submit"},         'button with expected type');
-  like($buffer, qr{$_="btn_w_2_my_label"}, "button with expected $_")
-    for ('name', 'id');
+    like($buffer, qr{type="submit"},         'button with expected type');
+    like($buffer, qr{$_="btn_w_2_my_label"}, "button with expected $_")
+      for ('name', 'id');
+  };
 };
 
 
