@@ -30,7 +30,7 @@ method setup_attrs($class:, $attrs, $meta) {
 method render_self($ctx) {
   $ctx->buffer(render_template('button.pltj', {ctx => $ctx}));
 
-  return unless $ctx->mode eq 'create_do';
+  return unless $ctx->mode =~ /_do$/;
   return unless $ctx->params->{$self->btn_id};
 
   $self->render_widgets($ctx);
