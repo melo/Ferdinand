@@ -33,5 +33,16 @@ __DATA__
 <?pl #@ARGS ctx, content ?>
 
 <form action="[= $ctx->action_uri->path =]" method="POST" accept-charset="utf-8">
+<?pl
+  if (my $item = $ctx->item) {
+    my @pk_cols = $ctx->model->source->primary_columns;
+    for my $col (@pk_cols) {
+      my $val = $ctx->field_value_str($col);
+?>
+  <input type="hidden" name="[= $col =]" value="[= $val =]">
+<?pl
+    }
+  }
+?>
   [== $content =]
 </form>
