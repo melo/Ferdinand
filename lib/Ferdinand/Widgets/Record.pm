@@ -19,7 +19,8 @@ method render_self ($ctx) {
     $t = 'view.pltj';
   }
   elsif ($m eq 'create' || $m eq 'create_do') {
-    $t = 'create.pltj';
+    $t = 'form.pltj';
+  }
   }
   else {
     confess("Context mode '$m' is not supported by Record widget");
@@ -64,7 +65,7 @@ __DATA__
 </table>
 
 
-@@ create.pltj
+@@ form.pltj
 <?pl #@ARGS ctx ?>
 <?pl my $widget = $ctx->widget; ?>
 <?pl my $cols = $widget->col_meta; ?>
