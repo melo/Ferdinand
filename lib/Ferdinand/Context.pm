@@ -224,7 +224,12 @@ method render_field_write (:$field, :$meta = {}, :$item) {
   $attrs{required} = 1 unless $meta->{is_nullable};
 
   if (my $opt = $meta->{options}) {
-    my @inner = map { $h->option({value => $_}, $_) } @$opt;
+    my @inner;
+    for my $opt (@$opt) {
+      my %attrs = (value => $opt);
+      $attrs{selected} = 1 if $val && $val eq $opt;
+      push @inner, $h->option(\%attrs, $opt);
+    }
     return $h->select({name => $field, id => $field}, @inner);
   }
   elsif ($type eq 'text') {
