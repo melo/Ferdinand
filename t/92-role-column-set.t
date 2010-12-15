@@ -104,11 +104,13 @@ subtest 'Live ColumnSet role tests' => sub {
       cls_list_html => " class=\"{sorter: 'eu_date'}\"",
       data_type     => "date",
       is_nullable   => 0,
-      default_value => DateTime->today(),
+      default_value => ignore(),
       label         => "Published At",
     },
     '... column published_at as expected'
   );
+  cmp_deeply($h->{published_at}{default_value}->(),
+    DateTime->today(), '...... default_value evals to the expected value');
 };
 
 

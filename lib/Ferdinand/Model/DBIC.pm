@@ -59,7 +59,7 @@ method column_meta_fixup ($name, $defs = {}) {
   }
 
   if (my $df = $ci->{extra}{default}) {
-    $info{default_value} = $df->();
+    $info{default_value} = $df;
   }
 
   return \%info;

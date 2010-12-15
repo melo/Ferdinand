@@ -256,7 +256,10 @@ method field_value ($field, $item?) {
 method field_value_str ($field, $meta = {}, $item?, $use_default = 0) {
   my $t = $meta->{data_type} || '';
   my $v = $self->field_value($field, $item);
-  $v = $meta->{default_value} if !$v && $use_default;
+  if (!$v && $use_default) {
+    $v = $meta->{default_value};
+    $v = $v->() if ref($v) eq 'CODE';
+  }
 
   my $f = $meta->{formatter};
   if ($f && $v) {

@@ -171,11 +171,13 @@ subtest 'Render Field' => sub {
       data_type     => "date",
       formatter     => ignore(),
       is_nullable   => 0,
-      default_value => DateTime->today(),
+      default_value => ignore(),
       label         => "Published At",
     },
     "... meta for field 'published_at' ok"
   );
+  cmp_deeply($cm->{published_at}{default_value}->(),
+    DateTime->today(), '...... default_value evals to the expected value');
   cmp_deeply(
     $cm->{slug},
     { cls_list      => [],
