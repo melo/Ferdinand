@@ -229,6 +229,30 @@ subtest 'render_field output' => sub {
     '&lt;ABCD &amp; EFGH&gt;',
     'Override item on render_field ok'
   );
+
+  ## Check influence of modes with render_field
+  my $mock_42 = Test::MockObject->new;
+  $mock_42->set_always(x => '42');
+
+  for my $item ({x => '42'}, $mock_42) {
+    for my $m (qw( view list )) {
+      my $g = $c1->overlay(mode => $m);
+      is($c1->render_field(field => 'x', item => $item),
+        '42', "Proper render_field() output for mode '$m' (item $item)");
+    }
+    for my $m (qw( create create_do edit edit_do )) {
+      my $g = $c1->overlay(mode => $m);
+      like_all(
+        "Proper render_field() output for mode '$m' (item $item)",
+        $c1->render_field(field => 'x', item => $item),
+        qr{<input },
+        qr{type="text"},
+        qr{name="x"},
+        qr{id="x"},
+        qr{value="42"},
+      );
+    }
+  }
 };
 
 

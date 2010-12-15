@@ -176,17 +176,14 @@ method render_field (:$field, :$meta = {}, :$item) {
   my $m = $self->mode;
   return $self->render_field_read(@_) if $m eq 'view' || $m eq 'list';
   return $self->render_field_write(@_) if $m eq 'create' || $m eq 'create_do';
+  return $self->render_field_write(@_) if $m eq 'edit' || $m eq 'edit_do';
 }
 
 method render_field_read (:$field, :$meta = {}, :$item) {
   $item = $self->item unless $item;
-  my $v = $item->$field();
+  my $v = $self->field_value_str($field, $meta, $item);
+  
   return '' unless defined $v;
-
-  if (my $f = $meta->{formatter}) {
-    local $_ = $v;
-    $v = $f->($self);
-  }
 
   my $url;
   if ($url = $meta->{linked}) {
