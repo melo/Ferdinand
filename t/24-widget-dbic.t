@@ -128,8 +128,11 @@ subtest 'Render Field' => sub {
     'Title 1 &amp; me',
     'Field title ok'
   );
-  is($ctx->render_field(field => 'published_at', meta => $cm->{published_at}),
-    '10/10/2010', 'Field published_at ok');
+  is(
+    $ctx->render_field(field => 'published_at', meta => $cm->{published_at}),
+    '10/10/2010',
+    'Field published_at ok'
+  );
   is(
     $ctx->render_field(field => 'slug', meta => $cm->{slug}),
     '<a href="http://example.com/title_1">title_1</a>',

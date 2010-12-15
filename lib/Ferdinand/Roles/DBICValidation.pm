@@ -51,9 +51,9 @@ our %meta_types = (
 
 method _validate($ctx, $fields) {
   my $model = $ctx->model;
-    my $src = $model->source;
+  my $src   = $model->source;
 
-    for my $col ($src->columns) {
+  for my $col ($src->columns) {
     next unless exists $fields->{$col};
 
     my $i    = $src->column_info($col);
@@ -86,21 +86,23 @@ method _validate($ctx, $fields) {
 
     $fields->{$col} = $v;
   }
-  }
+}
 
-  method _check_db_restrictions($ctx, $fields) {
-  my $src  = $ctx->model->source;
-    my %un = $src->unique_constraints;
+method _check_db_restrictions($ctx, $fields) {
+  my $src = $ctx->model->source;
+  my %un  = $src->unique_constraints;
 
-    for my $name (keys %un) {
+  for my $name (keys %un) {
     my $flds = $un{$name};
     my $sel = hash_select($fields, @$flds);
     next unless scalar(@$flds) == scalar(keys %$sel);
 
     next unless $src->resultset->count($sel);
+
     $ctx->add_error($_, "Elemento duplicado ($name)") for @$flds;
     last;
   }
-  }
+}
 
-  1;
+
+1;
