@@ -28,7 +28,7 @@ after render_self => sub {
   my $fields = hash_grep { !/^btn_/ } $ctx->params;
   if (my $valid = $self->valid) {
     local $_ = $ctx;
-    $fields = $valid->($self);
+    $fields = $valid->($self, $fields);
   }
   return unless $fields && ref($fields) eq 'HASH';
 
