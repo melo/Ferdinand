@@ -205,6 +205,22 @@ subtest 'render_field output' => sub {
     'Single row value, with formatter'
   );
 
+  $args{meta}{cls_field_html} = 'x y z';
+  is(
+    $c1->render_field(%args),
+    '<span class="x y z">&lt;ABCD &amp; EFGH&gt;</span>',
+    'Single row value, with class'
+  );
+
+  $args{meta}{link_to} = sub { $_->e };
+  like_all(
+    'link_to value + class',
+    $c1->render_field(%args),
+    qr{^<a }, qr{ class="x y z"},
+    qr{ href="!!"}, qr{>&lt;ABCD &amp; EFGH&gt;</a>},
+  );
+
+  delete $args{meta}{cls_field_html};
   $args{meta}{link_to} = sub { $_->e };
   is(
     $c1->render_field(%args),
@@ -271,13 +287,32 @@ subtest 'render_field_write', sub {
 
   like_all(
     'xpto with previous value',
-    $c1->render_field_write(field => 'xpto', item => {xpto => 'aa'}),
+    $c1->render_field_write(
+      field => 'xpto',
+      item  => {xpto => 'aa'}
+    ),
     qr{<input },
     qr{type="text"},
     qr{name="xpto"},
     qr{id="xpto"},
     qr{required="1"},
     qr{value="aa"},
+  );
+
+  like_all(
+    'xpto with previous value + class',
+    $c1->render_field_write(
+      field => 'xpto',
+      meta  => {cls_field_html => 'x y z'},
+      item  => {xpto => 'aa'}
+    ),
+    qr{<input },
+    qr{type="text"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+    qr{required="1"},
+    qr{value="aa"},
+    qr{class="x y z"},
   );
 
   like_all(
@@ -345,6 +380,21 @@ subtest 'render_field_write', sub {
   );
 
   like_all(
+    'xpto textarea + class',
+    $c1->render_field_write(
+      field => 'xpto',
+      meta  => {data_type => 'text', cls_field_html => 'x y z'}
+    ),
+    qr{<textarea },
+    qr{></textarea>},
+    qr{cols="100"},
+    qr{rows="6"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+    qr{class="x y z"},
+  );
+
+  like_all(
     'xpto textarea',
     $c1->render_field_write(
       field => 'xpto',
@@ -365,6 +415,20 @@ subtest 'render_field_write', sub {
     qr{<select },
     qr{name="xpto"},
     qr{id="xpto"},
+    qr{<option value="a">a</option>},
+    qr{<option value="b">b</option>},
+  );
+
+  like_all(
+    'xpto select + class',
+    $c1->render_field_write(
+      field => 'xpto',
+      meta  => {options => ['a', 'b'], cls_field_html => 'x y z'}
+    ),
+    qr{<select },
+    qr{name="xpto"},
+    qr{id="xpto"},
+    qr{class="x y z"},
     qr{<option value="a">a</option>},
     qr{<option value="b">b</option>},
   );
@@ -570,6 +634,9 @@ done_testing();
 sub like_all {
   my $prefix = shift;
   my $text   = shift;
+
+  ### Make sure Test::Builder reports errors in the proper place
+  local $Test::Builder::Level = $Test::Builder::Level + 1;
 
   ok($text, "Got $prefix");
   for my $re (@_) {

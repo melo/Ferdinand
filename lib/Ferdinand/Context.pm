@@ -180,10 +180,19 @@ method render_field (:$field, :$meta = {}, :$item) {
 }
 
 method render_field_read (:$field, :$meta = {}, :$item) {
+  my $h = ghtml();
+
   $item = $self->item unless $item;
   my $v = $self->field_value_str($field, $meta, $item);
-  
-  return '' unless defined $v;
+
+  my %attrs;
+  my $cls = $meta->{cls_field_html};
+  $attrs{class} = $cls if $cls;
+
+  if (!defined $v) {
+    return $h->span(\%attrs, '') if %attrs;
+    return '';
+  }
 
   my $url;
   if ($url = $meta->{linked}) {
@@ -196,7 +205,11 @@ method render_field_read (:$field, :$meta = {}, :$item) {
   }
 
   if ($url) {
-    $v = ghtml()->a({href => $url}, $v);
+    $attrs{href} = $url;
+    $v = $h->a(\%attrs, $v);
+  }
+  elsif (%attrs) {
+    $v = $h->span(\%attrs, $v);
   }
   else {
     $v = ehtml($v);
@@ -208,30 +221,30 @@ method render_field_read (:$field, :$meta = {}, :$item) {
 method render_field_write (:$field, :$meta = {}, :$item) {
   my $h    = ghtml();
   my $type = $meta->{data_type} || '';
-  my $def  = $self->mode eq 'create'? 1 : 0;
+  my $cls  = $meta->{cls_field_html};
+  my $def  = $self->mode eq 'create' ? 1 : 0;
   my $val  = $self->field_value_str($field, $meta, $item, $def);
 
   my %attrs = (
-    id    => $field,
-    name  => $field,
-    type  => 'text',
-    value => $val,
+    id   => $field,
+    name => $field,
   );
-
-  $attrs{required} = 1 unless $meta->{is_nullable};
+  $attrs{class} = $cls if $cls;
 
   if (my $opt = $meta->{options}) {
     my @inner;
     for my $opt (@$opt) {
-      my %attrs = (value => $opt);
-      $attrs{selected} = 1 if $val && $val eq $opt;
-      push @inner, $h->option(\%attrs, $opt);
+      my %oattrs = (value => $opt);
+      $oattrs{selected} = 1 if $val && $val eq $opt;
+      push @inner, $h->option(\%oattrs, $opt);
     }
-    return $h->select({name => $field, id => $field}, @inner);
+    return $h->select(\%attrs, @inner);
   }
   elsif ($type eq 'text') {
-    return $h->textarea(
-      {name => $field, id => $field, cols => 100, rows => 6}, $val);
+    $attrs{cols} = 100;
+    $attrs{rows} = 6;
+
+    return $h->textarea(\%attrs, $val);
   }
   elsif ($type eq 'char' || $type eq 'varchar') {
     if (my $size = $meta->{size}) {
@@ -242,6 +255,10 @@ method render_field_write (:$field, :$meta = {}, :$item) {
   elsif ($type eq 'date') {
     $attrs{type} = 'date';
   }
+
+  $attrs{required} = 1      unless $meta->{is_nullable};
+  $attrs{type}     = 'text' unless $attrs{type};
+  $attrs{value}    = $val;
 
   return $h->input(\%attrs);
 }
