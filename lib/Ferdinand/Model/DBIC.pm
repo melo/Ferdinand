@@ -51,8 +51,8 @@ method column_meta_fixup ($name, $defs = {}) {
   $info{label} = $label;
 
   my $classes = $ci->{extra}{classes} || {};
-  for my $t (qw(list)) {
-    my $cls = $classes->{$t} || [];
+  for my $t (keys %$classes) {
+    my $cls = $classes->{$t};
     $cls = [$cls] unless ref $cls;
     $info{"cls_$t"} = $cls;
     $info{"cls_${t}_html"} = @$cls ? ' class="' . join(' ', @$cls) . '"' : '';

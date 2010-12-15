@@ -76,9 +76,7 @@ subtest 'Live ColumnSet role tests' => sub {
   my $h = $x->col_meta;
   cmp_deeply(
     $h->{id},
-    { cls_list      => [],
-      cls_list_html => "",
-      data_type     => "integer",
+    { data_type     => "integer",
       is_nullable   => 0,
       label         => "ID",
     },
@@ -86,9 +84,7 @@ subtest 'Live ColumnSet role tests' => sub {
   );
   cmp_deeply(
     $h->{slug},
-    { cls_list      => [],
-      cls_list_html => "",
-      data_type     => "varchar",
+    { data_type     => "varchar",
       is_nullable   => 0,
       label         => "Slug",
       link_to       => $link_to,

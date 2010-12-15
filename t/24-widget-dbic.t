@@ -146,9 +146,7 @@ subtest 'Render Field' => sub {
   );
   cmp_deeply(
     $cm->{title},
-    { cls_list      => [],
-      cls_list_html => "",
-      data_type     => "varchar",
+    { data_type     => "varchar",
       label         => "Title",
       size          => 100,
     },
@@ -156,9 +154,7 @@ subtest 'Render Field' => sub {
   );
   cmp_deeply(
     $cm->{visible},
-    { cls_list      => [],
-      cls_list_html => "",
-      data_type     => "char",
+    { data_type     => "char",
       is_nullable   => 0,
       label         => "Visible",
       size          => 1,
@@ -183,9 +179,7 @@ subtest 'Render Field' => sub {
     DateTime->today(), '...... default_value evals to the expected value');
   cmp_deeply(
     $cm->{slug},
-    { cls_list      => [],
-      cls_list_html => "",
-      data_type     => "varchar",
+    { data_type     => "varchar",
       is_nullable   => 0,
       label         => "Slug",
       link_to       => ignore(),
