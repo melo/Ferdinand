@@ -21,6 +21,8 @@ method render_self ($ctx) {
   elsif ($m eq 'create' || $m eq 'create_do') {
     $t = 'form.pltj';
   }
+  elsif ($m eq 'edit' || $m eq 'edit_do') {
+    $t = 'form.pltj';
   }
   else {
     confess("Context mode '$m' is not supported by Record widget");
@@ -88,7 +90,7 @@ __DATA__
         my $html = $ctx->render_field(
           field => $col,
           meta  => $ci,
-          item  => $params,
+          item  => ($params->{submited}? $params : $ctx->item),
         );
 ?>
         <tr>
