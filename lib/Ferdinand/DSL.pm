@@ -12,7 +12,7 @@ our @EXPORT = qw(
   linked link_to col
   links url
 
-  dbic_source dbic_item dbic_set dbic_create
+  dbic_source dbic_item dbic_set dbic_create dbic_update
   form button label on_click
 
   cat_ferdinand_setup
@@ -88,6 +88,7 @@ sub dbic_source (&) { _add_setup {type => 'DBIC::Source', source => $_[0]} }
 sub dbic_item (&)   { _add_setup {type => 'DBIC::Item',   item   => $_[0]} }
 sub dbic_set (&)    { _add_setup {type => 'DBIC::Set',    set    => $_[0]} }
 sub dbic_create (&) { _add_setup {type => 'DBIC::Create', valid  => $_[0]} }
+sub dbic_update (&) { _add_setup {type => 'DBIC::Update', valid  => $_[0]} }
 
 
 ### Widget setup and main attributes

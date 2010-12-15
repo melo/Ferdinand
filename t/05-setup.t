@@ -30,7 +30,7 @@ my $excp = exception {
         header('My list header');
 
         widget {
-          attr type         => 'List';
+          attr type => 'List';
           columns {
             linked id    => 'view';
             linked title => 'view';
@@ -67,6 +67,7 @@ my $excp = exception {
       edit {
         title 'Edit me';
         title 'Second edit me';
+        dbic_update {};
       };
     };
   };
@@ -86,8 +87,8 @@ cmp_deeply(
           { type   => 'Header',
             header => 'My list header',
           },
-          { type         => 'List',
-            columns      => [
+          { type    => 'List',
+            columns => [
               id    => {linked  => 'view'},
               title => {linked  => 'view'},
               slug  => {link_to => $slug_cb},
@@ -126,7 +127,8 @@ cmp_deeply(
       { name   => 'edit',
         layout => [
           {title => 'Edit me',        type => 'Title'},
-          {title => 'Second edit me', type => 'Title'}
+          {title => 'Second edit me', type => 'Title'},
+          {valid => ignore(),         type => 'DBIC::Update'},
         ],
       },
     ],
@@ -246,7 +248,7 @@ subtest 'Edit action' => sub {
   isa_ok($action, 'Ferdinand::Action', '... proper class for action');
 
   my @widgets = $action->widgets;
-  is(scalar(@widgets), 2, 'Two widget in this layout');
+  is(scalar(@widgets), 3, 'Two widget in this layout');
 
   my ($w1, $w2) = @widgets;
 
