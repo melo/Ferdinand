@@ -91,17 +91,33 @@ method _validate($ctx, $fields) {
 method _check_db_restrictions($ctx, $fields) {
   my $src = $ctx->model->source;
   my %un  = $src->unique_constraints;
+  my @pk  = _extract_pk_values_from_item($ctx);
 
   for my $name (keys %un) {
     my $flds = $un{$name};
     my $sel = hash_select($fields, @$flds);
     next unless scalar(@$flds) == scalar(keys %$sel);
 
-    next unless $src->resultset->count($sel);
+    my $dup = $src->resultset->single($sel);
+    next unless $dup;
+
+    if (@pk) {
+      my @dpk = _extract_pk_values_from_item($ctx, $dup);
+      next if @dpk ~~ @pk;
+    }
 
     $ctx->add_error($_, "Elemento duplicado ($name)") for @$flds;
     last;
   }
+}
+
+func _extract_pk_values_from_item ($ctx, $item?) {
+  $item = $ctx->item unless $item;
+  return unless $item;
+
+  return
+    map { $ctx->field_value_str($_, {}, $item) }
+    $item->result_source->primary_columns;
 }
 
 
