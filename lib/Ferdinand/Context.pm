@@ -204,9 +204,19 @@ method render_field_read (:$field, :$meta = {}, :$item) {
     $url = $url->($self);
   }
 
+  my $fmt = $meta->{format} || '';
+  if ($fmt eq 'html') {
+    my $x = $v;
+    $v = \$x;
+  }
+
   if ($url) {
     $attrs{href} = $url;
     $v = $h->a(\%attrs, $v);
+  }
+  elsif (ref $v) {
+    $attrs{class} = $attrs{class} ? "$attrs{class} html_fmt" : 'html_fmt';
+    $v = $h->div(\%attrs, $v);
   }
   elsif (%attrs) {
     $v = $h->span(\%attrs, $v);
@@ -231,6 +241,11 @@ method render_field_write (:$field, :$meta = {}, :$item) {
   );
   $attrs{class} = $cls if $cls;
 
+  if ($meta->{format} && $meta->{format} eq 'html') {
+    my $t = $val;
+    $val = \$t;
+  }
+
   if (my $opt = $meta->{options}) {
     my @inner;
     for my $opt (@$opt) {
@@ -241,8 +256,11 @@ method render_field_write (:$field, :$meta = {}, :$item) {
     return $h->select(\%attrs, @inner);
   }
   elsif ($type eq 'text') {
-    $attrs{cols} = 100;
-    $attrs{rows} = 6;
+    $attrs{cols}  = 100;
+    $attrs{rows}  = 6;
+    if ($meta->{format} && $meta->{format} eq 'html') {
+      $attrs{class} = $attrs{class} ? "$attrs{class} html_fmt" : 'html_fmt';
+    }
 
     return $h->textarea(\%attrs, $val);
   }

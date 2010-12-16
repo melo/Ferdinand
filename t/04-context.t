@@ -246,6 +246,12 @@ subtest 'render_field output' => sub {
     'Override item on render_field ok'
   );
 
+  is(
+    $c1->render_field(field => 'x', meta => {format => 'html'}, item => $i),
+    '<div class="html_fmt"><ABCD & EFGH></div>',
+    'HTML format in fields renders ok'
+  );
+
   ## Check influence of modes with render_field
   my $mock_42 = Test::MockObject->new;
   $mock_42->set_always(x => '42');
@@ -392,6 +398,23 @@ subtest 'render_field_write', sub {
     qr{name="xpto"},
     qr{id="xpto"},
     qr{class="x y z"},
+  );
+
+  like_all(
+    'xpto textarea + class',
+    $c1->render_field_write(
+      field => 'xpto',
+      meta =>
+        {data_type => 'text', cls_field_html => 'x y z', format => 'html'},
+      item => {xpto => '<br>'},
+    ),
+    qr{<textarea },
+    qr{><br></textarea>},
+    qr{cols="100"},
+    qr{rows="6"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+    qr{class="x y z html_fmt"},
   );
 
   like_all(
