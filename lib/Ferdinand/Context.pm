@@ -256,10 +256,11 @@ method render_field_write (:$field, :$meta = {}, :$item) {
     return $h->select(\%attrs, @inner);
   }
   elsif ($type eq 'text') {
-    $attrs{cols}  = 100;
-    $attrs{rows}  = 6;
+    $attrs{cols} = 100;
+    $attrs{rows} = 6;
     if ($meta->{format} && $meta->{format} eq 'html') {
       $attrs{class} = $attrs{class} ? "$attrs{class} html_fmt" : 'html_fmt';
+      $attrs{rows} += 12;
     }
 
     return $h->textarea(\%attrs, $val);

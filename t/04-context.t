@@ -411,7 +411,7 @@ subtest 'render_field_write', sub {
     qr{<textarea },
     qr{><br></textarea>},
     qr{cols="100"},
-    qr{rows="6"},
+    qr{rows="18"},
     qr{name="xpto"},
     qr{id="xpto"},
     qr{class="x y z html_fmt"},
