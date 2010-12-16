@@ -32,6 +32,9 @@ method column_meta_fixup ($name, $defs = {}) {
     $info{$f} = $ci->{$f} if exists $ci->{$f};
   }
 
+  $info{format} = $ci->{extra}{format}
+    if exists $ci->{extra}{format};
+
   $info{formatter} = $ci->{extra}{formatter}
     if exists $ci->{extra}{formatter};
 

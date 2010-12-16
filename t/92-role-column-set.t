@@ -60,6 +60,7 @@ subtest 'Live ColumnSet role tests' => sub {
             'slug'  => {link_to => $link_to},
             'published_at',
             'visible',
+            'html',
           ],
         }
       ],
@@ -71,7 +72,7 @@ subtest 'Live ColumnSet role tests' => sub {
   isa_ok($x, 'Ferdinand::Widgets::X', '... of the expected type');
 
   my $n = $x->col_names;
-  is(scalar(@$n), 5, 'Five columns in our Set');
+  is(scalar(@$n), 6, 'Five columns in our Set');
 
   my $h = $x->col_meta;
   cmp_deeply(
@@ -107,6 +108,15 @@ subtest 'Live ColumnSet role tests' => sub {
   );
   cmp_deeply($h->{published_at}{default_value}->(),
     DateTime->today(), '...... default_value evals to the expected value');
+
+  cmp_deeply(
+    $h->{html},
+    { data_type => "text",
+      label     => "Html",
+      format    => "html",
+    },
+    '... column id as expected'
+  );
 };
 
 
