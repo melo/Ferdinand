@@ -84,7 +84,7 @@ sub render_template {
 }
 
 sub ghtml {
-  return XML::Generator->new(':pretty');
+  return XML::Generator->new(':pretty', escape => 'unescaped');
 }
 
 sub ehtml {

@@ -116,6 +116,8 @@ subtest 'Generate/Escape HTML', sub {
     'cool &gt; cold &amp; everything else &lt;',
     'HTML escaped properly'
   );
+
+  is(ghtml()->div(\'<<>>'), '<div><<>></div>', 'Unescaped HTML');
 };
 
 
