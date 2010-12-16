@@ -77,19 +77,19 @@ subtest 'Live ColumnSet role tests' => sub {
   my $h = $x->col_meta;
   cmp_deeply(
     $h->{id},
-    { data_type     => "integer",
-      is_nullable   => 0,
-      label         => "ID",
+    { data_type   => "integer",
+      is_nullable => 0,
+      label       => "ID",
     },
     '... column id as expected'
   );
   cmp_deeply(
     $h->{slug},
-    { data_type     => "varchar",
-      is_nullable   => 0,
-      label         => "Slug",
-      link_to       => $link_to,
-      size          => 100,
+    { data_type   => "varchar",
+      is_nullable => 0,
+      label       => "Slug",
+      link_to     => $link_to,
+      size        => 100,
     },
     '... column slug as expected'
   );
