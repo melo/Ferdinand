@@ -146,9 +146,9 @@ subtest 'Render Field' => sub {
   );
   cmp_deeply(
     $cm->{title},
-    { data_type     => "varchar",
-      label         => "Title",
-      size          => 100,
+    { data_type => "varchar",
+      label     => "Title",
+      size      => 100,
     },
     "... meta for field 'title' ok"
   );
@@ -159,7 +159,11 @@ subtest 'Render Field' => sub {
       label         => "Visible",
       size          => 1,
       default_value => 'H',
-      options       => [qw( H V )],
+      options       => [
+        {id => 'H', name => 'H'},
+        {id => 'V', name => 'V'},
+        {id => 'Z', name => 'ZZ'},
+      ],
     },
     "... meta for field 'visible' ok"
   );
@@ -179,11 +183,11 @@ subtest 'Render Field' => sub {
     DateTime->today(), '...... default_value evals to the expected value');
   cmp_deeply(
     $cm->{slug},
-    { data_type     => "varchar",
-      is_nullable   => 0,
-      label         => "Slug",
-      link_to       => ignore(),
-      size          => 100,
+    { data_type   => "varchar",
+      is_nullable => 0,
+      label       => "Slug",
+      link_to     => ignore(),
+      size        => 100,
     },
     "... meta for field 'slug' ok"
   );

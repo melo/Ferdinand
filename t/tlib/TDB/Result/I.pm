@@ -43,7 +43,7 @@ __PACKAGE__->add_columns(
     size          => 1,
     is_nullable   => 0,
     default_value => 'H',
-    extra         => {options => [qw( H V )]},
+    extra => {options => ['H', {id => 'V'}, {id => 'Z', name => 'ZZ'}]},
   },
 );
 

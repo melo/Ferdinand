@@ -249,9 +249,10 @@ method render_field_write (:$field, :$meta = {}, :$item) {
   if (my $opt = $meta->{options}) {
     my @inner;
     for my $opt (@$opt) {
-      my %oattrs = (value => $opt);
-      $oattrs{selected} = 1 if $val && $val eq $opt;
-      push @inner, $h->option(\%oattrs, $opt);
+      my $id = $opt->{id};
+      my %oattrs = (value => $id);
+      $oattrs{selected} = 1 if $val && $val eq $id;
+      push @inner, $h->option(\%oattrs, $opt->{name});
     }
     return $h->select(\%attrs, @inner);
   }

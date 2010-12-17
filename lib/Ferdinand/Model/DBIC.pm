@@ -38,8 +38,15 @@ method column_meta_fixup ($name, $defs = {}) {
   $info{formatter} = $ci->{extra}{formatter}
     if exists $ci->{extra}{formatter};
 
-  $info{options} = $ci->{extra}{options}
-    if exists $ci->{extra}{options};
+  if (exists $ci->{extra}{options}) {
+    my $opts = $info{options} = [];
+
+    for my $opt (@{$ci->{extra}{options}}) {
+      $opt = {id => $opt, name => $opt} unless ref($opt) eq 'HASH';
+      $opt->{name} = $opt->{id} unless $opt->{name};
+      push @$opts, $opt;
+    }
+  }
 
   my $label = $name;
   if (exists $ci->{extra}{label}) {

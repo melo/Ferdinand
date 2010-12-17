@@ -434,40 +434,44 @@ subtest 'render_field_write', sub {
 
   like_all(
     'xpto select',
-    $c1->render_field_write(field => 'xpto', meta => {options => ['a', 'b']}),
+    $c1->render_field_write(
+      field => 'xpto',
+      meta =>
+        {options => [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}]}
+    ),
     qr{<select },
     qr{name="xpto"},
     qr{id="xpto"},
-    qr{<option value="a">a</option>},
-    qr{<option value="b">b</option>},
+    qr{<option value="a">A</option>},
+    qr{<option value="b">B</option>},
   );
 
   like_all(
     'xpto select + class',
     $c1->render_field_write(
       field => 'xpto',
-      meta  => {options => ['a', 'b'], cls_field_html => 'x y z'}
+      meta  => {options => [{id => 'a', name => 'AA'}, {id => 'b', name => 'BB'}], cls_field_html => 'x y z'}
     ),
     qr{<select },
     qr{name="xpto"},
     qr{id="xpto"},
     qr{class="x y z"},
-    qr{<option value="a">a</option>},
-    qr{<option value="b">b</option>},
+    qr{<option value="a">AA</option>},
+    qr{<option value="b">BB</option>},
   );
 
   like_all(
     'xpto select',
     $c1->render_field_write(
       field => 'xpto',
-      meta  => {options => ['a', 'b']},
+      meta  => {options => [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}]},
       item => {xpto => 'b'},
     ),
     qr{<select },
     qr{name="xpto"},
     qr{id="xpto"},
-    qr{<option value="a">a</option>},
-    qr{<option value="b" selected="1">b</option>},
+    qr{<option value="a">A</option>},
+    qr{<option value="b" selected="1">B</option>},
   );
 };
 
