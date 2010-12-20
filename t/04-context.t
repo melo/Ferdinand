@@ -450,7 +450,10 @@ subtest 'render_field_write', sub {
     'xpto select + class',
     $c1->render_field_write(
       field => 'xpto',
-      meta  => {options => [{id => 'a', name => 'AA'}, {id => 'b', name => 'BB'}], cls_field_html => 'x y z'}
+      meta  => {
+        options => [{id => 'a', name => 'AA'}, {id => 'b', name => 'BB'}],
+        cls_field_html => 'x y z'
+      }
     ),
     qr{<select },
     qr{name="xpto"},
@@ -464,7 +467,8 @@ subtest 'render_field_write', sub {
     'xpto select',
     $c1->render_field_write(
       field => 'xpto',
-      meta  => {options => [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}]},
+      meta =>
+        {options => [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}]},
       item => {xpto => 'b'},
     ),
     qr{<select },
