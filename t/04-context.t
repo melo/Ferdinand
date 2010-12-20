@@ -587,6 +587,42 @@ subtest 'field values', sub {
     'Formatter works'
   );
 
+  is(
+    $c1->field_value_str(
+      'count',
+      { data_type => 'int',
+        formatter => sub {"xpto $_"}
+      },
+      {count => 42},
+    ),
+    "xpto 42",
+    'Formatter works for values > 0'
+  );
+
+  is(
+    $c1->field_value_str(
+      'count',
+      { data_type => 'int',
+        formatter => sub {"xpto $_"}
+      },
+      {count => 0},
+    ),
+    "xpto 0",
+    'Formatter works for zero values'
+  );
+
+  is(
+    $c1->field_value_str(
+      'count',
+      { data_type => 'int',
+        formatter => sub {"xpto $_"}
+      },
+      {count => undef},
+    ),
+    '',
+    'Formatter is not called for undef'
+  );
+
   is($c1->field_value('title', $mock), 'aa', 'Field title found in item arg');
   is($c1->field_value_str('title', {data_type => 'char'}, $mock),
     'aa', 'Field title found in item arg');

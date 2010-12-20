@@ -301,7 +301,7 @@ method field_value_str ($field, $meta = {}, $item?, $use_default = 0) {
   }
 
   my $f = $meta->{formatter};
-  if ($f && $v) {
+  if ($f && defined $v) {
     local $_ = $v;
     $v = $f->($self);
   }
