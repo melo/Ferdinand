@@ -306,7 +306,7 @@ method field_value_str ($field, $meta = {}, $item?, $use_default = 0) {
     $v = $f->($self);
   }
 
-  return '' unless $v;
+  return '' unless defined $v;
   return $v unless ref($v);
 
   if (blessed($v) eq 'DateTime') {

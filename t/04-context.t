@@ -627,6 +627,15 @@ subtest 'field values', sub {
     'Formatter is not called for undef'
   );
 
+  is($c1->field_value_str('count', {data_type => 'int'}, {count => 42}),
+    42, 'Formatter works for values > 0');
+
+  is($c1->field_value_str('count', {data_type => 'int'}, {count => 0}),
+    0, 'Formatter works for zero values');
+
+  is($c1->field_value_str('count', {data_type => 'int'}, {count => undef}),
+    '', 'Formatter is not called for undef');
+
   is($c1->field_value('title', $mock), 'aa', 'Field title found in item arg');
   is($c1->field_value_str('title', {data_type => 'char'}, $mock),
     'aa', 'Field title found in item arg');
