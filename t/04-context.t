@@ -658,12 +658,17 @@ subtest 'buffer wrap', sub {
 subtest 'buffers and parentage', sub {
   my $c1 = _ctx();
   my $c2 = _ctx(parent => $c1);
+  my $c3 = _ctx(parent => $c1);
 
   $c1->buffer('aa');
   $c2->buffer('bb');
-  undef $c2;
+  $c3->buffer('0');
 
-  is($c1->buffer, 'aabb', 'Buffer after parent merge ok');
+  undef $c2;
+  is($c1->buffer, 'aabb', 'Buffer after parent merge ok I');
+
+  undef $c3;
+  is($c1->buffer, 'aabb0', 'Buffer after parent merge ok II');
 
   is(exception { undef $c1 }, undef, 'No parent, no die');
 };

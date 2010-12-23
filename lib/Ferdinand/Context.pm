@@ -33,7 +33,7 @@ method DEMOLISH () {
   return unless $p;
 
   my $b = $self->buffer;
-  return unless $b;
+  return unless length($b);
 
   $p->buffer($b);
 }
