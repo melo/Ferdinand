@@ -13,12 +13,6 @@ has 'layout' => (
   handles => {widgets => 'elements'},
 );
 
-has 'clone' => (
-  is      => 'ro',
-  isa     => 'Bool',
-  default => 0,
-);
-
 has 'on_demand' => (
   isa     => 'Bool',
   is      => 'ro',
@@ -45,10 +39,7 @@ after setup_attrs => sub {
   }
 
   $attrs->{layout} = \@widgets;
-
-  for my $attr (qw( clone on_demand )) {
-    $attrs->{$attr} = delete $meta->{$attr} if exists $meta->{$attr};
-  }
+  $attrs->{on_demand} = delete $meta->{on_demand} if exists $meta->{on_demand};
 };
 
 
@@ -59,9 +50,8 @@ after render_self => sub {
   $self->render_widgets($ctx);
 };
 
-method render_widgets ($ctx) {
-  $ctx = $ctx->clone if $self->clone;
 
+method render_widgets ($ctx) {
   $_->render($ctx) for $self->widgets;
 }
 

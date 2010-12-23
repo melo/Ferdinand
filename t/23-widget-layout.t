@@ -10,7 +10,7 @@ use Ferdinand::Widgets::CB;
 use Ferdinand::Widgets::Layout;
 use Ferdinand::Context;
 
-subtest 'layout no clone' => sub {
+subtest 'layout' => sub {
   my $ctx = _ctx();
   my $l   = Ferdinand::Widgets::Layout->setup(
     { layout => [
@@ -29,26 +29,6 @@ subtest 'layout no clone' => sub {
   cmp_deeply($ctx->item, bless({x => 1}, 'X'), "Item as expected");
 
   is($ctx->stash->{titi}, "TestWidget $$", 'Support for +WidgetClass');
-};
-
-subtest 'layout with clone' => sub {
-  my $ctx = _ctx();
-
-  my $l = Ferdinand::Widgets::Layout->setup(
-    { clone  => 1,
-      layout => [
-        { type => 'CB',
-          cb   => sub { $_->item(bless({x => 1}, 'X')) }
-        },
-      ],
-    }
-  );
-
-  isa_ok($l, 'Ferdinand::Widgets::Layout',
-    'Class name for Layout widget object ok');
-
-  $l->render($ctx);
-  is($ctx->item, undef, "Item as expected");
 };
 
 subtest 'layout vs on_demand' => sub {
