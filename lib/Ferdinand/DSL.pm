@@ -38,15 +38,14 @@ our @EXPORT = qw(
 
   sub _add_setup {
     my ($name, $info) = @_;
+    my $ctx = $stack[-1];
 
-    if ($info) {
-      $stack[-1]{$name} = $info;
-    }
-    elsif (ref($name) eq 'ARRAY') {
-      push @{$stack[-1]}, @$name;
+    if (ref($ctx) eq 'ARRAY') {
+      push @$ctx, $name;
+      push @$ctx, $info if defined $info;
     }
     else {
-      push @{$stack[-1]}, $name;
+      $ctx->{$name} = $info;
     }
   }
 }
@@ -106,8 +105,8 @@ sub cols { _add_setup columns => [@_] }
 
 sub columns (&) { _add_setup columns => _cb_setup(@_, []) }
 
-sub linked ($$)  { _add_setup [$_[0], {linked  => $_[1]}] }
-sub link_to ($$) { _add_setup [$_[0], {link_to => $_[1]}] }
+sub linked ($$)  { _add_setup $_[0] => {linked  => $_[1]} }
+sub link_to ($$) { _add_setup $_[0] => {link_to => $_[1]} }
 sub col ($)      { _add_setup $_[0] }
 
 
