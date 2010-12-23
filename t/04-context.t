@@ -245,9 +245,6 @@ subtest 'render_field output' => sub {
   );
 
   $args{meta}{linked} = ['view', 'me'];
-  use Data::Dump qw(pp);
-  print STDERR ">>>>>> ", pp(%args), "\n";
-
   is($c1->render_field(%args), '&lt;ABCD &amp; EFGH&gt;', 'linked value');
 
   $c1 = $c1->clone(uri_helper => sub { return join('/', @{$_[1]}) });
