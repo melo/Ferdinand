@@ -185,11 +185,14 @@ method render_field_read (:$field, :$meta = {}, :$item) {
   $item = $self->item unless $item;
   my $v = $self->field_value_str($field, $meta, $item);
 
+  my $type = $meta->{data_type} || '';
+
   my %attrs;
   my $cls = $meta->{cls_field_html};
   $attrs{class} = $cls if $cls;
 
   if (!defined $v) {
+    return $h->div(\%attrs, '') if %attrs && $type eq 'text';
     return $h->span(\%attrs, '') if %attrs;
     return '';
   }
@@ -204,6 +207,15 @@ method render_field_read (:$field, :$meta = {}, :$item) {
     $url = $url->($self);
   }
 
+  my $opts = $meta->{options};
+  if ($opts) {
+    for my $o (@$opts) {
+      next unless $v eq $o->{id};
+      $v = $o->{name};
+      last;
+    }
+  }
+
   my $fmt = $meta->{format} || '';
   if ($fmt eq 'html') {
     my $x = $v;
@@ -214,8 +226,11 @@ method render_field_read (:$field, :$meta = {}, :$item) {
     $attrs{href} = $url;
     $v = $h->a(\%attrs, $v);
   }
-  elsif (ref $v) {
+  elsif (ref($v)) {
     $attrs{class} = $attrs{class} ? "$attrs{class} html_fmt" : 'html_fmt';
+    $v = $h->div(\%attrs, $v);
+  }
+  elsif ($type eq 'text') {
     $v = $h->div(\%attrs, $v);
   }
   elsif (%attrs) {

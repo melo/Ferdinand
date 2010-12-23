@@ -278,6 +278,124 @@ subtest 'render_field output' => sub {
 };
 
 
+subtest 'render_field_read', sub {
+  my $c1 = Ferdinand::Context->new(
+    map    => $map,
+    action => $action,
+  );
+
+  is($c1->render_field_read(field => 'xpto'), '', 'xpto bare input');
+
+  is($c1->render_field_read(field => 'xpto', item => {xpto => 'aa'}),
+    'aa', 'xpto with previous value');
+
+  is(
+    $c1->render_field_read(
+      field => 'xpto',
+      meta  => {cls_field_html => 'x y z'},
+      item  => {xpto => 'aa'}
+    ),
+    '<span class="x y z">aa</span>',
+    'xpto with previous value + class'
+  );
+
+  is($c1->render_field_read(field => 'xpto', meta => {is_nullable => 1}),
+    '', 'xpto with meta for optional file');
+
+  is(
+    $c1->render_field_read(
+      field => 'xpto',
+      meta  => {data_type => 'date'},
+      item  => {xpto => DateTime->new(year => 2001, month => 9, day => 10)},
+    ),
+    '2001/09/10',
+    'xpto with meta type date',
+  );
+
+  is(
+    $c1->render_field_read(
+      field => 'xpto',
+      meta  => {data_type => 'char', size => 10},
+      item => {xpto => 'yuppi'}
+    ),
+    'yuppi',
+    'xpto with meta type char with size'
+  );
+
+  is(
+    $c1->render_field_read(field => 'xpto', meta => {data_type => 'varchar'}),
+    '',
+    'xpto with meta type varchar'
+  );
+
+  is($c1->render_field_read(field => 'xpto', meta => {data_type => 'text'}),
+    '<div></div>', 'xpto text field');
+
+  is(
+    $c1->render_field_read(
+      field => 'xpto',
+      meta  => {data_type => 'text', cls_field_html => 'x y z'}
+    ),
+    '<div class="x y z"></div>',
+    'xpto text field + class'
+  );
+
+  is(
+    $c1->render_field_read(
+      field => 'xpto',
+      meta =>
+        {data_type => 'text', cls_field_html => 'x y z', format => 'html'},
+      item => {xpto => '<br>'}
+    ),
+    '<div class="x y z html_fmt"><br></div>',
+    'xpto text field, HTML formatted + class'
+  );
+
+  is(
+    $c1->render_field_read(
+      field => 'xpto',
+      meta  => {data_type => 'text'},
+      item  => {xpto => 'yyy'},
+    ),
+    '<div>yyy</div>',
+    'xpto text field + value'
+  );
+
+  is(
+    $c1->render_field_read(
+      field => 'xpto',
+      meta =>
+        {options => [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}]}
+    ),
+    '',
+    'xpto field with options, no value'
+  );
+
+  is(
+    $c1->render_field_read(
+      field => 'xpto',
+      meta  => {
+        options => [{id => 'a', name => 'AA'}, {id => 'b', name => 'BB'}],
+        cls_field_html => 'x y z'
+      }
+    ),
+    '<span class="x y z"></span>',
+    'xpto field with options + class'
+  );
+
+  is(
+    $c1->render_field_read(
+      field => 'xpto',
+      meta =>
+        {options => [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}]},
+      item => {xpto => 'b'},
+    ),
+    'B',
+    'xpto field with options + value'
+  );
+};
+
+
 subtest 'render_field_write', sub {
   my $c1 = Ferdinand::Context->new(
     map    => $map,
