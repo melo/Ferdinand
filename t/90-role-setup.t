@@ -7,10 +7,16 @@ use Method::Signatures;
 with 'Ferdinand::Roles::Setup';
 
 has 'str' => (isa => 'Str', is => 'ro');
+has 'end' => (isa => 'Str', is => 'rw');
 
-method setup_attrs ($class:, $attrs, $meta, $sys) {
+method setup_attrs ($class:, $attrs, $meta, $sys, $stash) {
   $attrs->{str} = delete $meta->{str} if exists $meta->{str};
-  $meta->{sys} = $sys;
+  $meta->{sys}  = $sys;
+  $stash->{end} = 'called';
+}
+
+method setup_done ($stash) {
+  $self->end($stash->{end});
 }
 
 
@@ -30,5 +36,6 @@ isa_ok($x, 'X', '... of the expected class X');
 is($x->str, 'aa', "Attribute 'str' is 'aa'");
 cmp_deeply($m, {ypt => 'bb', sys => 'X'}, "Final meta hashref as expected");
 
+is($x->end, 'called', 'setup_done() called properly');
 
 done_testing();
