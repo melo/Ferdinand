@@ -142,6 +142,21 @@ is(exception { $m = Ferdinand->setup(meta => $meta) },
   undef, 'Setup of Ferdinand ok');
 isa_ok($m, 'Ferdinand::Map', '... expected base class');
 
+subtest 'Basic render calls', sub {
+  like(
+    exception { $m->render('no_such_action') },
+    qr/No action named 'no_such_action', /,
+    'action not found throws exception'
+  );
+
+  my $action = $m->action_for('view');
+  ok($action, 'Got an action for view');
+
+  my $ctx;
+  is(exception { $ctx = $m->render($action) },
+    undef, 'Render with action object lives');
+};
+
 subtest 'List actions', sub {
   ok($m->has_action_for('list'), 'Our Ferdinand has a list action');
   my $action = $m->action_for('list');

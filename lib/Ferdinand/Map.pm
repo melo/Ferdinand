@@ -42,11 +42,13 @@ method setup_attrs ($class:, $attrs, $meta, $sys, $stash) {
 };
 
 
-method render ($action_name, $args = {}) {
-  confess "No action named '$action_name', "
-    unless $self->has_action_for($action_name);
+method render ($action, $args = {}) {
+  if (! blessed($action)) {
+    confess "No action named '$action', "
+      unless $self->has_action_for($action);
 
-  my $action = $self->action_for($action_name);
+    $action = $self->action_for($action);
+  }
 
   my %ctx_args = (
     map    => $self,
