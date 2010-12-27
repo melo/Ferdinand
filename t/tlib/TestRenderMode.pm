@@ -14,6 +14,10 @@ method render_self_write ($ctx) {
   $ctx->buffer('writer');
 }
 
+method render_self_setup ($ctx) {
+  $ctx->buffer('setup');
+}
+
 
 __PACKAGE__->meta->make_immutable;
 1;
