@@ -151,10 +151,10 @@ sub hash_grep (&$) {
     my $v = $in->{$k};
     local $_ = $k;
     next unless $cb->($v);
-    
+
     $out{$k} = $v;
   }
-  
+
   return %out if wantarray;
   return \%out;
 }
