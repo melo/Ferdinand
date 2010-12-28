@@ -31,6 +31,9 @@ sub import {
     no strict 'refs';
     require Exporter;
     push @{"${into}::ISA"}, 'Exporter';
+
+    warnings->import();
+    strict->import();
   }
   else {
     Carp::croak "unknown command $command in $class,";
