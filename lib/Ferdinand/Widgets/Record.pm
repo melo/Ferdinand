@@ -9,26 +9,16 @@ use Carp 'confess';
 extends 'Ferdinand::Widget';
 with 'Ferdinand::Roles::ColumnSet', 'Ferdinand::Roles::Title';
 
-method render_self ($ctx) {
-  my $m = $ctx->mode;
+method render_self_read ($ctx) {
+  ## FIXME: better to skip with warning?
+  confess('Record widget requires a valid item() in Context,')
+    unless $ctx->item;
 
-  my $t;
-  if ($m eq 'view') {
-    confess('Record widget requires a valid item() in Context,')
-      unless $ctx->item;
-    $t = 'view.pltj';
-  }
-  elsif ($m eq 'create' || $m eq 'create_do') {
-    $t = 'form.pltj';
-  }
-  elsif ($m eq 'edit' || $m eq 'edit_do') {
-    $t = 'form.pltj';
-  }
-  else {
-    confess("Context mode '$m' is not supported by Record widget");
-  }
+  $ctx->buffer(render_template('view.pltj', {ctx => $ctx}));
+}
 
-  $ctx->buffer(render_template($t, {ctx => $ctx}));
+method render_self_write ($ctx) {
+  $ctx->buffer(render_template('form.pltj', {ctx => $ctx}));
 }
 
 
