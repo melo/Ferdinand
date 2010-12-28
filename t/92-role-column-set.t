@@ -43,7 +43,7 @@ subtest 'Live ColumnSet role tests' => sub {
   plan skip_all => "Could not load test database, probably missing DBIC: $@"
     if $@;
 
-  my ($db, $tfh) = TDB->test_deploy;
+  my $db = TDB->test_deploy;
 
   my $link_to = sub { };
   my $l = Ferdinand::Widgets::Layout->setup(

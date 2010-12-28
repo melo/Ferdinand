@@ -5,18 +5,15 @@ use warnings;
 use Ferdinand::Tests;
 use Ferdinand::DSL;
 
-### Make sure we have all the pre-reqs we need for testing
-eval "require TDB";
-plan skip_all => "Need DBIx::Class for live tests: $@" if $@;
 
+### Make sure we have all the pre-reqs we need for testing
 eval "require Tenjin::Engine";
 plan skip_all => "Skip this tests unless we can find original plTenjin: $@"
   if $@;
+my $db = test_db();
 
 
 ### Start the tests properly
-my ($db, $tfh) = TDB->test_deploy;
-
 my $map;
 subtest 'Ferdinand setup' => sub {
   is(

@@ -37,11 +37,8 @@ subtest 'Faked objects' => sub {
 };
 
 subtest 'Live DB' => sub {
-  eval "require TDB";
-  plan skip_all => "Could not load test database, probably missing DBIC: $@"
-    if $@;
+my $db     = test_db();
 
-  my ($db, $tfh) = TDB->test_deploy;
 
   my $l = Ferdinand::Widgets::Layout->setup(
     { layout => [
@@ -82,12 +79,7 @@ subtest 'Live DB' => sub {
 
 
 subtest 'Render Field' => sub {
-  eval "require TDB";
-  plan skip_all => "Could not load test database, probably missing DBIC: $@"
-    if $@;
-
-  my ($db, $tfh) = TDB->test_deploy;
-
+  my $db = test_db();
   my $l = Ferdinand::Widgets::Layout->setup(
     { layout => [
         { type   => 'DBIC::Source',
