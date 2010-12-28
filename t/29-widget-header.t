@@ -3,33 +3,24 @@
 use strict;
 use warnings;
 use Ferdinand::Tests;
-use Ferdinand::Widgets::Header;
 
-my $ctx = Ferdinand::Context->new(
-  map    => bless({}, 'Ferdinand::Map'),
-  action => bless({}, 'Ferdinand::Action'),
-);
 
 subtest 'Scalar header' => sub {
-  $ctx->clear_buffer;
-
-  my $t = Ferdinand::Widgets::Header->setup({header => 'my'});
+  my $t = setup_widget('Header', {header => 'my'});
   isa_ok($t, 'Ferdinand::Widgets::Header', 'Class name for widget object');
 
-  $t->render($ctx);
+  my $ctx = render_ok($t);
   cmp_deeply($ctx->buffer, '<h1>my</h1>', 'Header as expected');
 };
 
-subtest 'CodeRef header' => sub {
-  $ctx->clear_buffer;
-  my $cl = $ctx->clone(params => {type => 'user'});
 
+subtest 'CodeRef header' => sub {
   my $cb = sub { ucfirst($_[1]->params->{type}) };
-  my $t = Ferdinand::Widgets::Header->setup({header => $cb});
+  my $t = setup_widget('Header', {header => $cb});
   isa_ok($t, 'Ferdinand::Widgets::Header', 'Class name for widget object');
 
-  $t->render($cl);
-  cmp_deeply($cl->buffer, '<h1>User</h1>', 'Header as expected');
+  my $ctx = render_ok($t, {params => {type => 'user'}});
+  cmp_deeply($ctx->buffer, '<h1>User</h1>', 'Header as expected');
 };
 
 
