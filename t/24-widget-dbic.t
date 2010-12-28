@@ -2,15 +2,8 @@
 
 use strict;
 use warnings;
-use lib 't/tlib';
-use Test::More;
-use Test::Deep;
-use Ferdinand::Context;
+use Ferdinand::Tests;
 use Ferdinand::Widgets::Layout;
-use Ferdinand::Widgets::DBIC::Source;
-use Ferdinand::Widgets::DBIC::Item;
-use Ferdinand::Widgets::DBIC::Set;
-use DateTime;
 
 subtest 'Faked objects' => sub {
   my $l = Ferdinand::Widgets::Layout->setup(

@@ -2,10 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More;
-use Test::Fatal;
-use Test::Deep;
-use Ferdinand;
+use Ferdinand::Tests;
 use Ferdinand::DSL;
 
 

@@ -2,14 +2,9 @@
 
 use strict;
 use warnings;
-use Test::More;
-use Test::Deep;
-use Test::Fatal;
-use Test::MockObject;
-use Ferdinand::Context;
+use Ferdinand::Tests;
 use Ferdinand::Action;
-use DateTime;
-use URI;
+use Test::MockObject;
 
 sub _ctx {
   my @extra_args = @_;

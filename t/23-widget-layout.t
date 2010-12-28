@@ -2,13 +2,8 @@
 
 use strict;
 use warnings;
-use lib 't/tlib';
-use Test::More;
-use Test::Deep;
-use Test::Fatal;
-use Ferdinand::Widgets::CB;
+use Ferdinand::Tests;
 use Ferdinand::Widgets::Layout;
-use Ferdinand::Context;
 
 subtest 'layout' => sub {
   my $ctx = _ctx();

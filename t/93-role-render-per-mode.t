@@ -2,11 +2,8 @@
 
 use strict;
 use warnings;
-use Test::More;
-use Test::Fatal;
-use lib 't/tlib';
+use Ferdinand::Tests;
 use TestRenderMode;
-use Ferdinand::Context;
 
 my $w = TestRenderMode->new(id => 1);
 

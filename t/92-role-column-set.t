@@ -10,9 +10,7 @@ package main;
 
 use strict;
 use warnings;
-use lib 't/tlib';
-use Test::More;
-use Test::Deep;
+use Ferdinand::Tests;
 use Ferdinand::Widgets::Layout;
 
 subtest 'Mock versions' => sub {

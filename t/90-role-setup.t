@@ -24,8 +24,7 @@ package main;
 
 use strict;
 use warnings;
-use Test::More;
-use Test::Deep;
+use Ferdinand::Tests;
 
 my $m = {str => 'aa', ypt => 'bb'};
 my $x = X->setup($m);

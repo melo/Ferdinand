@@ -2,10 +2,8 @@
 
 use strict;
 use warnings;
-use Test::More;
-use Test::Deep;
+use Ferdinand::Tests;
 use Ferdinand::Widgets::CB;
-use Ferdinand::Context;
 
 my $ctx = Ferdinand::Context->new(
   map    => bless({}, 'Ferdinand::Map'),

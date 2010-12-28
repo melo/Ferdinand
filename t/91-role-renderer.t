@@ -37,9 +37,7 @@ package main;
 
 use strict;
 use warnings;
-use Test::More;
-use Test::Deep;
-use Ferdinand::Context;
+use Ferdinand::Tests;
 
 my $ctx = Ferdinand::Context->new(
   map    => bless({}, 'Ferdinand::Map'),
