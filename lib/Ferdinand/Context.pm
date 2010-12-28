@@ -2,7 +2,6 @@ package Ferdinand::Context;
 
 use Ferdinand::Setup 'class';
 use Ferdinand::Utils qw( hash_merge );
-use Ferdinand::Form;
 use Guard 'guard';
 use Method::Signatures;
 
@@ -140,15 +139,34 @@ method buffer_merge ($buffer?) {
 # Model links
 
 has 'model' => (isa => 'Ferdinand::Model', is => 'rw');
+has 'item'  => (isa => 'Object',           is => 'rw');
+has 'set'   => (isa => 'Object',           is => 'rw');
+has 'id'    => (isa => 'ArrayRef',         is => 'bare');
 
-has 'item' => (isa => 'Object', is => 'rw');
-has 'set'  => (isa => 'Object', is => 'rw');
-
-has 'id' => (isa => 'ArrayRef', is => 'bare');
 
 method id () {
   return unless exists $self->{id};
   return @{$self->{id}};
+}
+
+method render_field () {
+  $self->model->render_field(ctx => $self, @_);
+}
+
+method render_field_read () {
+  $self->model->render_field_read(ctx => $self, @_);
+}
+
+method render_field_write () {
+  $self->model->render_field_write(ctx => $self, @_);
+}
+
+method field_value () {
+  $self->model->field_value(ctx => $self, @_);
+}
+
+method field_value_str () {
+  $self->model->field_value_str(ctx => $self, @_);
 }
 
 
@@ -169,23 +187,6 @@ has 'errors' => (
   },
 );
 
-
-#################
-# Form management
-
-has 'form' => (
-  is         => 'ro',
-  isa        => 'Ferdinand::Form',
-  lazy_build => 1,
-  handles    => [
-    qw(
-      render_field render_field_read render_field_write
-      field_value_str field_value
-      )
-  ],
-);
-
-sub _build_form { return Ferdinand::Form->new(ctx => $_[0]) }
 
 __PACKAGE__->meta->make_immutable;
 1;

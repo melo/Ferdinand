@@ -29,8 +29,8 @@ __DATA__
 
 @@ view.pltj
 <?pl #@ARGS ctx ?>
+<?pl my $model = $ctx->model; ?>
 <?pl my $widget = $ctx->widget; ?>
-<?pl my $cols = $widget->col_meta; ?>
 <?pl my $col_names = $widget->col_names; ?>
 
 [== $widget->render_title($ctx) =]
@@ -42,14 +42,11 @@ __DATA__
 	</colgroup>
     <tbody>
 <?pl  for my $col (@$col_names) {
-        my $ci = $cols->{$col};
-        my $html = $ctx->render_field(
-          field => $col,
-          meta  => $ci,
-        );
+        my $meta = $model->field_meta($col);
+        my $html = $ctx->render_field(field => $col);
 ?>
         <tr>
-            <th>[= $ci->{label} =]:</th>
+            <th>[= $meta->{label} =]:</th>
             <td>[== $html =]</td>
         </tr>
 <?pl  } ?>
@@ -59,8 +56,8 @@ __DATA__
 
 @@ form.pltj
 <?pl #@ARGS ctx ?>
+<?pl my $model = $ctx->model; ?>
 <?pl my $widget = $ctx->widget; ?>
-<?pl my $cols = $widget->col_meta; ?>
 <?pl my $col_names = $widget->col_names; ?>
 <?pl my $params = $ctx->params; ?>
 
@@ -75,16 +72,15 @@ __DATA__
 	</colgroup>
     <tbody>
 <?pl  for my $col (@$col_names) {
-        my $ci   = $cols->{$col};
+        my $meta = $model->field_meta($col);
         my $err  = $ctx->error_for($col);
         my $html = $ctx->render_field(
           field => $col,
-          meta  => $ci,
           item  => ($params->{submited}? $params : $ctx->item),
         );
 ?>
         <tr>
-            <th[== $err? ' class="errof"' : '' =]>[= $ci->{label} =]:</th>
+            <th[== $err? ' class="errof"' : '' =]>[= $meta->{label} =]:</th>
 <?pl if ($err) { ?>
             <td>[== $html =] <span class="errom">[= $err =]</span></td>
 <?pl } ?>

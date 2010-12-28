@@ -37,7 +37,7 @@ __DATA__
   if (my $item = $ctx->item) {
     my @pk_cols = $ctx->model->primary_columns;
     for my $col (@pk_cols) {
-      my $val = $ctx->field_value_str($col);
+      my $val = $ctx->field_value_str(field => $col);
 ?>
   <input type="hidden" name="[= $col =]" value="[= $val =]">
 <?pl
