@@ -4,6 +4,8 @@ use Ferdinand::Setup 'role';
 use Method::Signatures;
 
 method render ($ctx) {
+  my $cleanup_widget = $ctx->overlay(widget => $self);
+
   my $cleanup_guard = $self->render_begin($ctx);
   $self->render_self($ctx);
   $self->render_end($ctx);
