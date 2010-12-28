@@ -44,36 +44,16 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
 
 
 method render ($action, $args = {}) {
-  if (! blessed($action)) {
+  if (!blessed($action)) {
     confess "No action named '$action', "
       unless $self->has_action_for($action);
 
     $action = $self->action_for($action);
   }
 
-  my %ctx_args = (
-    map    => $self,
-    action => $action,
-  );
-  $ctx_args{id}         = $args->{id}         if exists $args->{id};
-  $ctx_args{mode}       = $args->{mode}       if exists $args->{mode};
-  $ctx_args{params}     = $args->{params}     if exists $args->{params};
-  $ctx_args{uri_helper} = $args->{uri_helper} if exists $args->{uri_helper};
-  $ctx_args{action_uri} = $args->{action_uri} if exists $args->{action_uri};
-
-  my $ctx = Ferdinand::Context->new(%ctx_args);
-  $action->render($ctx);
-
-  my $mode = $ctx->mode;
-  if ($ctx->has_errors && $mode =~ /^(.+)_do$/) {
-    $mode = $1;
-    my $g = $ctx->overlay(mode => $mode);
-    $ctx->clear_buffer;
-    $action->render($ctx);
-  }
-
-  return $ctx;
+  return $self->sys->render($action, $args);
 }
+
 
 __PACKAGE__->meta->make_immutable;
 1;
