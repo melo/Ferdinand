@@ -58,7 +58,7 @@ cmp_deeply(
 
 
 my $m;
-is(exception { $m = Ferdinand->setup(meta => $meta) },
+is(exception { $m = Ferdinand->setup_map($meta) },
   undef, 'Setup of Ferdinand ok');
 
 my $ctx = $m->render('list', {mode => 'list', params => {url => 'xpto'}});

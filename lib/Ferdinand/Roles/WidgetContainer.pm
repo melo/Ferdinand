@@ -37,8 +37,9 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys?, $stash = {}) {
     push @widgets, $widget_class->setup($widget_spec, $sys, $stash);
   }
 
-  $attrs->{layout} = \@widgets;
-  $attrs->{on_demand} = delete $meta->{on_demand} if exists $meta->{on_demand};
+  $attrs->{layout}    = \@widgets;
+  $attrs->{on_demand} = delete $meta->{on_demand}
+    if exists $meta->{on_demand};
 };
 
 

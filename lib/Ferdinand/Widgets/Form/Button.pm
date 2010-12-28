@@ -27,7 +27,7 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   }
 };
 
-method render_self($ctx) {
+method render_self ($ctx) {
   $ctx->buffer(render_template('button.pltj', {ctx => $ctx}));
 
   return unless $ctx->mode =~ /_do$/;
