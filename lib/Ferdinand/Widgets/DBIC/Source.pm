@@ -19,6 +19,12 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
     Ferdinand::Model::DBIC->new(source => $source);
 };
 
+
+after setup_check => method ($ctx) {
+  $ctx->model($self->model);
+};
+
+
 method render_self ($ctx) {
   $ctx->model($self->model);
 }

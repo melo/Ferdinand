@@ -14,9 +14,10 @@ has 'id' => (
   required => 1
 );
 
-method setup ($class:, $meta, $sys?, $stash = {}) {
+method setup ($class:, $meta, $sys, $stash) {
   my %attrs;
-  $class->setup_attrs(\%attrs, $meta, ($sys || $class), $stash);
+  $class->setup_attrs(\%attrs, $meta, $sys, $stash);
+
   $attrs{id} = 'w_' . ++$stash->{widget_ids} unless exists $attrs{id};
   $attrs{sys} = $sys;
 
@@ -28,5 +29,21 @@ method setup ($class:, $meta, $sys?, $stash = {}) {
 
 method setup_attrs ($class:, $attrs, $meta, $sys, $stash) {}
 method setup_done ($stash) {}
+
+
+#########################################
+# Check the tree setup: a visitor pattern
+
+method setup_check ($ctx) {
+  my @guards;
+
+  $self->setup_check_begin($ctx, \@guards);
+  $self->setup_check_self($ctx);
+
+  return;
+}
+
+method setup_check_begin ($ctx, $guards) {}
+method setup_check_self ($ctx) {}
 
 1;

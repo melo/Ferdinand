@@ -3,7 +3,7 @@ package Ferdinand::Roles::WidgetContainer;
 use Ferdinand::Setup 'role';
 use Method::Signatures;
 
-requires 'render_self', 'setup_attrs';
+requires 'render_self', 'setup_attrs', 'setup_check_self';
 
 has 'layout' => (
   traits  => ['Array'],
@@ -39,6 +39,11 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys?, $stash = {}) {
 
   $attrs->{layout} = \@widgets;
   $attrs->{on_demand} = delete $meta->{on_demand} if exists $meta->{on_demand};
+};
+
+
+after setup_check_self => method ($ctx) {
+  $_->setup_check($ctx) for $self->widgets;
 };
 
 

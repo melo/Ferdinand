@@ -17,6 +17,7 @@ has 'actions' => (
   is          => 'bare',
   default     => sub { {} },
   handles     => {
+    actions        => 'values',
     action_for     => 'get',
     has_action_for => 'exists',
   },
@@ -40,6 +41,11 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   }
 
   $attrs->{actions} = \%map;
+};
+
+
+after setup_check_self => method ($ctx) {
+  $_->setup_check($ctx) for $self->actions;
 };
 
 
