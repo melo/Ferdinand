@@ -9,15 +9,19 @@ use Method::Signatures;
 extends 'Ferdinand::Widget';
 with 'Ferdinand::Roles::WidgetContainer';
 
-has 'label'  => (isa => 'Str', is => 'ro', required   => 1);
-has 'btn_id' => (isa => 'Str', is => 'ro', lazy_build => 1);
+has 'label' => (isa => 'Str', is => 'ro', required => 1);
+has 'btn_id' => (
+  isa     => 'Str',
+  is      => 'ro',
+  lazy    => 1,
+  default => method () {
+    my $l = lc($self->label);
+    $l =~ s/ /_/g;
 
-method _build_btn_id () {
-  my $l = lc($self->label);
-  $l =~ s/ /_/g;
+    return join('_', 'btn', $self->id, $l);
+  }
+);
 
-  return join('_', 'btn', $self->id, $l);
-}
 
 after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   ## Remove known attributes
