@@ -24,6 +24,22 @@ method setup($class:, :$meta, :$map_class) {
   return $self;
 }
 
+method render ($obj, $args = {}) {
+  my $ctx = $self->build_ctx($args);
+  $obj->render($ctx);
+
+  my $mode = $ctx->mode;
+  if ($ctx->has_errors && $mode =~ /^(.+)_do$/) {
+    $mode = $1;
+    my $g = $ctx->overlay(mode => $mode);
+    $ctx->clear_buffer;
+    $obj->render($ctx);
+  }
+
+  return $ctx;
+}
+
+
 method build_ctx ($attrs = {}) {
   return $self->context_class_name->new($attrs);
 }
