@@ -1,6 +1,7 @@
 package Ferdinand::Roles::WidgetContainer;
 
 use Ferdinand::Setup 'role';
+use Ferdinand::Utils qw( load_widget );
 use Method::Signatures;
 
 requires 'render_self', 'setup_attrs', 'setup_check_self';
@@ -29,11 +30,7 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys?, $stash = {}) {
     confess "Missing widget 'type', "
       unless $widget_class;
 
-    $widget_class = "Ferdinand::Widgets::$widget_class"
-      unless $widget_class =~ s/^\+//;
-    eval "require $widget_class";
-    confess("Could not load widget '$widget_class': $@, ") if $@;
-
+    $widget_class = load_widget($widget_class);
     push @widgets, $widget_class->setup($widget_spec, $sys, $stash);
   }
 
