@@ -44,6 +44,6 @@ __DATA__
     }
   }
 ?>
-  [== $content =]
   <input type="hidden" name="submited" value="1">
+  [== $content =]
 </form>
