@@ -3,7 +3,7 @@ package Ferdinand::Roles::ColumnSet;
 use Ferdinand::Setup 'role';
 use Method::Signatures;
 
-requires 'setup_attrs';
+requires 'setup_attrs', 'setup_check_self';
 
 has 'col_names' => (
   isa      => 'ArrayRef',
@@ -41,5 +41,13 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   $attrs->{col_meta}  = \%meta;
 };
 
+after setup_check_self => method ($ctx) {
+  my $model = $ctx->model;
+  my $meta  = $self->col_meta;
+
+  for my $f (keys %$meta) {
+    $model->set_field_meta($f => $meta->{$f});
+  }
+};
 
 1;

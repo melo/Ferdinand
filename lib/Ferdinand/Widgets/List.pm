@@ -23,8 +23,8 @@ __DATA__
 
 @@ list.pltj
 <?pl #@ARGS ctx ?>
+<?pl my $model = $ctx->model; ?>
 <?pl my $widget = $ctx->widget; ?>
-<?pl my $cols = $widget->col_meta; ?>
 <?pl my $col_names = $widget->col_names; ?>
 <?pl my @rows = $ctx->set->all; ?>
 
@@ -34,31 +34,31 @@ __DATA__
   <thead>
     <tr>
 <?pl
-  for my $col (@$col_names) {
-    my $ci = $cols->{$col};
+     for my $col (@$col_names) {
+       my $meta = $model->field_meta($col);
 ?>
-      <th[== $ci->{cls_list_html} =]>[= $ci->{label} =]</th>
+      <th[== $meta->{cls_list_html} =]>[= $meta->{label} =]</th>
 <?pl } ?>
     </tr>
   </thead>
   <tbody>
-<?pl  if (@rows) { ?>
-<?pl    for my $row (@rows) { ?>
+<?pl if (@rows) { ?>
+<?pl   for my $row (@rows) { ?>
     <tr>
-<?pl      for my $col (@$col_names) {
-            my $html = $ctx->render_field(
-              item  => $row,
+<?pl     for my $col (@$col_names) {
+           my $html = $ctx->render_field(
               field => $col,
-              meta  => $cols->{$col},
-            );
+              item  => $row,
+           );
 ?>
       <td>[== $html =]</td>
-<?pl      } ?>
+<?pl     } ?>
     </tr>
-<?pl    } ?>
-<?pl  } ?>
-<?pl  else { my $n_cols = @$cols; ?>
+<?pl   } ?>
+<?pl } ?>
+<?pl else {
+       my $n_cols = @$col_names; ?>
     <tr colspan="[= $n_cols =]">Não existem registos para listar</tr>
-<?pl  } ?>
+<?pl } ?>
   </tbody>
 </table>

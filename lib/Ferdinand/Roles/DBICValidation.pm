@@ -34,31 +34,18 @@ after render_self => method ($ctx) {
   $self->dbic_action($ctx, $fields);
 };
 
-our %meta_types = (
-  integer  => 'numeric',
-  decimal  => 'numeric',
-  tinyint  => 'numeric',
-  varchar  => 'text',
-  char     => 'text',
-  text     => 'text',
-  date     => 'date',
-  datetime => 'date',
-);
-
-method _validate($ctx, $fields) {
+method _validate ($ctx, $fields) {
   my $model = $ctx->model;
-  my $src   = $model->source;
 
   for my $col ($model->columns) {
     next unless exists $fields->{$col};
 
-    my $i    = $src->column_info($col);
-    my $t    = $i->{data_type};
-    my $mt   = $meta_types{$t};
-    my $req  = !$i->{is_nullable};
-    my $meta = $model->column_meta_fixup($col);
+    my $meta = $model->field_meta($col);
+    my $t    = $meta->{data_type};
+    my $mt   = $meta->{meta_type};
+    my $req  = $meta->{is_required};
 
-    my $v = $ctx->field_value_str($col, $meta, $fields);
+    my $v = $ctx->field_value_str(field => $col, item => $fields);
     $v =~ s/^\s+|\s+$//g;
     my $lv = length($v);
 
