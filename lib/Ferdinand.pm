@@ -5,8 +5,9 @@ use Ferdinand::Setup 'class';
 use Carp 'confess';
 use Method::Signatures;
 
-sub map_class_name    {'Ferdinand::Map'}
-sub action_class_name {'Ferdinand::Action'}
+sub map_class_name     {'Ferdinand::Map'}
+sub action_class_name  {'Ferdinand::Action'}
+sub context_class_name {'Ferdinand::Context'}
 
 method setup($class:, :$meta, :$map_class) {
   ## Pick our implementation class
@@ -22,6 +23,11 @@ method setup($class:, :$meta, :$map_class) {
 
   return $self;
 }
+
+method build_ctx ($attrs = {}) {
+  return $self->context_class_name->new($attrs);
+}
+
 
 __PACKAGE__->meta->make_immutable;
 1;
