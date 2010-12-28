@@ -20,8 +20,7 @@ has 'on_demand' => (
 );
 
 
-after setup_attrs => sub {
-  my ($class, $attrs, $meta, $sys, $stash) = @_;
+after setup_attrs => method ($class:, $attrs, $meta, $sys?, $stash = {}) {
   my $layout = delete $meta->{layout} || [];
 
   my @widgets;
@@ -43,8 +42,7 @@ after setup_attrs => sub {
 };
 
 
-after render_self => sub {
-  my ($self, $ctx) = @_;
+after render_self => method($ctx) {
   return if $self->on_demand;
 
   $self->render_widgets($ctx);

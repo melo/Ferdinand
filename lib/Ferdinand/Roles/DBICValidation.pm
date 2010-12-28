@@ -16,15 +16,11 @@ has 'valid' => (
 );
 
 
-after setup_attrs => sub {
-  my ($class, $attrs, $meta) = @_;
-
+after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   $attrs->{valid} = delete $meta->{valid} if exists $meta->{valid};
 };
 
-after render_self => sub {
-  my ($self, $ctx) = @_;
-
+after render_self => method ($ctx) {
   my $fields = hash_grep { !/^btn_/ } $ctx->params;
   if (my $valid = $self->valid) {
     local $_ = $ctx;

@@ -18,9 +18,7 @@ has 'col_meta' => (
 );
 
 
-after setup_attrs => sub {
-  my ($class, $attrs, $meta, $sys, $stash) = @_;
-
+after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   my $cols_spec = delete($meta->{columns}) || [];
   confess "Requires a 'columns' specification, "
     unless @$cols_spec;

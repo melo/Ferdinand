@@ -9,11 +9,11 @@ with 'Ferdinand::Roles::Setup';
 has 'str' => (isa => 'Str', is => 'ro');
 has 'end' => (isa => 'Str', is => 'rw');
 
-method setup_attrs ($class:, $attrs, $meta, $sys, $stash) {
+after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   $attrs->{str} = delete $meta->{str} if exists $meta->{str};
   $meta->{sys}  = $sys;
   $stash->{end} = 'called';
-}
+};
 
 method setup_done ($stash) {
   $self->end($stash->{end});

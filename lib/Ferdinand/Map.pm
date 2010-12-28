@@ -22,7 +22,8 @@ has 'actions' => (
   },
 );
 
-method setup_attrs ($class:, $attrs, $meta, $sys, $stash) {
+
+after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   my $action_list = delete($meta->{actions}) || [];
   confess "Requires a 'actions' specification, "
     unless @$action_list;
