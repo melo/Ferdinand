@@ -3,6 +3,12 @@ package Ferdinand::Roles::Setup;
 use Ferdinand::Setup 'role';
 use Method::Signatures;
 
+has 'id' => (
+  isa => 'Str',
+  is  => 'ro',
+  required => 1
+);
+
 method setup ($class:, $meta, $sys?, $stash = {}) {
   my %attrs;
   $class->setup_attrs(\%attrs, $meta, ($sys || $class), $stash);
