@@ -9,14 +9,15 @@ use Method::Signatures;
 #################
 # Main attributes
 
-has 'map' => (isa => 'Ferdinand::Map', is => 'ro', required => 1);
+has 'map' => (isa => 'Ferdinand::Map', is => 'ro');
+has 'action' => (isa => 'Ferdinand::Action', is => 'ro');
+
 has 'widget' => (isa => 'Ferdinand::Widget', is => 'rw');
 
 has 'params' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
 has 'mode' => (isa => 'Str', is => 'ro', default => 'view');
 
-has 'action' => (isa => 'Ferdinand::Action', is => 'ro', required => 1);
 has 'action_uri' => (isa => 'URI', is => 'ro');
 
 
