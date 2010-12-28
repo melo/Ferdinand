@@ -78,10 +78,10 @@ method _validate($ctx, $fields) {
       $ctx->add_error($col => "Data inválida ($@)") if $@;
     }
 
-    $self->_check_db_restrictions($ctx, $fields);
-
     $fields->{$col} = $v;
   }
+
+  $self->_check_db_restrictions($ctx, $fields);
 }
 
 method _check_db_restrictions($ctx, $fields) {
