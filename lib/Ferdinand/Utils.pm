@@ -3,15 +3,35 @@ package Ferdinand::Utils;
 use Ferdinand::Setup 'library';
 use Tenjin;
 use XML::Generator;
+use Class::MOP ();
 use Carp 'confess';
 
 our @EXPORT_OK = qw(
+  load_class load_widget
   read_data_files get_data_files
   render_template
   ghtml ehtml
   hash_merge hash_select hash_grep
 );
 
+
+sub load_class {
+  my ($class) = @_;
+
+  Class::MOP::load_class($class)
+    or confess("Could not load class '$class': $@, ");
+
+  return $class;
+}
+
+sub load_widget {
+  my ($name) = @_;
+
+  $name = "Ferdinand::Widgets::$name"
+    unless $name =~ s/^\+//;
+
+  return load_class($name);
+}
 
 sub get_data_files {
   my ($class) = @_;

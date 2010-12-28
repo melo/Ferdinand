@@ -11,6 +11,7 @@ use Ferdinand::Utils qw(
   render_template
   ghtml ehtml
   hash_merge hash_select hash_grep
+  load_class load_widget
 );
 use Sample;
 
@@ -152,5 +153,26 @@ subtest 'Hash grep' => sub {
   cmp_deeply(\%hg, {text => 'something'}, 'hash_grep in list context ok');
 };
 
+
+subtest 'load_* utils' => sub {
+  my $c;
+
+  is(exception { $c = load_class('Ferdinand::Map') },
+    undef, 'Load class Ferdinand::Map ok');
+  is($c, 'Ferdinand::Map', '... with the expected return value');
+
+  is(exception { $c = load_widget('Title') }, undef, 'Load widget Title ok');
+  is($c, 'Ferdinand::Widgets::Title', '... with the expected class returned');
+
+  is(exception { $c = load_widget('+TestRenderMode') },
+    undef, 'Load widget TestRenderMode ok');
+  is($c, 'TestRenderMode', '... with the expected class returned');
+
+  like(
+    exception { load_class("Ferdinand::WeDontHaveThY::$$") },
+    qr{Can't locate Ferdinand/WeDontHaveThY/$$.pm},
+    'Failed to load class, died ok'
+  );
+};
 
 done_testing();
