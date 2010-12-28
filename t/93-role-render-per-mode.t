@@ -27,10 +27,6 @@ $ctx = _ctx(mode => 'create_do');
 $w->render($ctx);
 is($ctx->buffer, 'writer', 'mode create_do => writer ok');
 
-$ctx = _ctx(mode => 'setup');
-$w->render($ctx);
-is($ctx->buffer, 'setup', 'mode setup => setup ok');
-
 $ctx = _ctx(mode => 'no_such_mode');
 is(exception { $w->render($ctx) }, undef, "Unknown mode doesn't kill you");
 is($ctx->buffer, '', 'mode unknown, no method called');

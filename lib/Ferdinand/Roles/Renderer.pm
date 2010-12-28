@@ -12,7 +12,15 @@ method render ($ctx) {
 }
 
 sub render_begin { }
-sub render_self  { }
 sub render_end   { }
+
+method render_self ($ctx) {
+  my $m = $ctx->mode;
+  return $self->render_self_read(@_)  if $m eq 'view'   || $m eq 'list';
+  return $self->render_self_write(@_) if $m eq 'create' || $m eq 'create_do';
+};
+
+sub render_self_read  { }
+sub render_self_write { }
 
 1;

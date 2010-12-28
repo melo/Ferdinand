@@ -8,7 +8,7 @@ use Ferdinand::Utils qw( render_template );
 use Text::Markdown ();
 
 extends 'Ferdinand::Widget';
-with 'Ferdinand::Roles::ColumnSet', 'Ferdinand::Roles::RenderPerMode';
+with 'Ferdinand::Roles::ColumnSet';
 
 method render_self_read ($ctx) {
   confess('Record widget requires a valid item() in Context,') unless $ctx->item;
