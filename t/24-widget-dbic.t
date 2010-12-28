@@ -131,9 +131,13 @@ subtest 'Render Field' => sub {
   );
   cmp_deeply(
     $cm->{title},
-    { data_type => "varchar",
-      label     => "Title",
-      size      => 100,
+    { data_type   => 'varchar',
+      label       => 'Title',
+      size        => 100,
+      is_required => 1,
+      meta_type   => 'text',
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
     },
     "... meta for field 'title' ok"
   );
@@ -149,6 +153,10 @@ subtest 'Render Field' => sub {
         {id => 'V', name => 'V'},
         {id => 'Z', name => 'ZZ'},
       ],
+      is_required => 1,
+      meta_type   => 'text',
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
     },
     "... meta for field 'visible' ok"
   );
@@ -161,6 +169,10 @@ subtest 'Render Field' => sub {
       is_nullable   => 0,
       default_value => ignore(),
       label         => "Published At",
+      is_required   => 1,
+      meta_type     => 'date',
+      _file         => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line         => ignore(),
     },
     "... meta for field 'published_at' ok"
   );
@@ -173,6 +185,10 @@ subtest 'Render Field' => sub {
       label       => "Slug",
       link_to     => ignore(),
       size        => 100,
+      is_required => 1,
+      meta_type   => 'text',
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
     },
     "... meta for field 'slug' ok"
   );
