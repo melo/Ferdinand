@@ -85,21 +85,25 @@ method _validate($ctx, $fields) {
 }
 
 method _check_db_restrictions($ctx, $fields) {
-  my $src = $ctx->model->source;
-  my %un  = $src->unique_constraints;
-  my @pk  = _extract_pk_values_from_item($ctx);
+  my $src  = $ctx->model->source;
+  my %un   = $src->unique_constraints;
+  my @ours = _extract_pk_values_from_item($ctx);
 
   for my $name (keys %un) {
     my $flds = $un{$name};
+
+    ### Skip if we don't have the fields to check this constraint
     my $sel = hash_select($fields, @$flds);
     next unless scalar(@$flds) == scalar(keys %$sel);
 
-    my $dup = $src->resultset->single($sel);
-    next unless $dup;
+    ### Skip is no other row was found with the same fields
+    my $row_found = $src->resultset->single($sel);
+    next unless $row_found;
 
-    if (@pk) {
-      my @dpk = _extract_pk_values_from_item($ctx, $dup);
-      next if @dpk ~~ @pk;
+    ### If another row was found, skip if its the same as ours
+    if (@ours) {
+      my @other = _extract_pk_values_from_item($ctx, $row_found);
+      next if @ours ~~ @other;
     }
 
     $ctx->add_error($_, "Elemento duplicado ($name)") for @$flds;
