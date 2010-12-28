@@ -39,15 +39,13 @@ subtest 'Ferdinand setup' => sub {
 };
 
 
-my $ctx;
-subtest 'Render call' => sub {
+subtest 'Render list action' => sub {
+  my $ctx;
+
   is(exception { $ctx = $map->render('list') },
     undef, "Rendered list didn't die");
   ok($ctx->buffer, '... got a buffer with something in it');
-};
 
-
-subtest 'Result tests' => sub {
   my $buffer = $ctx->buffer;
 
   like($buffer, qr{<th[^>]*>$_</th>}, "Buffer matches header '$_'")
