@@ -35,7 +35,7 @@ __DATA__
 <form action="[= $ctx->action_uri->path =]" method="POST" accept-charset="utf-8">
 <?pl
   if (my $item = $ctx->item) {
-    my @pk_cols = $ctx->model->source->primary_columns;
+    my @pk_cols = $ctx->model->primary_columns;
     for my $col (@pk_cols) {
       my $val = $ctx->field_value_str($col);
 ?>

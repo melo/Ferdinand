@@ -9,6 +9,7 @@ has 'source' => (
   is       => 'ro',
   isa      => 'DBIx::Class::ResultSource',
   required => 1,
+  handles  => [qw(primary_columns columns)],
 );
 
 

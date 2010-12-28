@@ -49,7 +49,7 @@ method _validate($ctx, $fields) {
   my $model = $ctx->model;
   my $src   = $model->source;
 
-  for my $col ($src->columns) {
+  for my $col ($model->columns) {
     next unless exists $fields->{$col};
 
     my $i    = $src->column_info($col);
