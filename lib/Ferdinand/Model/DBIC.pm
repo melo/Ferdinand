@@ -88,7 +88,7 @@ method column_meta_fixup ($name, $defs = {}) {
   }
 
   ### General cleanups
-  $info{is_required} = 0 unless $info{is_required};
+  $info{is_required} = 0 unless exists $info{is_required};
   if (!exists $info{meta_type} && exists $info{data_type}) {
     my $t = $info{data_type};
     $info{meta_type} = exists $meta_types{$t} ? $meta_types{$t} : 'unknown';
