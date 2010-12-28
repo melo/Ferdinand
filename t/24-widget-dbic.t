@@ -3,62 +3,47 @@
 use strict;
 use warnings;
 use Ferdinand::Tests;
-use Ferdinand::Widgets::Layout;
 
-subtest 'Faked objects' => sub {
-  my $l = Ferdinand::Widgets::Layout->setup(
-    { layout => [
-        { type   => 'DBIC::Source',
-          source => sub { bless({source => 1}, 'DBIx::Class::ResultSource') },
-        },
-        { type => 'DBIC::Item',
-          item => sub { bless({item => $_[1]->model}, 'DBIx::Class::Row') },
-        },
-        { type => 'DBIC::Set',
-          set =>
-            sub { bless({set => $_[1]->model}, 'DBIx::Class::ResultSet') },
-        },
-      ],
-    }
-  );
 
-  my $ctx = _ctx();
-  $l->render($ctx);
-
-  my $source =
-    bless {source => bless {source => 1}, 'DBIx::Class::ResultSource'},
-    'Ferdinand::Model::DBIC';
-  my $item = bless {item => $source}, 'DBIx::Class::Row';
-  my $set  = bless {set  => $source}, 'DBIx::Class::ResultSet';
-
-  cmp_deeply($ctx->model, $source, "Source as expected");
-  cmp_deeply($ctx->item,  $item,   "Item as expected");
-  cmp_deeply($ctx->set,   $set,    "Set as expected");
-};
-
-subtest 'Live DB' => sub {
 my $db     = test_db();
+my $set    = $db->resultset('I');
+my $item   = $set->find(1);
+my $source = $set->result_source;
 
 
-  my $l = Ferdinand::Widgets::Layout->setup(
+subtest 'Basic DBIC model elements' => sub {
+  my $f = setup_widget(
+    'Form',
     { layout => [
         { type   => 'DBIC::Source',
-          source => sub { $db->source('I') },
+          source => sub {$source},
         },
         { type => 'DBIC::Item',
-          item => sub { $db->resultset('I')->find(1) },
+          item => sub {$item},
         },
         { type => 'DBIC::Set',
-          set  => sub { $db->resultset('I') },
+          set  => sub {$set},
         },
       ],
     }
   );
 
-  my $ctx = _ctx();
-  $l->render($ctx);
+  my $ctx = render_ok($f);
 
-  my $s = $ctx->model->source;
+  my $model = $ctx->model;
+  cmp_deeply(
+    [$model->columns],
+    [qw(id title slug body html published_at visible)],
+    'Model columns() works'
+  );
+  cmp_deeply([$model->primary_columns],
+    [qw(id)], '... primary_columns() also works');
+
+  is($model->source, $source, '... source lives on as expected');
+  is($ctx->item,     $item,   '... item lives on as expected');
+  is($ctx->set,      $set,    '... set lives on as expected');
+
+  my $s = $model->source;
   ok($s, 'Got a source');
   isa_ok($s, 'DBIx::Class::ResultSource', '... of the expected type');
   ok($s->has_column($_), "... has column $_")
@@ -79,14 +64,14 @@ my $db     = test_db();
 
 
 subtest 'Render Field' => sub {
-  my $db = test_db();
-  my $l = Ferdinand::Widgets::Layout->setup(
+  my $f = setup_widget(
+    'Form',
     { layout => [
         { type   => 'DBIC::Source',
-          source => sub { $db->source('I') },
+          source => sub {$source},
         },
         { type => 'DBIC::Item',
-          item => sub { $db->resultset('I')->find(1) },
+          item => sub {$item},
         },
         { type    => '+TestRenderField',
           columns => [
@@ -102,28 +87,33 @@ subtest 'Render Field' => sub {
     }
   );
 
-  my $ctx = _ctx();
-  $l->render($ctx);
+  my $ctx = render_ok($f);
+TODO: {
+    local $TODO =
+      "Fix model leak: all containers should start a overlay to cleanup after all child widgets are rendered";
+    is($ctx->model, undef,
+      'Last model seen is still visible from the outside');
+  }
 
-  my $cm = $ctx->stash->{col_meta};
-  is($ctx->render_field(field => 'visible', meta => $cm->{visible}),
-    'V', 'Field visible ok');
+  ## Fake it :)
+  $ctx->model(($f->widgets)[0]->model);
+
+  is($ctx->render_field(field => 'visible'), 'V', 'Field visible ok');
   is(
-    $ctx->render_field(field => 'title', meta => $cm->{title}),
+    $ctx->render_field(field => 'title'),
     'Title 1 &amp; me',
     'Field title ok'
   );
+
+  is($ctx->render_field(field => 'published_at'),
+    '10/10/2010', 'Field published_at ok');
   is(
-    $ctx->render_field(field => 'published_at', meta => $cm->{published_at}),
-    '10/10/2010',
-    'Field published_at ok'
-  );
-  is(
-    $ctx->render_field(field => 'slug', meta => $cm->{slug}),
+    $ctx->render_field(field => 'slug'),
     '<a href="http://example.com/title_1">title_1</a>',
     'Field slug ok'
   );
 
+  my $cm = $ctx->model->_field_meta;
   cmp_deeply(
     [keys(%$cm)],
     bag(qw(published_at slug title visible)),
@@ -196,11 +186,3 @@ subtest 'Render Field' => sub {
 
 
 done_testing();
-
-sub _ctx {
-  return Ferdinand::Context->new(
-    map    => bless({}, 'Ferdinand::Map'),
-    action => bless({}, 'Ferdinand::Action'),
-    @_,
-  );
-}

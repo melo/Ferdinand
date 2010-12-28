@@ -53,7 +53,7 @@ our @EXPORT = qw(
 
 ### Ferdinand global setup
 sub ferdinand_setup (&) { _cb_setup(@_) }
-sub ferdinand_map (&) { Ferdinand->setup(meta => _cb_setup(@_)) }
+sub ferdinand_map (&)   { Ferdinand->setup_map(_cb_setup(@_)) }
 
 
 ### Action setup

@@ -7,15 +7,9 @@ use Test::MockObject;
 use Ferdinand::DSL;
 
 
-my $source = bless {}, 'DBIx::Class::ResultSource';
-{
-  no strict 'refs';
-  *{'DBIx::Class::ResultSource::column_info'} = sub { {} };
-}
-
-
+my $db       = test_db();
 my $title_cb = sub { join(' ', 'View for', $_->id) };
-my $slug_cb = sub { 'http://example.com/items/' . $_->slug };
+my $slug_cb  = sub { 'http://example.com/items/' . $_->slug };
 
 my $meta;
 my $excp = exception {
@@ -23,6 +17,9 @@ my $excp = exception {
     actions {
       list {
         title('My list title');
+
+        dbic_source { $db->source('I') };
+        dbic_set { $_->stash->{set} = $_; $_->model->source->result_set };
 
         header('My list header');
 
@@ -42,8 +39,11 @@ my $excp = exception {
       view {
         title($title_cb);
 
-        dbic_item { $_->stash->{item} = $_ };
-        dbic_set { $_->stash->{set} = $_ };
+        dbic_source { $db->source('I') };
+        dbic_item {
+          $_->stash->{item} = $_;
+          $_->model->source->resultset->find(1);
+        };
 
         execute { $_->stash->{cb_called} = $$ };
       };
@@ -57,6 +57,7 @@ my $excp = exception {
       };
 
       create {
+        dbic_source { $db->source('I') };
         dbic_create { $_->stash->{valid} = 1 };
         title 'Create me';
       };
@@ -64,6 +65,7 @@ my $excp = exception {
       edit {
         title 'Edit me';
         title 'Second edit me';
+        dbic_source { $db->source('I') };
         dbic_update {};
       };
     };
@@ -80,6 +82,12 @@ cmp_deeply(
         layout => [
           { type  => 'Title',
             title => 'My list title',
+          },
+          { type   => 'DBIC::Source',
+            source => ignore(),
+          },
+          { type => 'DBIC::Set',
+            set  => ignore(),
           },
           { type   => 'Header',
             header => 'My list header',
@@ -101,11 +109,11 @@ cmp_deeply(
           { type  => 'Title',
             title => $title_cb,
           },
+          { type   => 'DBIC::Source',
+            source => ignore(),
+          },
           { type => 'DBIC::Item',
             item => ignore(),
-          },
-          { type => 'DBIC::Set',
-            set  => ignore(),
           },
           { type => 'CB',
             cb   => ignore(),
@@ -117,15 +125,17 @@ cmp_deeply(
       },
       { name   => 'create',
         layout => [
-          {valid => ignore(),    type => 'DBIC::Create'},
-          {title => 'Create me', type => 'Title'}
+          {source => ignore(),    type => 'DBIC::Source'},
+          {valid  => ignore(),    type => 'DBIC::Create'},
+          {title  => 'Create me', type => 'Title'}
         ],
       },
       { name   => 'edit',
         layout => [
-          {title => 'Edit me',        type => 'Title'},
-          {title => 'Second edit me', type => 'Title'},
-          {valid => ignore(),         type => 'DBIC::Update'},
+          {title  => 'Edit me',        type => 'Title'},
+          {title  => 'Second edit me', type => 'Title'},
+          {source => ignore(),         type => 'DBIC::Source'},
+          {valid  => ignore(),         type => 'DBIC::Update'},
         ],
       },
     ],
@@ -135,7 +145,7 @@ cmp_deeply(
 
 
 my $m;
-is(exception { $m = Ferdinand->setup(meta => $meta) },
+is(exception { $m = Ferdinand->setup_map($meta) },
   undef, 'Setup of Ferdinand ok');
 isa_ok($m, 'Ferdinand::Map', '... expected base class');
 
@@ -160,27 +170,72 @@ subtest 'List actions', sub {
   isnt($action, undef, '... and seem to have it');
   isa_ok($action, 'Ferdinand::Action');
 
-  is(scalar($action->widgets), 3, 'Has three widgets');
-  my ($t, $h, $l) = $action->widgets;
+  is(scalar($action->widgets), 5, 'Has five widgets');
+  my ($t, $r, $s, $h, $l) = $action->widgets;
 
   is($t->title, 'My list title', 'Title title is ok');
   is($t->id,    'w_1',           '... and ID matches');
 
   is($h->header, 'My list header', 'Header header is ok');
-  is($h->id,     'w_2',            '... and ID matches');
+  is($h->id,     'w_4',            '... and ID matches');
 
   my $col_names = $l->col_names;
-  is(scalar(@$col_names), 6, 'Number of columns is ok');
+  is(scalar(@$col_names), 6, "Number of columns is ok");
   cmp_deeply($col_names,
     [qw( id title slug created_at last_update_at is_visible )]);
 
   my $cols = $l->col_meta;
-  cmp_deeply($cols->{id},    {linked  => 'view'},   'Meta for id ok');
-  cmp_deeply($cols->{title}, {linked  => 'view'},   'Meta for title ok');
-  cmp_deeply($cols->{slug},  {link_to => $slug_cb}, 'Meta for slug ok');
-  cmp_deeply($cols->{is_visible}, {}, 'Meta for is_visible ok');
+  cmp_deeply(
+    $cols->{id},
+    { data_type   => "integer",
+      is_nullable => 0,
+      is_required => 1,
+      label       => "ID",
+      linked      => "view",
+      meta_type   => "numeric",
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
+    },
+    'Meta for id ok'
+  );
+  cmp_deeply(
+    $cols->{title},
+    { data_type   => "varchar",
+      is_required => 1,
+      label       => "Title",
+      linked      => "view",
+      meta_type   => "text",
+      size        => 100,
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
+    },
+    'Meta for title ok'
+  );
+  cmp_deeply(
+    $cols->{slug},
+    { data_type   => "varchar",
+      is_nullable => 0,
+      is_required => 1,
+      label       => "Slug",
+      link_to     => $slug_cb,
+      meta_type   => "text",
+      size        => 100,
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
+    },
+    'Meta for slug ok'
+  );
+  cmp_deeply(
+    $cols->{is_visible},
+    { is_required => 0,
+      label       => "Is Visible",
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
+    },
+    'Meta for is_visible ok'
+  );
 
-  is($l->id, 'w_3', 'List widget ID matches');
+  is($l->id, 'w_5', 'List widget ID matches');
 
   ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
 };
@@ -206,7 +261,7 @@ subtest 'View action' => sub {
   isa_ok($action, 'Ferdinand::Action', '... proper class for action');
 
   my @widgets = $action->widgets;
-  is(scalar(@widgets), 4, 'Three widgets in this layout');
+  is(scalar(@widgets), 4, 'Four widgets in this layout');
   is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
     'Expected type for widget');
   is($widgets[0]->title, $title_cb, 'Title cb is ok');
@@ -217,7 +272,6 @@ subtest 'View action' => sub {
 
   is($ctx->stash->{title}, 'View for yuppii', 'Dynamic title as expected');
   is($ctx->stash->{item}, $ctx, 'dbic_item() called with the expected $_');
-  is($ctx->stash->{set},  $ctx, 'dbic_set() called with the expected $_');
   is($ctx->stash->{cb_called}, $$, 'execute() called with the expected $_');
 
   ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
@@ -230,9 +284,9 @@ subtest 'Create action' => sub {
   isa_ok($action, 'Ferdinand::Action', '... proper class for action');
 
   my @widgets = $action->widgets;
-  is(scalar(@widgets), 2, 'Two widgets in this layout');
+  is(scalar(@widgets), 3, 'Three widgets in this layout');
 
-  my ($c, $t) = @widgets;
+  my ($r, $c, $t) = @widgets;
 
   is(
     ref($c),
@@ -260,7 +314,7 @@ subtest 'Edit action' => sub {
   isa_ok($action, 'Ferdinand::Action', '... proper class for action');
 
   my @widgets = $action->widgets;
-  is(scalar(@widgets), 3, 'Two widget in this layout');
+  is(scalar(@widgets), 4, 'Four widgets in this layout');
 
   my ($w1, $w2) = @widgets;
 
