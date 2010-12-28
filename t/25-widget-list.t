@@ -6,8 +6,7 @@ use Ferdinand::Tests;
 use Ferdinand::DSL;
 
 ### Make sure we have all the pre-reqs we need for testing
-plan skip_all => "Skip this tests unless we can find original plTenjin: $@"
-  if $@;
+require_tenjin();
 my $db = test_db();
 
 my $map;

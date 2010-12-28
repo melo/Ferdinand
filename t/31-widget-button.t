@@ -5,10 +5,9 @@ use warnings;
 use Ferdinand::Tests;
 use Ferdinand::DSL;
 
+
 ### Make sure we have all the pre-reqs we need for testing
-eval "require Tenjin::Engine";
-plan skip_all => "Skip this tests unless we can find original plTenjin: $@"
-  if $@;
+require_tenjin();
 
 
 ### Start the tests properly
