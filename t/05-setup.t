@@ -27,7 +27,7 @@ my $excp = exception {
           attr type => 'List';
           columns {
             linked id    => 'view';
-            linked title => 'view', {color => '#ff0'};
+            linked title => 'view', {color => '#ff0', size => 75};
             link_to slug => $slug_cb, {color => '#ff0'};
             col('created_at');
             col('last_update_at');
@@ -103,6 +103,7 @@ cmp_deeply(
               title => {
                 linked => 'view',
                 color  => '#ff0',
+                size   => 75,
               },
               slug => {
                 link_to => $slug_cb,
@@ -220,7 +221,7 @@ subtest 'List actions', sub {
       label       => "Title",
       linked      => "view",
       meta_type   => "text",
-      size        => 100,
+      size        => 75,
       color       => '#ff0',
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => ignore(),

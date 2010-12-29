@@ -2,6 +2,7 @@ package Ferdinand::Model::DBIC;
 # ABSTRACT: Ferdinand model for DBIx::Class sources
 
 use Ferdinand::Setup 'class';
+use Ferdinand::Utils qw( hash_merge );
 use Method::Signatures;
 extends 'Ferdinand::Model';
 
@@ -24,7 +25,7 @@ our %meta_types = (
 );
 
 method column_meta_fixup ($name, $defs = {}) {
-  my %info = %$defs;
+  my %info;
 
   ### Enrich with DBIC meta-data
   my $source = $self->source;
@@ -86,6 +87,9 @@ method column_meta_fixup ($name, $defs = {}) {
 
     $info{label} = $label;
   }
+
+  ### Merge user_overrides
+  hash_merge(\%info, %$defs);
 
   ### General cleanups
   $info{is_required} = 0 unless exists $info{is_required};
