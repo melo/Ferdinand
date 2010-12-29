@@ -123,6 +123,7 @@ method render_field_write(:$ctx, :$field, :$item) {
     item        => $item,
     use_default => $def
   );
+  $val = '' if $meta->{empty};
 
   my %attrs = (
     id   => $field,
@@ -188,8 +189,6 @@ method field_value (:$ctx, :$field, :$item) {
 
 method field_value_str (:$ctx, :$field, :$item, :$use_default = 0) {
   my $meta = $self->field_meta($field);
-  return '' if $meta->{empty};
-
   my $t    = $meta->{data_type} || '';
   my $v    = $self->field_value(ctx => $ctx, field => $field, item => $item);
   if (!$v && $use_default) {
