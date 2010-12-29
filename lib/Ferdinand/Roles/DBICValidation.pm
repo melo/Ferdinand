@@ -49,6 +49,11 @@ method _validate ($ctx, $fields) {
     $v =~ s/^\s+|\s+$//g;
     my $lv = length($v);
 
+    if ($meta->{skip_if_empty} && $lv == 0) {
+      delete $fields->{$col};
+      next;
+    }
+
     if ($req && $mt eq 'text' && $lv == 0) {
       $ctx->add_error($col => 'Campo obrigatório');
     }
