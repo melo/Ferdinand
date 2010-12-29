@@ -498,6 +498,25 @@ subtest 'field values', sub {
   %meta = (default_value => 5);
   is($c1->field_value_str(field => 'count', item => {}, use_default => 1),
     5, 'Field count not found but default value was used');
+
+  %meta = (empty => 1, default_value => 'xpto default');
+  is($c1->field_value_str(field => 'count', item => {}, use_default => 1),
+    '', 'Field count with empty + default_value meta - still empty');
+
+  %meta = (empty => 1, default_value => 'xpto default');
+  is($c1->field_value_str(field => 'count', item => {}, use_default => 1),
+    '', 'Field count with empty + default_value meta - still empty');
+
+  %meta = (empty => 1, default_value => 'xpto default');
+  is(
+    $c1->field_value_str(
+      field       => 'count',
+      item        => {count => 'xpto value'},
+      use_default => 1,
+    ),
+    '',
+    'Field count with empty + item_value + default_value meta - still empty'
+  );
 };
 
 
