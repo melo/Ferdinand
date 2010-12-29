@@ -27,6 +27,14 @@ $ctx = build_ctx(mode => 'create_do');
 $w->render($ctx);
 is($ctx->buffer, 'writer', 'mode create_do => writer ok');
 
+$ctx = build_ctx(mode => 'edit');
+$w->render($ctx);
+is($ctx->buffer, 'writer', 'mode edit => writer ok');
+
+$ctx = build_ctx(mode => 'edit_do');
+$w->render($ctx);
+is($ctx->buffer, 'writer', 'mode edit_do => writer ok');
+
 $ctx = build_ctx(mode => 'no_such_mode');
 is(exception { $w->render($ctx) }, undef, "Unknown mode doesn't kill you");
 is($ctx->buffer, '', 'mode unknown, no method called');
