@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Ferdinand::Tests;
 
+require_tenjin();
 
 my $db     = test_db();
 my $set    = $db->resultset('I');
