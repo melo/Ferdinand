@@ -27,12 +27,16 @@ my $excp = exception {
           attr type => 'List';
           columns {
             linked id    => 'view';
-            linked title => 'view';
-            link_to slug => $slug_cb;
+            linked title => 'view', {color => '#ff0'};
+            link_to slug => $slug_cb, {color => '#ff0'};
             col('created_at');
             col('last_update_at');
             col('is_visible');
-            col 'password' => {empty => 1, skip_if_empty => 1};
+            col 'password' => {
+              empty         => 1,
+              skip_if_empty => 1,
+              label         => 'Password FTW',
+            };
           };
         };
       };
@@ -95,13 +99,23 @@ cmp_deeply(
           },
           { type    => 'List',
             columns => [
-              id    => {linked  => 'view'},
-              title => {linked  => 'view'},
-              slug  => {link_to => $slug_cb},
+              id    => {linked => 'view'},
+              title => {
+                linked => 'view',
+                color  => '#ff0',
+              },
+              slug => {
+                link_to => $slug_cb,
+                color   => '#ff0',
+              },
               'created_at',
               'last_update_at',
               'is_visible',
-              password => {empty => 1, skip_if_empty => 1},
+              password => {
+                empty         => 1,
+                skip_if_empty => 1,
+                label         => 'Password FTW',
+              },
             ],
           },
         ]
@@ -207,6 +221,7 @@ subtest 'List actions', sub {
       linked      => "view",
       meta_type   => "text",
       size        => 100,
+      color       => '#ff0',
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => ignore(),
     },
@@ -221,6 +236,7 @@ subtest 'List actions', sub {
       link_to     => $slug_cb,
       meta_type   => "text",
       size        => 100,
+      color       => '#ff0',
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => ignore(),
     },
@@ -240,7 +256,7 @@ subtest 'List actions', sub {
     { empty         => 1,
       skip_if_empty => 1,
       is_required   => 0,
-      label         => "Password",
+      label         => 'Password FTW',
       _file         => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line         => ignore(),
     },
