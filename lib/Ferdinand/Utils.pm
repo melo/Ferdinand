@@ -118,6 +118,19 @@ sub ehtml {
   return $value;
 }
 
+=function hash_merge
+
+Accepts a target hashref and a list of key/value pairs. For each pair,
+if the value is defined, sets the target key to the new value. If the
+value is undefined, removes the key from the target.
+
+Returns nothing, the target hashref is modified in place.
+
+    my $target = { a => 1, c => 3 };
+    hash_merge($target, a => 2, b => 2, c => undef);
+    ## $target is now { a => 2, b => 2 }
+
+=cut
 sub hash_merge {
   my $h = shift;
 
