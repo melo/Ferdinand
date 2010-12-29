@@ -11,10 +11,11 @@ has 'links' => (
   is  => 'ro',
 );
 
-method setup_attrs ($class:, $attrs, $meta) {
+after setup_attrs => method ($class:, $attrs, $meta) {
   $attrs->{links} = delete $meta->{links}
     if exists $meta->{links};
-}
+};
+
 
 method render_self ($ctx) {
   my $links = $self->links;
@@ -33,6 +34,7 @@ method render_self ($ctx) {
 
   $ctx->buffer(render_template('links.pltj', {ctx => $ctx, links => \@sl}));
 }
+
 
 __PACKAGE__->meta->make_immutable;
 1;

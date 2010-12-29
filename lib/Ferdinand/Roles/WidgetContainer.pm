@@ -1,9 +1,10 @@
 package Ferdinand::Roles::WidgetContainer;
 
 use Ferdinand::Setup 'role';
+use Ferdinand::Utils qw( load_widget );
 use Method::Signatures;
 
-requires 'render_self', 'setup_attrs';
+requires 'render_self', 'setup_attrs', 'setup_check_self';
 
 has 'layout' => (
   traits  => ['Array'],
@@ -13,12 +14,6 @@ has 'layout' => (
   handles => {widgets => 'elements'},
 );
 
-has 'clone' => (
-  is      => 'ro',
-  isa     => 'Bool',
-  default => 0,
-);
-
 has 'on_demand' => (
   isa     => 'Bool',
   is      => 'ro',
@@ -26,8 +21,7 @@ has 'on_demand' => (
 );
 
 
-after setup_attrs => sub {
-  my ($class, $attrs, $meta, $sys, $stash) = @_;
+after setup_attrs => method ($class:, $attrs, $meta, $sys?, $stash = {}) {
   my $layout = delete $meta->{layout} || [];
 
   my @widgets;
@@ -36,32 +30,29 @@ after setup_attrs => sub {
     confess "Missing widget 'type', "
       unless $widget_class;
 
-    $widget_class = "Ferdinand::Widgets::$widget_class"
-      unless $widget_class =~ s/^\+//;
-    eval "require $widget_class";
-    confess("Could not load widget '$widget_class': $@, ") if $@;
-
+    $widget_class = load_widget($widget_class);
     push @widgets, $widget_class->setup($widget_spec, $sys, $stash);
   }
 
-  $attrs->{layout} = \@widgets;
-
-  for my $attr (qw( clone on_demand )) {
-    $attrs->{$attr} = delete $meta->{$attr} if exists $meta->{$attr};
-  }
+  $attrs->{layout}    = \@widgets;
+  $attrs->{on_demand} = delete $meta->{on_demand}
+    if exists $meta->{on_demand};
 };
 
 
-after render_self => sub {
-  my ($self, $ctx) = @_;
+after setup_check_self => method ($ctx) {
+  $_->setup_check($ctx) for $self->widgets;
+};
+
+
+after render_self => method($ctx) {
   return if $self->on_demand;
 
   $self->render_widgets($ctx);
 };
 
-method render_widgets ($ctx) {
-  $ctx = $ctx->clone if $self->clone;
 
+method render_widgets ($ctx) {
   $_->render($ctx) for $self->widgets;
 }
 

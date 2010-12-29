@@ -3,7 +3,7 @@ package Ferdinand::Roles::ColumnSet;
 use Ferdinand::Setup 'role';
 use Method::Signatures;
 
-requires 'setup_attrs';
+requires 'setup_attrs', 'setup_check_self';
 
 has 'col_names' => (
   isa      => 'ArrayRef',
@@ -18,9 +18,7 @@ has 'col_meta' => (
 );
 
 
-after setup_attrs => sub {
-  my ($class, $attrs, $meta, $sys, $stash) = @_;
-
+after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   my $cols_spec = delete($meta->{columns}) || [];
   confess "Requires a 'columns' specification, "
     unless @$cols_spec;
@@ -43,5 +41,13 @@ after setup_attrs => sub {
   $attrs->{col_meta}  = \%meta;
 };
 
+after setup_check_self => method ($ctx) {
+  my $model = $ctx->model;
+  my $meta  = $self->col_meta;
+
+  for my $f (keys %$meta) {
+    $model->set_field_meta($f => $meta->{$f});
+  }
+};
 
 1;

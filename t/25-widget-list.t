@@ -2,25 +2,12 @@
 
 use strict;
 use warnings;
-use lib 't/tlib';
-use Test::More;
-use Test::Deep;
-use Test::Fatal;
-use Ferdinand;
+use Ferdinand::Tests;
 use Ferdinand::DSL;
 
 ### Make sure we have all the pre-reqs we need for testing
-eval "require TDB";
-plan skip_all => "Need DBIx::Class for live tests: $@" if $@;
-
-eval "require Tenjin::Engine";
-plan skip_all => "Skip this tests unless we can find original plTenjin: $@"
-  if $@;
-
-
-### Start the tests properly
-my ($db, $tfh) = TDB->test_deploy;
-
+require_tenjin();
+my $db = test_db();
 
 my $map;
 subtest 'Ferdinand setup' => sub {
@@ -52,15 +39,13 @@ subtest 'Ferdinand setup' => sub {
 };
 
 
-my $ctx;
-subtest 'Render call' => sub {
+subtest 'Render list action' => sub {
+  my $ctx;
+
   is(exception { $ctx = $map->render('list') },
     undef, "Rendered list didn't die");
   ok($ctx->buffer, '... got a buffer with something in it');
-};
 
-
-subtest 'Result tests' => sub {
   my $buffer = $ctx->buffer;
 
   like($buffer, qr{<th[^>]*>$_</th>}, "Buffer matches header '$_'")

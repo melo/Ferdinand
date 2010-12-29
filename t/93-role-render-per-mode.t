@@ -2,32 +2,35 @@
 
 use strict;
 use warnings;
-use Test::More;
-use lib 't/tlib';
+use Ferdinand::Tests;
 use TestRenderMode;
-use Ferdinand::Context;
 
 my $w = TestRenderMode->new(id => 1);
+my $ctx;
 
-my $ctx = _ctx();
-$w->render($ctx);
-is($ctx->buffer, 'reader', 'Got the reader part ok view');
+$ctx = render_ok($w);
+is($ctx->buffer, 'reader', 'default mode => reader ok');
 
-$ctx = _ctx(mode => 'create');
-$w->render($ctx);
-is($ctx->buffer, 'writer', 'Got the writer part ok create');
+$ctx = render_ok($w, {mode => 'view'});
+is($ctx->buffer, 'reader', 'mode view => reader ok');
 
-$ctx = _ctx(mode => 'create_do');
-$w->render($ctx);
-is($ctx->buffer, 'writer', 'Got the writer part ok for mode create_do');
+$ctx = render_ok($w, {mode => 'list'});
+is($ctx->buffer, 'reader', 'mode list => reader ok');
+
+$ctx = render_ok($w, {mode => 'create'});
+is($ctx->buffer, 'writer', 'mode create => writer ok');
+
+$ctx = render_ok($w, {mode => 'create_do'});
+is($ctx->buffer, 'writer', 'mode create_do => writer ok');
+
+$ctx = render_ok($w, {mode => 'edit'});
+is($ctx->buffer, 'writer', 'mode edit => writer ok');
+
+$ctx = render_ok($w, {mode => 'edit_do'});
+is($ctx->buffer, 'writer', 'mode edit_do => writer ok');
+
+$ctx = render_ok($w, {mode => 'no_such_mode'});
+is($ctx->buffer, '', 'mode unknown, no method called');
 
 
 done_testing();
-
-sub _ctx {
-  return Ferdinand::Context->new(
-    map    => bless({}, 'Ferdinand::Map'),
-    action => bless({}, 'Ferdinand::Action'),
-    @_,
-  );
-}

@@ -2,73 +2,48 @@
 
 use strict;
 use warnings;
-use lib 't/tlib';
-use Test::More;
-use Test::Deep;
-use Ferdinand::Context;
-use Ferdinand::Widgets::Layout;
-use Ferdinand::Widgets::DBIC::Source;
-use Ferdinand::Widgets::DBIC::Item;
-use Ferdinand::Widgets::DBIC::Set;
-use DateTime;
+use Ferdinand::Tests;
 
-subtest 'Faked objects' => sub {
-  my $l = Ferdinand::Widgets::Layout->setup(
+
+my $db     = test_db();
+my $set    = $db->resultset('I');
+my $item   = $set->find(1);
+my $source = $set->result_source;
+
+
+subtest 'Basic DBIC model elements' => sub {
+  my $f = setup_widget(
+    'Form',
     { layout => [
         { type   => 'DBIC::Source',
-          source => sub { bless({source => 1}, 'DBIx::Class::ResultSource') },
+          source => sub {$source},
         },
         { type => 'DBIC::Item',
-          item => sub { bless({item => $_[1]->model}, 'DBIx::Class::Row') },
+          item => sub {$item},
         },
         { type => 'DBIC::Set',
-          set =>
-            sub { bless({set => $_[1]->model}, 'DBIx::Class::ResultSet') },
+          set  => sub {$set},
         },
       ],
     }
   );
 
-  my $ctx = _ctx();
-  $l->render($ctx);
+  my $ctx = render_ok($f);
 
-  my $source =
-    bless {source => bless {source => 1}, 'DBIx::Class::ResultSource'},
-    'Ferdinand::Model::DBIC';
-  my $item = bless {item => $source}, 'DBIx::Class::Row';
-  my $set  = bless {set  => $source}, 'DBIx::Class::ResultSet';
-
-  cmp_deeply($ctx->model, $source, "Source as expected");
-  cmp_deeply($ctx->item,  $item,   "Item as expected");
-  cmp_deeply($ctx->set,   $set,    "Set as expected");
-};
-
-subtest 'Live DB' => sub {
-  eval "require TDB";
-  plan skip_all => "Could not load test database, probably missing DBIC: $@"
-    if $@;
-
-  my ($db, $tfh) = TDB->test_deploy;
-
-  my $l = Ferdinand::Widgets::Layout->setup(
-    { layout => [
-        { type   => 'DBIC::Source',
-          source => sub { $db->source('I') },
-        },
-        { type => 'DBIC::Item',
-          item => sub { $db->resultset('I')->find(1) },
-        },
-        { type => 'DBIC::Set',
-          set  => sub { $db->resultset('I') },
-        },
-      ],
-    }
+  my $model = $ctx->model;
+  cmp_deeply(
+    [$model->columns],
+    [qw(id title slug body html published_at visible)],
+    'Model columns() works'
   );
+  cmp_deeply([$model->primary_columns],
+    [qw(id)], '... primary_columns() also works');
 
-  my $ctx = _ctx();
-  $l->render($ctx);
+  is($model->source, $source, '... source lives on as expected');
+  is($ctx->item,     $item,   '... item lives on as expected');
+  is($ctx->set,      $set,    '... set lives on as expected');
 
-  my $s = $ctx->model->source;
+  my $s = $model->source;
   ok($s, 'Got a source');
   isa_ok($s, 'DBIx::Class::ResultSource', '... of the expected type');
   ok($s->has_column($_), "... has column $_")
@@ -89,19 +64,14 @@ subtest 'Live DB' => sub {
 
 
 subtest 'Render Field' => sub {
-  eval "require TDB";
-  plan skip_all => "Could not load test database, probably missing DBIC: $@"
-    if $@;
-
-  my ($db, $tfh) = TDB->test_deploy;
-
-  my $l = Ferdinand::Widgets::Layout->setup(
+  my $f = setup_widget(
+    'Form',
     { layout => [
         { type   => 'DBIC::Source',
-          source => sub { $db->source('I') },
+          source => sub {$source},
         },
         { type => 'DBIC::Item',
-          item => sub { $db->resultset('I')->find(1) },
+          item => sub {$item},
         },
         { type    => '+TestRenderField',
           columns => [
@@ -117,28 +87,33 @@ subtest 'Render Field' => sub {
     }
   );
 
-  my $ctx = _ctx();
-  $l->render($ctx);
+  my $ctx = render_ok($f);
+TODO: {
+    local $TODO =
+      "Fix model leak: all containers should start a overlay to cleanup after all child widgets are rendered";
+    is($ctx->model, undef,
+      'Last model seen is still visible from the outside');
+  }
 
-  my $cm = $ctx->stash->{col_meta};
-  is($ctx->render_field(field => 'visible', meta => $cm->{visible}),
-    'V', 'Field visible ok');
+  ## Fake it :)
+  $ctx->model(($f->widgets)[0]->model);
+
+  is($ctx->render_field(field => 'visible'), 'V', 'Field visible ok');
   is(
-    $ctx->render_field(field => 'title', meta => $cm->{title}),
+    $ctx->render_field(field => 'title'),
     'Title 1 &amp; me',
     'Field title ok'
   );
+
+  is($ctx->render_field(field => 'published_at'),
+    '10/10/2010', 'Field published_at ok');
   is(
-    $ctx->render_field(field => 'published_at', meta => $cm->{published_at}),
-    '10/10/2010',
-    'Field published_at ok'
-  );
-  is(
-    $ctx->render_field(field => 'slug', meta => $cm->{slug}),
+    $ctx->render_field(field => 'slug'),
     '<a href="http://example.com/title_1">title_1</a>',
     'Field slug ok'
   );
 
+  my $cm = $ctx->model->_field_meta;
   cmp_deeply(
     [keys(%$cm)],
     bag(qw(published_at slug title visible)),
@@ -146,9 +121,13 @@ subtest 'Render Field' => sub {
   );
   cmp_deeply(
     $cm->{title},
-    { data_type => "varchar",
-      label     => "Title",
-      size      => 100,
+    { data_type   => 'varchar',
+      label       => 'Title',
+      size        => 100,
+      is_required => 1,
+      meta_type   => 'text',
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
     },
     "... meta for field 'title' ok"
   );
@@ -164,6 +143,10 @@ subtest 'Render Field' => sub {
         {id => 'V', name => 'V'},
         {id => 'Z', name => 'ZZ'},
       ],
+      is_required => 1,
+      meta_type   => 'text',
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
     },
     "... meta for field 'visible' ok"
   );
@@ -176,6 +159,10 @@ subtest 'Render Field' => sub {
       is_nullable   => 0,
       default_value => ignore(),
       label         => "Published At",
+      is_required   => 1,
+      meta_type     => 'date',
+      _file         => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line         => ignore(),
     },
     "... meta for field 'published_at' ok"
   );
@@ -188,6 +175,10 @@ subtest 'Render Field' => sub {
       label       => "Slug",
       link_to     => ignore(),
       size        => 100,
+      is_required => 1,
+      meta_type   => 'text',
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
     },
     "... meta for field 'slug' ok"
   );
@@ -195,11 +186,3 @@ subtest 'Render Field' => sub {
 
 
 done_testing();
-
-sub _ctx {
-  return Ferdinand::Context->new(
-    map    => bless({}, 'Ferdinand::Map'),
-    action => bless({}, 'Ferdinand::Action'),
-    @_,
-  );
-}

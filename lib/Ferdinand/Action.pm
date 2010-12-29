@@ -12,12 +12,12 @@ with
 has 'name' => (isa => 'Str', is => 'ro', required => 1);
 
 
-method setup_attrs ($class:, $attrs, $meta) {
+after setup_attrs => method ($class:, $attrs, $meta) {
   ## Remove known attributes
   for my $f (qw( name )) {
     $attrs->{$f} = delete $meta->{$f} if exists $meta->{$f};
   }
-}
+};
 
 
 __PACKAGE__->meta->make_immutable;

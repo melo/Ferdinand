@@ -3,15 +3,35 @@ package Ferdinand::Utils;
 use Ferdinand::Setup 'library';
 use Tenjin;
 use XML::Generator;
+use Class::MOP ();
 use Carp 'confess';
 
 our @EXPORT_OK = qw(
+  load_class load_widget
   read_data_files get_data_files
   render_template
   ghtml ehtml
   hash_merge hash_select hash_grep
 );
 
+
+sub load_class {
+  my ($class) = @_;
+
+  Class::MOP::load_class($class)
+    or confess("Could not load class '$class': $@, ");
+
+  return $class;
+}
+
+sub load_widget {
+  my ($name) = @_;
+
+  $name = "Ferdinand::Widgets::$name"
+    unless $name =~ s/^\+//;
+
+  return load_class($name);
+}
 
 sub get_data_files {
   my ($class) = @_;
@@ -98,6 +118,19 @@ sub ehtml {
   return $value;
 }
 
+=function hash_merge
+
+Accepts a target hashref and a list of key/value pairs. For each pair,
+if the value is defined, sets the target key to the new value. If the
+value is undefined, removes the key from the target.
+
+Returns nothing, the target hashref is modified in place.
+
+    my $target = { a => 1, c => 3 };
+    hash_merge($target, a => 2, b => 2, c => undef);
+    ## $target is now { a => 2, b => 2 }
+
+=cut
 sub hash_merge {
   my $h = shift;
 
@@ -131,10 +164,10 @@ sub hash_grep (&$) {
     my $v = $in->{$k};
     local $_ = $k;
     next unless $cb->($v);
-    
+
     $out{$k} = $v;
   }
-  
+
   return %out if wantarray;
   return \%out;
 }

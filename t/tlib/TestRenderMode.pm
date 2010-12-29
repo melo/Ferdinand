@@ -4,7 +4,6 @@ use Ferdinand::Setup 'class';
 use Method::Signatures;
 
 extends 'Ferdinand::Widget';
-with 'Ferdinand::Roles::RenderPerMode';
 
 method render_self_read ($ctx) {
   $ctx->buffer('reader');

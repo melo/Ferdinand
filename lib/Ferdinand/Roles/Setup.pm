@@ -3,15 +3,47 @@ package Ferdinand::Roles::Setup;
 use Ferdinand::Setup 'role';
 use Method::Signatures;
 
-method setup ($class:, $meta, $sys?, $stash = {}) {
+has 'sys' => (
+  isa => 'Str',
+  is  => 'ro',
+);
+
+has 'id' => (
+  isa => 'Str',
+  is  => 'ro',
+  required => 1
+);
+
+method setup ($class:, $meta, $sys, $stash) {
   my %attrs;
-  $class->setup_attrs(\%attrs, $meta, ($sys || $class), $stash);
+  $class->setup_attrs(\%attrs, $meta, $sys, $stash);
 
   $attrs{id} = 'w_' . ++$stash->{widget_ids} unless exists $attrs{id};
-  return $class->new(%attrs);
+  $attrs{sys} = $sys;
+
+  my $self = $class->new(%attrs);
+  $self->setup_done($stash);
+
+  return $self;
 }
 
 method setup_attrs ($class:, $attrs, $meta, $sys, $stash) {}
+method setup_done ($stash) {}
 
+
+#########################################
+# Check the tree setup: a visitor pattern
+
+method setup_check ($ctx) {
+  my @guards;
+
+  $self->setup_check_begin($ctx, \@guards);
+  $self->setup_check_self($ctx);
+
+  return;
+}
+
+method setup_check_begin ($ctx, $guards) {}
+method setup_check_self ($ctx) {}
 
 1;

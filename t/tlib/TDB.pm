@@ -3,14 +3,12 @@ package TDB;
 use strict;
 use warnings;
 use base 'DBIx::Class::Schema';
-use File::Temp;
 
 __PACKAGE__->load_namespaces();
 
 sub test_deploy {
   my $class = shift;
 
-  my $fh = File::Temp->new;
   my $db = $class->connect('dbi:SQLite::memory:');
   $db->deploy({});
 
@@ -44,7 +42,7 @@ more stuff
     ]
   );
 
-  return ($db, $fh);
+  return $db;
 }
 
 1;

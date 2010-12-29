@@ -53,7 +53,7 @@ our @EXPORT = qw(
 
 ### Ferdinand global setup
 sub ferdinand_setup (&) { _cb_setup(@_) }
-sub ferdinand_map (&) { Ferdinand->setup(meta => _cb_setup(@_)) }
+sub ferdinand_map (&)   { Ferdinand->setup_map(_cb_setup(@_)) }
 
 
 ### Action setup
@@ -76,10 +76,6 @@ sub layout (&) { _add_setup layout => _cb_setup(@_, []) }
 sub title ($)   { _add_setup {title  => $_[0], type => 'Title'} }
 sub header ($)  { _add_setup {header => $_[0], type => 'Header'} }
 sub execute (&) { _add_setup {cb     => $_[0], type => 'CB'} }
-
-sub nest (&) {
-  _add_setup {type => 'Layout', clone => 1, layout => _cb_setup(@_, [])};
-}
 
 
 ### DBIC widgets shortcuts
@@ -105,9 +101,9 @@ sub cols { _add_setup columns => [@_] }
 
 sub columns (&) { _add_setup columns => _cb_setup(@_, []) }
 
-sub linked ($$)  { _add_setup $_[0] => {linked  => $_[1]} }
-sub link_to ($$) { _add_setup $_[0] => {link_to => $_[1]} }
-sub col ($)      { _add_setup $_[0] }
+sub linked ($$;$)  { _add_setup $_[0] => {%{$_[2] || {}}, linked  => $_[1]} }
+sub link_to ($$;$) { _add_setup $_[0] => {%{$_[2] || {}}, link_to => $_[1]} }
+sub col ($;$)      { _add_setup @_ }
 
 
 ### Forms

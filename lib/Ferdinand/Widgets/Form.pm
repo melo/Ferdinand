@@ -35,15 +35,15 @@ __DATA__
 <form action="[= $ctx->action_uri->path =]" method="POST" accept-charset="utf-8">
 <?pl
   if (my $item = $ctx->item) {
-    my @pk_cols = $ctx->model->source->primary_columns;
+    my @pk_cols = $ctx->model->primary_columns;
     for my $col (@pk_cols) {
-      my $val = $ctx->field_value_str($col);
+      my $val = $ctx->field_value_str(field => $col);
 ?>
   <input type="hidden" name="[= $col =]" value="[= $val =]">
 <?pl
     }
   }
 ?>
-  [== $content =]
   <input type="hidden" name="submited" value="1">
+  [== $content =]
 </form>

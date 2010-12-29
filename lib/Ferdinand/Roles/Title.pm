@@ -11,8 +11,7 @@ has 'title' => (
   isa => 'CodeRef|Str',
 );
 
-after setup_attrs => sub {
-  my ($class, $attrs, $meta) = @_;
+after setup_attrs => method ($attrs, $meta, $sys, $stash) {
   $attrs->{title} = delete $meta->{title} if exists $meta->{title};
 };
 

@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More;
+use Ferdinand::Tests;
 use Ferdinand::Widget;
 
 my $w = Ferdinand::Widget->new(id => 'id_1');

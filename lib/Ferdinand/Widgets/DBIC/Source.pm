@@ -11,13 +11,19 @@ extends 'Ferdinand::Widget';
 has 'model' => (isa => 'Ferdinand::Model::DBIC', is => 'ro', required => 1);
 
 
-method setup_attrs ($class:, $attrs, $meta, $sys, $stash) {
+after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   my $source = delete $meta->{source};
   $source = $source->() if ref($source) eq 'CODE';
 
   $stash->{model} = $attrs->{model} =
     Ferdinand::Model::DBIC->new(source => $source);
-}
+};
+
+
+after setup_check => method ($ctx) {
+  $ctx->model($self->model);
+};
+
 
 method render_self ($ctx) {
   $ctx->model($self->model);

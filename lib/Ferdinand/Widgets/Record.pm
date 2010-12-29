@@ -9,26 +9,16 @@ use Carp 'confess';
 extends 'Ferdinand::Widget';
 with 'Ferdinand::Roles::ColumnSet', 'Ferdinand::Roles::Title';
 
-method render_self ($ctx) {
-  my $m = $ctx->mode;
+method render_self_read ($ctx) {
+  ## FIXME: better to skip with warning?
+  confess('Record widget requires a valid item() in Context,')
+    unless $ctx->item;
 
-  my $t;
-  if ($m eq 'view') {
-    confess('Record widget requires a valid item() in Context,')
-      unless $ctx->item;
-    $t = 'view.pltj';
-  }
-  elsif ($m eq 'create' || $m eq 'create_do') {
-    $t = 'form.pltj';
-  }
-  elsif ($m eq 'edit' || $m eq 'edit_do') {
-    $t = 'form.pltj';
-  }
-  else {
-    confess("Context mode '$m' is not supported by Record widget");
-  }
+  $ctx->buffer(render_template('view.pltj', {ctx => $ctx}));
+}
 
-  $ctx->buffer(render_template($t, {ctx => $ctx}));
+method render_self_write ($ctx) {
+  $ctx->buffer(render_template('form.pltj', {ctx => $ctx}));
 }
 
 
@@ -39,8 +29,8 @@ __DATA__
 
 @@ view.pltj
 <?pl #@ARGS ctx ?>
+<?pl my $model = $ctx->model; ?>
 <?pl my $widget = $ctx->widget; ?>
-<?pl my $cols = $widget->col_meta; ?>
 <?pl my $col_names = $widget->col_names; ?>
 
 [== $widget->render_title($ctx) =]
@@ -52,14 +42,11 @@ __DATA__
 	</colgroup>
     <tbody>
 <?pl  for my $col (@$col_names) {
-        my $ci = $cols->{$col};
-        my $html = $ctx->render_field(
-          field => $col,
-          meta  => $ci,
-        );
+        my $meta = $model->field_meta($col);
+        my $html = $ctx->render_field(field => $col);
 ?>
         <tr>
-            <th>[= $ci->{label} =]:</th>
+            <th>[= $meta->{label} =]:</th>
             <td>[== $html =]</td>
         </tr>
 <?pl  } ?>
@@ -69,8 +56,8 @@ __DATA__
 
 @@ form.pltj
 <?pl #@ARGS ctx ?>
+<?pl my $model = $ctx->model; ?>
 <?pl my $widget = $ctx->widget; ?>
-<?pl my $cols = $widget->col_meta; ?>
 <?pl my $col_names = $widget->col_names; ?>
 <?pl my $params = $ctx->params; ?>
 
@@ -85,16 +72,15 @@ __DATA__
 	</colgroup>
     <tbody>
 <?pl  for my $col (@$col_names) {
-        my $ci   = $cols->{$col};
+        my $meta = $model->field_meta($col);
         my $err  = $ctx->error_for($col);
         my $html = $ctx->render_field(
           field => $col,
-          meta  => $ci,
           item  => ($params->{submited}? $params : $ctx->item),
         );
 ?>
         <tr>
-            <th[== $err? ' class="errof"' : '' =]>[= $ci->{label} =]:</th>
+            <th[== $err? ' class="errof"' : '' =]>[= $meta->{label} =]:</th>
 <?pl if ($err) { ?>
             <td>[== $html =] <span class="errom">[= $err =]</span></td>
 <?pl } ?>

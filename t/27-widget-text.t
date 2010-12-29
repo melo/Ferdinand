@@ -2,26 +2,16 @@
 
 use strict;
 use warnings;
-use lib 't/tlib';
-use Test::More;
-use Test::Deep;
-use Test::Fatal;
-use Ferdinand;
+use Ferdinand::Tests;
 use Ferdinand::DSL;
 
-### Make sure we have all the pre-reqs we need for testing
-eval "require TDB";
-plan skip_all => "Need DBIx::Class for live tests: $@" if $@;
 
-eval "require Tenjin::Engine";
-plan skip_all => "Skip this tests unless we can find original plTenjin: $@"
-  if $@;
+### Make sure we have all the pre-reqs we need for testing
+my $db = test_db();
+require_tenjin();
 
 
 ### Start the tests properly
-my ($db, $tfh) = TDB->test_deploy;
-
-
 my $map;
 subtest 'Ferdinand setup' => sub {
   is(

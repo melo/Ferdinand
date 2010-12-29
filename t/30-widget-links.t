@@ -2,17 +2,12 @@
 
 use strict;
 use warnings;
-use Test::More;
-use Test::Fatal;
-use Test::Deep;
-use Ferdinand;
+use Ferdinand::Tests;
 use Ferdinand::DSL;
 
 
 ### Make sure we have all the pre-reqs we need for testing
-eval "require Tenjin::Engine";
-plan skip_all => "Skip this tests unless we can find original plTenjin: $@"
-  if $@;
+require_tenjin();
 
 
 ### Start the tests proper
@@ -63,7 +58,7 @@ cmp_deeply(
 
 
 my $m;
-is(exception { $m = Ferdinand->setup(meta => $meta) },
+is(exception { $m = Ferdinand->setup_map($meta) },
   undef, 'Setup of Ferdinand ok');
 
 my $ctx = $m->render('list', {mode => 'list', params => {url => 'xpto'}});

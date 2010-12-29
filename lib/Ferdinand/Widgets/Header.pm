@@ -11,12 +11,13 @@ extends 'Ferdinand::Widget';
 has 'header' => (isa => 'Str|CodeRef', is => 'ro', required => 1);
 
 
-method setup_attrs ($class:, $attrs, $meta) {
+after setup_attrs => method ($class:, $attrs, $meta) {
   ## Remove known attributes
   for my $f (qw( header )) {
     $attrs->{$f} = delete $meta->{$f} if exists $meta->{$f};
   }
-}
+};
+
 
 method render_self ($ctx) {
   my $header = $self->header;

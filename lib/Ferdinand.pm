@@ -2,26 +2,56 @@ package Ferdinand;
 # ABSTRACT: a very cool module
 
 use Ferdinand::Setup 'class';
+use Ferdinand::Utils qw( load_class load_widget );
 use Carp 'confess';
 use Method::Signatures;
 
-sub map_class_name    {'Ferdinand::Map'}
-sub action_class_name {'Ferdinand::Action'}
+sub map_class_name     {'Ferdinand::Map'}
+sub action_class_name  {'Ferdinand::Action'}
+sub context_class_name {'Ferdinand::Context'}
 
-method setup($class:, :$meta, :$map_class) {
-  ## Pick our implementation class
-  $map_class = $class->map_class_name unless $map_class;
-  eval "require $map_class";
-  confess($@) if $@;
 
-  ## Let our implementation parse the specification
-  my $self = $map_class->setup($meta, $class);
+method setup ($sys:, $class, $meta) {
+  my %stash;
+  load_class($class);
+  my $obj = $class->setup($meta, $sys, \%stash);
 
-  confess('Could not understand attribures: ' . join(', ', sort keys %$meta))
+  my $ctx = $sys->build_ctx({mode => 'setup', stash => \%stash});
+  $obj->setup_check($ctx);
+
+  confess('Could not parse attribures during $class setup: '
+      . join(', ', sort keys %$meta))
     if %$meta;
 
-  return $self;
+  return $obj;
 }
+
+
+method setup_map ($sys:, $meta) {
+  return $sys->setup($sys->map_class_name, $meta);
+}
+
+
+method render ($obj, $args = {}) {
+  my $ctx = $self->build_ctx($args);
+  $obj->render($ctx);
+
+  my $mode = $ctx->mode;
+  if ($ctx->has_errors && $mode =~ /^(.+)_do$/) {
+    $mode = $1;
+    my $g = $ctx->overlay(mode => $mode);
+    $ctx->clear_buffer;
+    $obj->render($ctx);
+  }
+
+  return $ctx;
+}
+
+
+method build_ctx ($attrs = {}) {
+  return $self->context_class_name->new($attrs);
+}
+
 
 __PACKAGE__->meta->make_immutable;
 1;

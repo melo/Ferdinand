@@ -2,26 +2,16 @@
 
 use strict;
 use warnings;
-use lib 't/tlib';
-use Test::More;
-use Test::Deep;
-use Test::Fatal;
-use Ferdinand;
+use Ferdinand::Tests;
 use Ferdinand::DSL;
 
-### Make sure we have all the pre-reqs we need for testing
-eval "require TDB";
-plan skip_all => "Need DBIx::Class for live tests: $@" if $@;
 
-eval "require Tenjin::Engine";
-plan skip_all => "Skip this tests unless we can find original plTenjin: $@"
-  if $@;
+### Make sure we have all the pre-reqs we need for testing
+my $db = test_db();
+require_tenjin();
 
 
 ### Start the tests properly
-my ($db, $tfh) = TDB->test_deploy;
-
-
 my $map;
 subtest 'Ferdinand setup' => sub {
   is(
@@ -46,6 +36,17 @@ subtest 'Ferdinand setup' => sub {
 
           create {
             dbic_source { $db->source('I') };
+            widget {
+              type 'Record';
+              columns {
+                col 'published_at';
+              };
+            };
+          };
+
+          edit {
+            dbic_source { $db->source('I') };
+            dbic_item { $_->model->source->resultset->find($_->id) };
             widget {
               type 'Record';
               columns {
@@ -97,66 +98,70 @@ subtest 'View render' => sub {
 };
 
 
-subtest 'Create render' => sub {
-  my $ctx;
+subtest 'Render Tests' => sub {
+  my @test_specs =
+    (['create', DateTime->today->dmy('/')], ['edit', '10/10/2010'],);
 
-  is(exception { $ctx = $map->render('create', {mode => 'create'}) },
-    undef, "Rendered create didn't die");
-  ok($ctx->buffer, '... got a buffer with something in it');
+  subtest 'Create/edit render' => sub {
+    for my $ts (@test_specs) {
+      my ($mode, $dmy) = @$ts;
 
-  subtest 'Buffer tests' => sub {
-    my $buffer = $ctx->buffer;
+      my $action = $map->action_for($mode);
+      my $ctx    = render_ok(
+        $action,
+        { mode => $mode,
+          id   => [1],
+        },
+        "Render action for mode '$mode'"
+      );
 
-    like(
-      $buffer,
-      qr{<th[^>]*>Published At:</th>},
-      "Buffer matches header 'Published At'"
-    );
+      my $buffer = $ctx->buffer;
+      ok($buffer, '... got a buffer with something in it');
 
-    my $dmy = DateTime->today->dmy('/');
-    like($buffer, qr{value="$dmy"},
-      '... Default value for published_at matches');
-    like($buffer, qr{type="date"}, '... type for published_at matches');
+      like(
+        $buffer,
+        qr{<th[^>]*>Published At:</th>},
+        "Buffer matches header 'Published At'"
+      );
+      like($buffer, qr{value="$dmy"},
+        '... Default value for published_at matches');
+      like($buffer, qr{type="date"}, '... type for published_at matches');
+    }
   };
-};
 
 
-subtest 'Create render with errors', sub {
-  my $action = $map->action_for('create');
-  my $ctx    = Ferdinand::Context->new(
-    map    => $map,
-    action => $action,
-    mode   => 'create',
-    errors => {published_at => 'error found'},
-  );
+  subtest 'Create render with errors', sub {
+    for my $ts (@test_specs) {
+      my ($mode, $dmy) = @$ts;
 
-  is(
-    exception {
-      $action->render($ctx);
-    },
-    undef,
-    "Rendered create with errors didn't die"
-  );
-  ok($ctx->buffer, '... got a buffer with something in it');
+      my $action = $map->action_for($mode);
+      my $ctx    = render_ok(
+        $action,
+        { mode   => 'create',
+          errors => {published_at => 'error found'},
+          id     => [1],
+        },
+        "Render action for mode '$mode'"
+      );
 
-  subtest 'Buffer tests' => sub {
-    my $buffer = $ctx->buffer;
+      my $buffer = $ctx->buffer;
+      ok($buffer, '... got a buffer with something in it');
 
-    like(
-      $buffer,
-      qr{<th class="errof">Published At:</th>},
-      "Buffer matches header with error 'Published At'"
-    );
+      like(
+        $buffer,
+        qr{<th class="errof">Published At:</th>},
+        "Buffer matches header with error 'Published At'"
+      );
+      like($buffer, qr{value="$dmy"},
+        '... Default value for published_at matches');
+      like($buffer, qr{type="date"}, '... type for published_at matches');
+      like(
+        $buffer,
+        qr{<span class="errom">error found</span>},
+        '... error found for published_at matches'
+      );
 
-    my $dmy = DateTime->today->dmy('/');
-    like($buffer, qr{value="$dmy"},
-      '... Default value for published_at matches');
-    like($buffer, qr{type="date"}, '... type for published_at matches');
-    like(
-      $buffer,
-      qr{<span class="errom">error found</span>},
-      '... error found for published_at matches'
-    );
+    }
   };
 };
 

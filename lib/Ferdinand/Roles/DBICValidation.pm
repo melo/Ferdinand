@@ -16,15 +16,11 @@ has 'valid' => (
 );
 
 
-after setup_attrs => sub {
-  my ($class, $attrs, $meta) = @_;
-
+after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   $attrs->{valid} = delete $meta->{valid} if exists $meta->{valid};
 };
 
-after render_self => sub {
-  my ($self, $ctx) = @_;
-
+after render_self => method ($ctx) {
   my $fields = hash_grep { !/^btn_/ } $ctx->params;
   if (my $valid = $self->valid) {
     local $_ = $ctx;
@@ -38,31 +34,18 @@ after render_self => sub {
   $self->dbic_action($ctx, $fields);
 };
 
-our %meta_types = (
-  integer  => 'numeric',
-  decimal  => 'numeric',
-  tinyint  => 'numeric',
-  varchar  => 'text',
-  char     => 'text',
-  text     => 'text',
-  date     => 'date',
-  datetime => 'date',
-);
-
-method _validate($ctx, $fields) {
+method _validate ($ctx, $fields) {
   my $model = $ctx->model;
-  my $src   = $model->source;
 
-  for my $col ($src->columns) {
+  for my $col ($model->columns) {
     next unless exists $fields->{$col};
 
-    my $i    = $src->column_info($col);
-    my $t    = $i->{data_type};
-    my $mt   = $meta_types{$t};
-    my $req  = !$i->{is_nullable};
-    my $meta = $model->column_meta_fixup($col);
+    my $meta = $model->field_meta($col);
+    my $t    = $meta->{data_type};
+    my $mt   = $meta->{meta_type};
+    my $req  = $meta->{is_required};
 
-    my $v = $ctx->field_value_str($col, $meta, $fields);
+    my $v = $ctx->field_value_str(field => $col, item => $fields);
     $v =~ s/^\s+|\s+$//g;
     my $lv = length($v);
 
@@ -82,28 +65,32 @@ method _validate($ctx, $fields) {
       $ctx->add_error($col => "Data inválida ($@)") if $@;
     }
 
-    $self->_check_db_restrictions($ctx, $fields);
-
     $fields->{$col} = $v;
   }
+
+  $self->_check_db_restrictions($ctx, $fields);
 }
 
 method _check_db_restrictions($ctx, $fields) {
-  my $src = $ctx->model->source;
-  my %un  = $src->unique_constraints;
-  my @pk  = _extract_pk_values_from_item($ctx);
+  my $src  = $ctx->model->source;
+  my %un   = $src->unique_constraints;
+  my @ours = _extract_pk_values_from_item($ctx);
 
   for my $name (keys %un) {
     my $flds = $un{$name};
+
+    ### Skip if we don't have the fields to check this constraint
     my $sel = hash_select($fields, @$flds);
     next unless scalar(@$flds) == scalar(keys %$sel);
 
-    my $dup = $src->resultset->single($sel);
-    next unless $dup;
+    ### Skip is no other row was found with the same fields
+    my $row_found = $src->resultset->single($sel);
+    next unless $row_found;
 
-    if (@pk) {
-      my @dpk = _extract_pk_values_from_item($ctx, $dup);
-      next if @dpk ~~ @pk;
+    ### If another row was found, skip if its the same as ours
+    if (@ours) {
+      my @other = _extract_pk_values_from_item($ctx, $row_found);
+      next if @ours ~~ @other;
     }
 
     $ctx->add_error($_, "Elemento duplicado ($name)") for @$flds;
@@ -116,7 +103,7 @@ func _extract_pk_values_from_item ($ctx, $item?) {
   return unless $item;
 
   return
-    map { $ctx->field_value_str($_, {}, $item) }
+    map { $ctx->field_value_str(field => $_, item => $item) }
     $item->result_source->primary_columns;
 }
 
