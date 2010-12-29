@@ -32,6 +32,7 @@ my $excp = exception {
             col('created_at');
             col('last_update_at');
             col('is_visible');
+            col 'password' => {empty => 1, skip_if_empty => 1};
           };
         };
       };
@@ -100,6 +101,7 @@ cmp_deeply(
               'created_at',
               'last_update_at',
               'is_visible',
+              password => {empty => 1, skip_if_empty => 1},
             ],
           },
         ]
@@ -180,9 +182,8 @@ subtest 'List actions', sub {
   is($h->id,     'w_4',            '... and ID matches');
 
   my $col_names = $l->col_names;
-  is(scalar(@$col_names), 6, "Number of columns is ok");
   cmp_deeply($col_names,
-    [qw( id title slug created_at last_update_at is_visible )]);
+    [qw( id title slug created_at last_update_at is_visible password )]);
 
   my $cols = $l->col_meta;
   cmp_deeply(
@@ -233,6 +234,17 @@ subtest 'List actions', sub {
       _line       => ignore(),
     },
     'Meta for is_visible ok'
+  );
+  cmp_deeply(
+    $cols->{password},
+    { empty         => 1,
+      skip_if_empty => 1,
+      is_required   => 0,
+      label         => "Password",
+      _file         => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line         => ignore(),
+    },
+    'Meta for password ok'
   );
 
   is($l->id, 'w_5', 'List widget ID matches');

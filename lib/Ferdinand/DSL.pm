@@ -103,7 +103,7 @@ sub columns (&) { _add_setup columns => _cb_setup(@_, []) }
 
 sub linked ($$)  { _add_setup $_[0] => {linked  => $_[1]} }
 sub link_to ($$) { _add_setup $_[0] => {link_to => $_[1]} }
-sub col ($)      { _add_setup $_[0] }
+sub col ($;$)    { _add_setup @_ }
 
 
 ### Forms
