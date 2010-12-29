@@ -73,7 +73,7 @@ func test_db () {
 
 func require_tenjin () {
   eval "require Tenjin::Engine";
-  Test::More::plan skip_all => "Skip this tests unless we can find original plTenjin: $@"
+  Test::More::plan skip_all => "Skip this tests unless we can find original plTenjin"
     if $@;
 }
 
