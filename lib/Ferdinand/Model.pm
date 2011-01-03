@@ -161,6 +161,9 @@ method render_field_write(:$ctx, :$field, :$item) {
       $attrs{maxlength} = $size;
       $attrs{size}      = $size;
     }
+    if (my $width = $meta->{width}) {
+      $attrs{size} = $width;
+    }
   }
   elsif ($type eq 'date') {
     $attrs{type} = 'date';

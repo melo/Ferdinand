@@ -309,6 +309,18 @@ subtest 'render_field_write', sub {
     qr{size="10"},
   );
 
+  %meta = (data_type => 'char', size => 10, width => 5);
+  like_all(
+    'xpto with meta type char with size + width',
+    $c1->render_field_write(field => 'xpto'),
+    qr{<input },
+    qr{type="text"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+    qr{maxlength="10"},
+    qr{size="5"},
+  );
+
   %meta = (data_type => 'varchar');
   like_all(
     'xpto with meta type varchar',
