@@ -528,6 +528,62 @@ subtest 'field values', sub {
 };
 
 
+subtest 'metadata with live data' => sub {
+  my $db = test_db();
+  my $w  = setup_widget(
+    'Layout',
+    { layout => [
+        { type   => 'DBIC::Source',
+          source => sub { $db->source('I') }
+        },
+        {type => 'Record', columns => [qw(title slug body)]},
+      ]
+    }
+  );
+  my $m = $w->layout->[0]->model;
+
+  cmp_deeply(
+    $m->field_meta('title'),
+    { data_type   => "varchar",
+      is_nullable => 1,
+      is_required => "",
+      label       => "Title",
+      meta_type   => "text",
+      size        => 100,
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => re(qr{^\d+$}),
+    },
+    "Meta for field 'title' ok"
+  );
+
+  cmp_deeply(
+    $m->field_meta('slug'),
+    { data_type   => "varchar",
+      is_nullable => 0,
+      is_required => 1,
+      label       => "Slug",
+      meta_type   => "text",
+      size        => 100,
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => re(qr{^\d+$}),
+    },
+    "Meta for field 'slug' ok"
+  );
+
+  cmp_deeply(
+    $m->field_meta('body'),
+    { data_type   => "text",
+      is_required => 1,
+      label       => "Body",
+      meta_type   => "text",
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => re(qr{^\d+$}),
+    },
+    "Meta for field 'body' ok"
+  );
+};
+
+
 done_testing();
 
 sub like_all {

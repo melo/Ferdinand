@@ -40,11 +40,11 @@ method column_meta_fixup ($name, $defs = {}) {
       default_value
       currency_code
     );
-    $info{is_required} = !$info{is_nullable};
 
     for my $f (@fields) {
       $info{$f} = $ci->{$f} if exists $ci->{$f};
     }
+    $info{is_required} = !$info{is_nullable};
 
     $info{format} = $ci->{extra}{format}
       if exists $ci->{extra}{format};

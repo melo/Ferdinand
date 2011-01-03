@@ -16,8 +16,9 @@ __PACKAGE__->add_columns(
   },
 
   'title' => {
-    data_type => 'varchar',
-    size      => 100,
+    data_type   => 'varchar',
+    size        => 100,
+    is_nullable => 1,
   },
   'slug' => {
     data_type   => 'varchar',

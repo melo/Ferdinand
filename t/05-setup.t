@@ -217,7 +217,8 @@ subtest 'List actions', sub {
   cmp_deeply(
     $cols->{title},
     { data_type   => "varchar",
-      is_required => 1,
+      is_required => '',
+      is_nullable => 1,
       label       => "Title",
       linked      => "view",
       meta_type   => "text",
