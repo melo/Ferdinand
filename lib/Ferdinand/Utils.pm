@@ -132,6 +132,7 @@ Returns nothing, the target hashref is modified in place.
     ## $target is now { a => 2, b => 2 }
 
 =cut
+
 sub hash_merge {
   my $h = shift;
 
