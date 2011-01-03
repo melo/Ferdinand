@@ -46,18 +46,13 @@ method column_meta_fixup ($name, $defs = {}) {
     }
     $info{is_required} = !$info{is_nullable};
 
-    $info{format} = $ci->{extra}{format}
-      if exists $ci->{extra}{format};
-
-    $info{formatter} = $ci->{extra}{formatter}
-      if exists $ci->{extra}{formatter};
-
-    $info{label} = $ci->{extra}{label}
-      if exists $ci->{extra}{label};
-
+    for (qw( format formatter label )) {
+      $info{$_} = $ci->{extra}{$_}
+        if exists $ci->{extra}{$_};
+    }
 
     $info{default_value} = $ci->{extra}{default}
-    if exists $ci->{extra}{default};
+      if exists $ci->{extra}{default};
 
     if (exists $ci->{extra}{options}) {
       my $opts = $info{options} = [];
