@@ -194,29 +194,20 @@ sub expand_structure {
   my %out;
 
   for my $src (keys %$in) {
-    my (@path) = split(/[.]/, $src);
+    my (@path) = parse_structured_key($src);
 
-    my $s = \%out;
     my $n;
-
+    my $s   = \%out;
     my $set = sub {
-      my ($v) = @_;
-      if   (ref($s) eq 'HASH') { $v = $s->{$n} ||= $v }
-      else                     { $v = $s->[$n] ||= $v }
-
-      return $v;
+      if   (ref($s) eq 'HASH') { $s = $s->{$n} ||= $_[0] }
+      else                     { $s = $s->[$n] ||= $_[0] }
     };
 
+    $n = shift @path;
     while (@path) {
+      $set->(ref($path[0]) ? [] : {});
       $n = shift @path;
-
-      if ($n =~ s/\[(\d+)\]$//) {
-        my $idx = $1;
-        $s = $set->([]);
-        $n = $idx;
-      }
-
-      $s = $set->({}) if @path;
+      $n = $$n if ref $n;
     }
 
     $set->($in->{$src});
