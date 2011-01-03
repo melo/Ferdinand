@@ -71,7 +71,7 @@ my $excp = exception {
         title 'Edit me';
         title 'Second edit me';
         dbic_source { $db->source('I') };
-        dbic_update {};
+        dbic_apply {};
       };
     };
   };
@@ -152,7 +152,7 @@ cmp_deeply(
           {title  => 'Edit me',        type => 'Title'},
           {title  => 'Second edit me', type => 'Title'},
           {source => ignore(),         type => 'DBIC::Source'},
-          {valid  => ignore(),         type => 'DBIC::Update'},
+          {valid  => ignore(),         type => 'DBIC::Apply'},
         ],
       },
     ],
