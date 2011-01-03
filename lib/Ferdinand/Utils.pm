@@ -12,7 +12,7 @@ our @EXPORT_OK = qw(
   render_template
   ghtml ehtml
   hash_merge hash_select hash_grep
-  expand_structure
+  expand_structure parse_structured_key
 );
 
 
@@ -224,5 +224,11 @@ sub expand_structure {
 
   return \%out;
 }
+
+sub parse_structured_key {
+  return
+    map { /^(.+)\[(\d+)\]$/ ? ($1, \(my $i = $2)) : $_ } split(/[.]/, $_[0]);
+}
+
 
 1;
