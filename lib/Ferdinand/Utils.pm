@@ -12,6 +12,7 @@ our @EXPORT_OK = qw(
   render_template
   ghtml ehtml
   hash_merge hash_select hash_grep
+  expand_structure
 );
 
 
@@ -172,5 +173,55 @@ sub hash_grep (&$) {
   return \%out;
 }
 
+
+=function expand_structure
+
+Given a HashRef with key => values pairs, expand each key into the proper Perl structure.
+
+The encoding is simple:
+
+ * key: { key => value };
+ * key1.key2: { key1 => { key2 => value }}
+ * key1.key2[0]: { key1 => { key2 => [value] }}
+ * key1.key2[1]: { key1 => { key2 => [undef, value] }}
+ * key1.key2[1].key3: { key1 => { key2 => [undef, { key3 => value}] }}
+
+=cut
+
+sub expand_structure {
+  my ($in) = @_;
+  my %out;
+
+  for my $src (keys %$in) {
+    my (@path) = split(/[.]/, $src);
+
+    my $s = \%out;
+    my $n;
+
+    my $set = sub {
+      my ($v) = @_;
+      if   (ref($s) eq 'HASH') { $v = $s->{$n} ||= $v }
+      else                     { $v = $s->[$n] ||= $v }
+
+      return $v;
+    };
+
+    while (@path) {
+      $n = shift @path;
+
+      if ($n =~ s/\[(\d+)\]$//) {
+        my $idx = $1;
+        $s = $set->([]);
+        $n = $idx;
+      }
+
+      $s = $set->({}) if @path;
+    }
+
+    $set->($in->{$src});
+  }
+
+  return \%out;
+}
 
 1;

@@ -9,6 +9,7 @@ use Ferdinand::Utils qw(
   ghtml ehtml
   hash_merge hash_select hash_grep
   load_class load_widget
+  expand_structure
 );
 use Sample;
 
@@ -169,5 +170,43 @@ subtest 'load_* utils' => sub {
     'Failed to load class, died ok'
   );
 };
+
+
+subtest 'expand_structure' => sub {
+  my @test_cases = (
+    { in  => {key => 'value'},
+      out => {key => 'value'},
+    },
+    { in  => {'key1.key2' => 'value'},
+      out => {key1        => {key2 => 'value'}},
+    },
+    { in => {'key1.key2' => 'value', 'key1.key3' => 'value'},
+      out => {key1 => {key2 => 'value', key3 => 'value'}},
+    },
+    { in  => {'key1.key2[0]' => 'value'},
+      out => {key1           => {key2 => ['value']}},
+    },
+    { in  => {'key1.key2[1]' => 'value'},
+      out => {key1           => {key2 => [undef, 'value']}},
+    },
+    { in  => {'key1.key2[1].key3' => 'value'},
+      out => {key1                => {key2 => [undef, {key3 => 'value'}]}},
+    },
+    { in => {
+        'key1.key2[0].key3' => 'v1',
+        'key1.key2[1].key4' => 'v2',
+        'key1.key2[1].key5' => 'v3',
+      },
+      out =>
+        {key1 => {key2 => [{key3 => 'v1'}, {key4 => 'v2', key5 => 'v3'}]}},
+    },
+  );
+
+  for my $t (@test_cases) {
+    my $desc = join(', ', keys %{$t->{in}});
+    cmp_deeply(expand_structure($t->{in}), $t->{out}, "Expanded '$desc' ok");
+  }
+};
+
 
 done_testing();
