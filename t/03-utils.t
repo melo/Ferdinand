@@ -9,7 +9,7 @@ use Ferdinand::Utils qw(
   ghtml ehtml
   hash_merge hash_select hash_grep
   load_class load_widget
-  expand_structure parse_structured_key
+  expand_structure parse_structured_key select_structure
 );
 use Sample;
 
@@ -231,6 +231,30 @@ subtest 'parse_structured_key' => sub {
   for my $t (@test_cases) {
     cmp_deeply([parse_structured_key($t->{in})],
       $t->{out}, "Parsed '$t->{in}' ok");
+  }
+};
+
+
+subtest 'select_structure' => sub {
+  my $source = {
+    a => {b => 1},
+    c => {d => {e => 2}},
+    f => 4,
+  };
+
+  my @test_cases = (
+    { in  => [qw( a.b c.g g f.h )],
+      out => {a => {b => 1}},
+    },
+    { in  => [qw( a.g c.d.e g.h f )],
+      out => {c => {d => {e => 2}}, f => 4},
+    },
+  );
+
+  for my $t (@test_cases) {
+    my $desc = join(', ', @{$t->{in}});
+    cmp_deeply(select_structure($source, @{$t->{in}}),
+      $t->{out}, "Selected '$desc' ok");
   }
 };
 

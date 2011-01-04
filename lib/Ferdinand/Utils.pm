@@ -12,7 +12,7 @@ our @EXPORT_OK = qw(
   render_template
   ghtml ehtml
   hash_merge hash_select hash_grep
-  expand_structure parse_structured_key
+  expand_structure parse_structured_key select_structure
 );
 
 
@@ -219,6 +219,28 @@ sub expand_structure {
 sub parse_structured_key {
   return
     map { /^(.+)\[(\d+)\]$/ ? ($1, \(my $i = $2)) : $_ } split(/[.]/, $_[0]);
+}
+
+sub select_structure {
+  my $in = shift;
+
+  my %values;
+KEY: for my $k (@_) {
+    my (@path) = parse_structured_key($k);
+
+    my $s = $in;
+    while (@path) {
+      my $n = shift @path;
+
+      next KEY unless defined($s) && ref($s) eq 'HASH' && exists $s->{$n};
+
+      $s = $s->{$n};
+    }
+
+    $values{$k} = $s;
+  }
+
+  return expand_structure(\%values);
 }
 
 
