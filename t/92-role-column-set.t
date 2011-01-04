@@ -119,6 +119,7 @@ cmp_deeply(
     label       => "Slug",
     link_to     => $link_to,
     size        => 100,
+    width       => 50,
     is_required => 1,
     _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
     _line       => re(qr{^\d+$}),

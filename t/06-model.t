@@ -564,6 +564,7 @@ subtest 'metadata with live data' => sub {
       label       => "Slug",
       meta_type   => "text",
       size        => 100,
+      width       => 50,
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => re(qr{^\d+$}),
     },

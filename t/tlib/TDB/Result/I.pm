@@ -24,6 +24,7 @@ __PACKAGE__->add_columns(
     data_type   => 'varchar',
     size        => 100,
     is_nullable => 0,
+    extra       => {width => 50},
   },
 
   'body' => {data_type => 'text'},

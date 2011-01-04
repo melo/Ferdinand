@@ -46,7 +46,7 @@ method column_meta_fixup ($name, $defs = {}) {
     }
     $info{is_required} = !$info{is_nullable};
 
-    for (qw( format formatter label )) {
+    for (qw( format formatter label width )) {
       $info{$_} = $ci->{extra}{$_}
         if exists $ci->{extra}{$_};
     }

@@ -177,6 +177,7 @@ TODO: {
       label       => "Slug",
       link_to     => ignore(),
       size        => 100,
+      width       => 50,
       is_required => 1,
       meta_type   => 'text',
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),

@@ -238,6 +238,7 @@ subtest 'List actions', sub {
       link_to     => $slug_cb,
       meta_type   => "text",
       size        => 100,
+      width       => 50,
       color       => '#ff0',
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => ignore(),
