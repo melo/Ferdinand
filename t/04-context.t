@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use Ferdinand;
 use Ferdinand::Tests;
 use Ferdinand::Action;
 use Test::MockObject;
@@ -15,11 +16,12 @@ sub _ctx {
 
   is(
     exception {
-      $ctx = Ferdinand::Context->new(
-        map        => $map,
-        action     => $action,
-        action_uri => URI->new('http://example.com/something'),
-        @extra_args,
+      $ctx = Ferdinand->build_ctx(
+        { map        => $map,
+          action     => $action,
+          action_uri => URI->new('http://example.com/something'),
+          @extra_args,
+        }
       );
     },
     undef,
@@ -40,7 +42,7 @@ sub _ctx_full {
 
 
 subtest 'Basic tests' => sub {
-  my $c1 = _ctx_full();
+  my $c1 = _ctx_full(params => {a => 1, b => 2, 'c.a[1].b' => 'taxi'});
 
   isa_ok($c1->map,        'Ferdinand::Map');
   isa_ok($c1->action,     'Ferdinand::Action');
@@ -51,8 +53,12 @@ subtest 'Basic tests' => sub {
 
   is($c1->action_uri->path, '/something', 'action_uri works');
 
-  cmp_deeply($c1->params, {a => 1, b => 2}, 'param as expected');
-  cmp_deeply($c1->stash,  {x => 9, y => 8}, 'stash as expected');
+  cmp_deeply(
+    $c1->params,
+    {a => 1, b => 2, c => {a => [undef, {b => 'taxi'}]}},
+    'param as expected'
+  );
+  cmp_deeply($c1->stash, {x => 9, y => 8}, 'stash as expected');
 
   is($c1->mode, 'view', 'mode as expected');
 };
