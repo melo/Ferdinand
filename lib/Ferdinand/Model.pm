@@ -1,7 +1,7 @@
 package Ferdinand::Model;
 
 use Ferdinand::Setup 'class';
-use Ferdinand::Utils qw( ehtml ghtml hash_merge );
+use Ferdinand::Utils qw( ehtml ghtml hash_merge parse_structured_key );
 use Method::Signatures;
 
 
@@ -184,8 +184,18 @@ method field_value (:$ctx, :$field, :$item) {
   $item = $ctx->item unless $item;
   return unless $item;
 
-  return $item->$field() if blessed($item) and $item->can($field);
-  return $item->{$field} if ref($item) eq 'HASH';
+  my @path = parse_structured_key($field);
+
+  while ($item && @path) {
+    my $name = shift @path;
+    confess("FATAL: no support for list fields, ") if ref $name;
+
+    if (blessed($item) && $item->can($name)) { $item = $item->$name() }
+    elsif (ref($item) eq 'HASH') { $item = $item->{$name} }
+    else                         { $item = undef }
+  }
+
+  return $item if defined $item;
   return;
 }
 

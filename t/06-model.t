@@ -528,6 +528,38 @@ subtest 'field values', sub {
 };
 
 
+subtest 'field values with live data' => sub {
+  my $db = test_db();
+  my $i  = $db->resultset('I')->create(
+    { title        => 'my title',
+      slug         => 'slug_me',
+      body         => 'a good one',
+      html         => '<p>A good one indeed</p>',
+      published_at => '2011-01-01',
+      visible      => 'Y',
+    }
+  );
+  $i->create_related(a => {name => 'Mini Me'});
+
+  my $m = Ferdinand::Model->new();
+  my $c = build_ctx(item => $i);
+
+  is($m->field_value(ctx => $c, field => 'title'),
+    'my title', 'Simple fields work ok (object)');
+  is($m->field_value(ctx => $c, field => 'a.name'),
+    'Mini Me', 'Complex fields work ok too (object)');
+
+  $i = {title => 'another title', a => {name => 'Maxi Pain'}};
+  is(
+    $m->field_value(ctx => $c, field => 'title', item => $i),
+    'another title',
+    'Simple fields work ok (hash)'
+  );
+  is($m->field_value(ctx => $c, field => 'a.name', item => $i),
+    'Maxi Pain', 'Complex fields work ok too (hash)');
+};
+
+
 subtest 'metadata with live data' => sub {
   my $db = test_db();
   my $w  = setup_widget(
@@ -536,7 +568,15 @@ subtest 'metadata with live data' => sub {
         { type   => 'DBIC::Source',
           source => sub { $db->source('I') }
         },
-        {type => 'Record', columns => [qw(title slug body)]},
+        { type    => 'Record',
+          columns => [
+            qw(
+              title slug body a.name
+              a.listed_but_doesnt_exist
+              no_relation.field
+              )
+          ]
+        },
       ]
     }
   );
@@ -581,6 +621,52 @@ subtest 'metadata with live data' => sub {
       _line       => re(qr{^\d+$}),
     },
     "Meta for field 'body' ok"
+  );
+
+  cmp_deeply(
+    $m->field_meta('a.name'),
+    { data_type   => "varchar",
+      size        => 100,
+      is_required => 1,
+      is_nullable => 0,
+      label       => "Name",
+      meta_type   => "text",
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => re(qr{^\d+$}),
+    },
+    "Meta for field 'a.name' ok"
+  );
+
+  cmp_deeply(
+    $m->field_meta('a.listed_but_doesnt_exist'),
+    { is_required => 0,
+      label       => "Listed But Doesnt Exist",
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => re(qr{^\d+$}),
+    },
+    "Meta for field 'a.listed_but_doesnt_exist' ok"
+  );
+
+  cmp_deeply(
+    $m->field_meta('no_relation.field'),
+    { is_required => 0,
+      label       => "Field",
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => re(qr{^\d+$}),
+    },
+    "Meta for field 'no_relation.field' ok"
+  );
+
+  cmp_deeply(
+    $m->field_meta('a.not_a_field'),
+    {},
+    "Meta for field 'a.not_a_field' ok"
+  );
+
+  cmp_deeply(
+    $m->field_meta('not_a_relation.field_name'),
+    {},
+    "Meta for field 'not_a_relation.field_name' ok"
   );
 };
 

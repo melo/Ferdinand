@@ -2,7 +2,7 @@ package Ferdinand::Model::DBIC;
 # ABSTRACT: Ferdinand model for DBIx::Class sources
 
 use Ferdinand::Setup 'class';
-use Ferdinand::Utils qw( hash_merge );
+use Ferdinand::Utils qw( hash_merge parse_structured_key );
 use Method::Signatures;
 extends 'Ferdinand::Model';
 
@@ -24,12 +24,27 @@ our %meta_types = (
   datetime => 'date',
 );
 
-method column_meta_fixup ($name, $defs = {}) {
+method column_meta_fixup ($full_name, $defs = {}) {
   my %info;
+  my $source = $self->source;
+
+  ### Deal with nested fields
+  my @path = parse_structured_key($full_name);
+  my $name = shift @path;
+  while (@path) {
+    if ($source && !ref($name)) {
+      if ($source->has_relationship($name)) {
+        $source = $source->related_source($name);
+      }
+      else {
+        $source = undef;
+      }
+    }
+    $name = shift @path;
+  }
 
   ### Enrich with DBIC meta-data
-  my $source = $self->source;
-  if ($source->has_column($name)) {
+  if ($source && $source->has_column($name)) {
     my $ci = $source->column_info($name);
 
     my @fields = qw(
