@@ -27,7 +27,7 @@ subtest 'Ferdinand setup' => sub {
                 col 'id';
                 col 'title';
                 link_to slug =>
-                  sub { 'http://example.com/items/' . $_->slug };
+                  sub { 'http://example.com/items/' . shift->slug };
                 col 'published_at';
                 col 'visible';
               };

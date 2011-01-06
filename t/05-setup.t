@@ -9,7 +9,7 @@ use Ferdinand::DSL;
 
 my $db       = test_db();
 my $title_cb = sub { join(' ', 'View for', $_->id) };
-my $slug_cb  = sub { 'http://example.com/items/' . $_->slug };
+my $slug_cb  = sub { 'http://example.com/items/' . shift->slug };
 
 my $meta;
 my $excp = exception {
@@ -26,8 +26,8 @@ my $excp = exception {
         widget {
           attr type => 'List';
           columns {
-            linked id    => 'view';
-            linked title => 'view', {color => '#ff0', size => 75};
+            link_to id => $slug_cb;
+            link_to title => $slug_cb, {color => '#ff0', size => 75};
             link_to slug => $slug_cb, {color => '#ff0'};
             col('created_at');
             col('last_update_at');
@@ -99,11 +99,11 @@ cmp_deeply(
           },
           { type    => 'List',
             columns => [
-              id    => {linked => 'view'},
+              id    => {link_to => $slug_cb},
               title => {
-                linked => 'view',
-                color  => '#ff0',
-                size   => 75,
+                link_to => $slug_cb,
+                color   => '#ff0',
+                size    => 75,
               },
               slug => {
                 link_to => $slug_cb,
@@ -207,7 +207,7 @@ subtest 'List actions', sub {
       is_nullable => 0,
       is_required => 1,
       label       => "ID",
-      linked      => "view",
+      link_to     => $slug_cb,
       meta_type   => "numeric",
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => ignore(),
@@ -220,7 +220,7 @@ subtest 'List actions', sub {
       is_required => '',
       is_nullable => 1,
       label       => "Title",
-      linked      => "view",
+      link_to     => $slug_cb,
       meta_type   => "text",
       size        => 75,
       color       => '#ff0',

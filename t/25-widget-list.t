@@ -11,6 +11,7 @@ my $db = test_db();
 
 my $map;
 subtest 'Ferdinand setup' => sub {
+  my $link_to_cb = sub { 'http://example.com/items/' . shift->slug };
   is(
     exception {
       $map = ferdinand_map {
@@ -21,10 +22,9 @@ subtest 'Ferdinand setup' => sub {
             widget {
               type 'List';
               columns {
-                linked id    => 'view';
-                linked title => 'view';
-                link_to slug =>
-                  sub { 'http://example.com/items/' . $_->slug };
+                link_to id    => $link_to_cb;
+                link_to title => $link_to_cb;
+                link_to slug  => $link_to_cb;
                 col('published_at');
                 col('visible');
               };
@@ -52,12 +52,16 @@ subtest 'Render list action' => sub {
     for ('ID', 'Title', 'Slug', 'Published At', 'Visible');
 
   for my $row ($db->resultset('I')->all) {
-    my $id = $row->id;
+    my $id   = $row->id;
+    my $slug = $row->slug;
 
     ok($row, "Got row $id");
-    like($buffer, qr{<td>$id</td>}, '... ID matches');
+    like(
+      $buffer,
+      qr{<td><a href="http://example.com/items/$slug">$id</a></td>},
+      '... ID matches'
+    );
 
-    my $slug = $row->slug;
     like(
       $buffer,
       qr{<td><a href="http://example.com/items/$slug">$slug</a></td>},

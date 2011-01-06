@@ -77,7 +77,7 @@ subtest 'Render Field' => sub {
         { type    => '+TestRenderField',
           columns => [
             'slug' => {
-              link_to => sub { 'http://example.com/' . $_->slug }
+              link_to => sub { 'http://example.com/' . shift->slug }
             },
             'published_at',
             'visible',

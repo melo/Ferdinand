@@ -17,7 +17,16 @@ has 'params' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
 has 'mode' => (isa => 'Str', is => 'ro', default => 'view');
 
+## TODO: use self_uri or some other less-Catalyst name
 has 'action_uri' => (isa => 'URI', is => 'ro');
+
+## TODO: this is too App specific, maybe move back to per-app Context class?
+has 'uri_helper' => (
+  isa => 'Object',
+  is  => 'ro',
+);
+
+
 
 
 ##########################
@@ -47,20 +56,6 @@ method overlay () {
   }
 
   return guard { hash_merge($self, @saved) };
-}
-
-
-###############
-# Generate URIs
-
-has 'uri_helper' => (
-  isa => 'CodeRef',
-  is  => 'ro',
-);
-
-method uri () {
-  return unless exists $self->{uri_helper};
-  return $self->{uri_helper}->($self, @_);
 }
 
 

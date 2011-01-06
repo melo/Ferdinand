@@ -65,13 +65,9 @@ method render_field_read (:$ctx, :$field, :$item) {
   }
 
   my $url;
-  if ($url = $meta->{linked}) {
-    local $_ = $item;
-    $url = $ctx->uri($url, [$item->id]);
-  }
-  elsif ($url = $meta->{link_to}) {
-    local $_ = $item;
-    $url = $url->($self);
+  if ($url = $meta->{link_to}) {
+    local $_ = $ctx;
+    $url = $url->($item);
   }
 
   my $opts = $meta->{options};

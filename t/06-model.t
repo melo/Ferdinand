@@ -55,7 +55,7 @@ subtest 'render_field output' => sub {
     'Single row value, with class'
   );
 
-  $meta{link_to} = sub { $_->e };
+  $meta{link_to} = sub { shift->e };
   like_all(
     'link_to value + class',
     $c1->render_field(%args),
@@ -64,21 +64,11 @@ subtest 'render_field output' => sub {
   );
 
   delete $meta{cls_field_html};
-  $meta{link_to} = sub { $_->e };
+  $meta{link_to} = sub { shift->e };
   is(
     $c1->render_field(%args),
     '<a href="!!">&lt;ABCD &amp; EFGH&gt;</a>',
     'link_to value'
-  );
-
-  $meta{linked} = ['view', 'me'];
-  is($c1->render_field(%args), '&lt;ABCD &amp; EFGH&gt;', 'linked value');
-
-  my $g = $c1->overlay(uri_helper => sub { return join('/', @{$_[1]}) });
-  is(
-    $c1->render_field(%args),
-    '<a href="view/me">&lt;ABCD &amp; EFGH&gt;</a>',
-    'link_to value, with formatter'
   );
 
   $i = Test::MockObject->new;

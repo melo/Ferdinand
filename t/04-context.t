@@ -33,7 +33,6 @@ sub _ctx {
 
 sub _ctx_full {
   return _ctx(
-    uri_helper => sub { join(' ', @_) },
     params => {a => 1, b => 2},
     stash  => {x => 9, y => 8},
     @_,
@@ -49,7 +48,6 @@ subtest 'Basic tests' => sub {
   isa_ok($c1->action_uri, 'URI');
 
   is($c1->widget, undef,   'Widget is undef');
-  is($c1->uri(5), "$c1 5", 'uri_helper works');
 
   is($c1->action_uri->path, '/something', 'action_uri works');
 
