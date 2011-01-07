@@ -77,6 +77,7 @@ sub title ($)   { _add_setup {title  => $_[0], type => 'Title'} }
 sub header ($)  { _add_setup {header => $_[0], type => 'Header'} }
 sub execute (&) { _add_setup {cb     => $_[0], type => 'CB'} }
 
+sub nest (&) { _add_setup {type => 'Layout', layout => _cb_setup(@_, [])} }
 
 ### DBIC widgets shortcuts
 sub dbic_source (&) { _add_setup {type => 'DBIC::Source', source => $_[0]} }

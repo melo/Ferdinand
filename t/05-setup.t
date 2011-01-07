@@ -58,6 +58,9 @@ my $excp = exception {
 
         layout {
           title('My pop title');
+          nest {
+            title('A little subtitle');
+          }
         };
       };
 
@@ -138,7 +141,12 @@ cmp_deeply(
         ],
       },
       { name   => 'pop',
-        layout => [{title => 'My pop title', type => 'Title'}],
+        layout => [
+          {type => 'Title', title => 'My pop title',},
+          { type   => 'Layout',
+            layout => [{type => 'Title', title => 'A little subtitle'}],
+          },
+        ],
       },
       { name   => 'create',
         layout => [
@@ -277,10 +285,18 @@ subtest 'Pop action' => sub {
   isa_ok($action, 'Ferdinand::Action', '... proper class for action');
 
   my @widgets = $action->widgets;
-  is(scalar(@widgets), 1, 'One widget in this layout');
+  is(scalar(@widgets), 2, 'Two widgets in this layout');
   is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
-    'Expected type for widget');
-  is($widgets[0]->title, 'My pop title', 'Title text is ok');
+    'Expected type for first widget');
+  is($widgets[0]->title, 'My pop title', '... title text is ok');
+
+  is(ref($widgets[1]), 'Ferdinand::Widgets::Layout',
+    'Expected type for second widget');
+    
+  @widgets = $widgets[1]->widgets;
+  is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
+    'Expected type for first subwidget');
+  is($widgets[0]->title, 'A little subtitle', '... title text is ok');
 
   ok(all_unique(map { $_->id } $action->widgets), 'All IDs are unique');
 };
