@@ -58,7 +58,7 @@ __DATA__
 <?pl } ?>
 <?pl else {
        my $n_cols = @$col_names; ?>
-    <tr colspan="[= $n_cols =]">Não existem registos para listar</tr>
+    <tr><td colspan="[= $n_cols =]">Não existem registos para listar</td></tr>
 <?pl } ?>
   </tbody>
 </table>

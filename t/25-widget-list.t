@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use utf8;
 use Ferdinand::Tests;
 use Ferdinand::DSL;
 
@@ -19,6 +20,21 @@ subtest 'Ferdinand setup' => sub {
           list {
             dbic_source { $db->source('I') };
             dbic_set { $_->model->source->resultset };
+            widget {
+              type 'List';
+              columns {
+                link_to id    => $link_to_cb;
+                link_to title => $link_to_cb;
+                link_to slug  => $link_to_cb;
+                col('published_at');
+                col('visible');
+              };
+            };
+          };
+
+          view {
+            dbic_source { $db->source('I') };
+            dbic_set { $db->resultset('I')->search({id => -1}) };
             widget {
               type 'List';
               columns {
@@ -74,6 +90,22 @@ subtest 'Render list action' => sub {
     my $visible = $row->visible;
     like($buffer, qr{<td>$visible</td>}, '... Visibility matches');
   }
+};
+
+
+subtest 'Render empty list' => sub {
+  my $ctx;
+
+  is(exception { $ctx = $map->render('view') },
+    undef, "Rendered view didn't die");
+  my $buffer = $ctx->buffer;
+
+  ok($buffer, '... got a buffer with something in it');
+  like(
+    $buffer,
+    qr{<tr><td colspan="\d+">Não existem registos para listar</td></tr>},
+    '... proper warning message found'
+  );
 };
 
 
