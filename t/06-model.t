@@ -63,6 +63,16 @@ subtest 'render_field output' => sub {
     qr{ href="!!"}, qr{>&lt;ABCD &amp; EFGH&gt;</a>},
   );
 
+  $meta{link_to} = sub { $_[1] };
+  like_all(
+    'link_to value + class (using cur value argument)',
+    $c1->render_field(%args),
+    qr{^<a },
+    qr{ class="x y z"},
+    qr{ href="&lt;ABCD &amp; EFGH&gt;"},
+    qr{>&lt;ABCD &amp; EFGH&gt;</a>},
+  );
+
   delete $meta{cls_field_html};
   $meta{link_to} = sub { shift->e };
   is(
@@ -647,17 +657,11 @@ subtest 'metadata with live data' => sub {
     "Meta for field 'no_relation.field' ok"
   );
 
-  cmp_deeply(
-    $m->field_meta('a.not_a_field'),
-    {},
-    "Meta for field 'a.not_a_field' ok"
-  );
+  cmp_deeply($m->field_meta('a.not_a_field'),
+    {}, "Meta for field 'a.not_a_field' ok");
 
-  cmp_deeply(
-    $m->field_meta('not_a_relation.field_name'),
-    {},
-    "Meta for field 'not_a_relation.field_name' ok"
-  );
+  cmp_deeply($m->field_meta('not_a_relation.field_name'),
+    {}, "Meta for field 'not_a_relation.field_name' ok");
 };
 
 
