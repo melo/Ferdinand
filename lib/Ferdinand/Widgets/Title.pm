@@ -22,7 +22,7 @@ method render_self ($ctx) {
   my $title = $self->title;
   if (ref($title) eq 'CODE') {
     local $_ = $ctx;
-    $title = $title->($self, $ctx) ;
+    $title = $title->($ctx->item) ;
   }
   $ctx->stash(title => $title) if $title;
 }
