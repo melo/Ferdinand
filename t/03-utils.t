@@ -128,10 +128,7 @@ subtest 'Merge hashref with a hash' => sub {
 
 subtest 'Hash select' => sub {
   my $h = {a => 1, b => 2, c => 3};
-  my %h = hash_select($h, qw(a b d));
-
-  cmp_deeply(scalar(hash_select($h, qw(a b d))), {a => 1, b => 2});
-  cmp_deeply(\%h, {a => 1, b => 2});
+  cmp_deeply(hash_select($h, qw(a b d)), {a => 1, b => 2});
 };
 
 

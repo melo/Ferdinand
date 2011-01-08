@@ -154,7 +154,6 @@ sub hash_select {
     $s{$k} = $h->{$k} if exists $h->{$k};
   }
 
-  return %s if wantarray;
   return \%s;
 }
 
