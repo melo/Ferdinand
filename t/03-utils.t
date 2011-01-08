@@ -121,8 +121,9 @@ subtest 'Generate/Escape HTML', sub {
 subtest 'Merge hashref with a hash' => sub {
   my $h = {a => 1, b => 2};
 
-  hash_merge($h, a => 2, b => undef, c => 3);
+  my $y = hash_merge($h, a => 2, b => undef, c => 3);
   cmp_deeply($h, {a => 2, c => 3}, 'hash_merge works');
+  is($y, $h, '... and it returns the input hash');
 };
 
 

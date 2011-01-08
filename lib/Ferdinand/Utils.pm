@@ -143,7 +143,7 @@ sub hash_merge {
     else            { delete $h->{$k} }
   }
 
-  return;
+  return $h;
 }
 
 sub hash_select {
