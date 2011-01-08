@@ -20,7 +20,7 @@ method title ($ctx) {
   return $t unless ref $t;
 
   local $_ = $ctx;
-  return $t->($self);
+  return $t->($ctx->item);
 }
 
 method render_title ($ctx) {
