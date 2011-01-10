@@ -75,6 +75,10 @@ my $excp = exception {
         title 'Second edit me';
         dbic_source { $db->source('I') };
         dbic_apply {};
+
+        prefix 'xpto' => sub {
+          title 'Ypto';
+          }
       };
     };
   };
@@ -161,6 +165,10 @@ cmp_deeply(
           {title  => 'Second edit me', type => 'Title'},
           {source => ignore(),         type => 'DBIC::Source'},
           {valid  => ignore(),         type => 'DBIC::Apply'},
+          { overlay => {prefix => 'xpto'},
+            type    => 'Layout',
+            layout => [{title => 'Ypto', type => 'Title'}],
+          },
         ],
       },
     ],
@@ -292,7 +300,7 @@ subtest 'Pop action' => sub {
 
   is(ref($widgets[1]), 'Ferdinand::Widgets::Layout',
     'Expected type for second widget');
-    
+
   @widgets = $widgets[1]->widgets;
   is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
     'Expected type for first subwidget');
@@ -361,7 +369,7 @@ subtest 'Edit action' => sub {
   isa_ok($action, 'Ferdinand::Action', '... proper class for action');
 
   my @widgets = $action->widgets;
-  is(scalar(@widgets), 4, 'Four widgets in this layout');
+  is(scalar(@widgets), 5, 'Fice widgets in this layout');
 
   my ($w1, $w2) = @widgets;
 

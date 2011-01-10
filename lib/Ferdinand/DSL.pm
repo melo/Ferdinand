@@ -6,7 +6,7 @@ our @EXPORT = qw(
   ferdinand_setup ferdinand_map
   actions list view create edit
   action name layout
-  title header nest execute
+  title header nest prefix execute
   widget type attr
   columns cols
   link_to col
@@ -78,6 +78,15 @@ sub header ($)  { _add_setup {header => $_[0], type => 'Header'} }
 sub execute (&) { _add_setup {cb     => $_[0], type => 'CB'} }
 
 sub nest (&) { _add_setup {type => 'Layout', layout => _cb_setup(@_, [])} }
+
+sub prefix ($&) {
+  _add_setup {
+    type    => 'Layout',
+    overlay => {prefix => $_[0]},
+    layout => _cb_setup($_[1], []),
+  };
+}
+
 
 ### DBIC widgets shortcuts
 sub dbic_source (&) { _add_setup {type => 'DBIC::Source', source => $_[0]} }
