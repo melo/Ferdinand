@@ -46,4 +46,21 @@ subtest 'layout vs on_demand' => sub {
 };
 
 
+subtest 'layout with overlay' => sub {
+  my $l = setup_widget(
+    'Layout',
+    { overlay => {prefix => 'my prefix'},
+      layout  => [
+        { type => 'CB',
+          cb   => sub { $_->stash(prefix => $_->prefix) }
+        },
+      ],
+    }
+  );
+
+  my $ctx = render_ok($l);
+  is($ctx->stash->{prefix}, 'my prefix', 'Prefix as expected inside layout');
+};
+
+
 done_testing();
