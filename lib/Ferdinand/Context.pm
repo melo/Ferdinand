@@ -138,6 +138,7 @@ has 'item'  => (isa => 'Object',           is => 'rw');
 has 'set'   => (isa => 'Object',           is => 'rw');
 has 'id'    => (isa => 'ArrayRef',         is => 'bare');
 
+has 'prefix' => (isa => 'Str', is => 'rw', default => '');
 
 method id () {
   return unless exists $self->{id};

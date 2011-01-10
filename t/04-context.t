@@ -47,7 +47,7 @@ subtest 'Basic tests' => sub {
   isa_ok($c1->action,     'Ferdinand::Action');
   isa_ok($c1->action_uri, 'URI');
 
-  is($c1->widget, undef,   'Widget is undef');
+  is($c1->widget, undef, 'Widget is undef');
 
   is($c1->action_uri->path, '/something', 'action_uri works');
 
@@ -59,6 +59,11 @@ subtest 'Basic tests' => sub {
   cmp_deeply($c1->stash, {x => 9, y => 8}, 'stash as expected');
 
   is($c1->mode, 'view', 'mode as expected');
+
+  is($c1->prefix, '', 'prefix default as expected');
+
+  $c1->prefix('z');
+  is($c1->prefix, 'z', 'prefix as expected');
 };
 
 
