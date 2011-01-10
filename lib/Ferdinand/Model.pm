@@ -121,6 +121,8 @@ method render_field_write(:$ctx, :$field, :$item) {
   );
   $val = '' if $meta->{empty};
 
+  my $prefix = $ctx->prefix;
+  $field = "$prefix.$field" if $prefix;
   my %attrs = (
     id   => $field,
     name => $field,

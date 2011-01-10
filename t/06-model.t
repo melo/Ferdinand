@@ -238,6 +238,15 @@ subtest 'render_field_write', sub {
     qr{required="1"},
   );
 
+  $c1->prefix('x');
+  like_all(
+    'xpto bare input (with ctx prefix)',
+    $c1->render_field_write(field => 'xpto'),
+    qr{<input }, qr{type="text"}, qr{name="x.xpto"}, qr{id="x.xpto"},
+    qr{required="1"},
+  );
+  $c1->prefix('');
+
   like_all(
     'xpto with previous value',
     $c1->render_field_write(
