@@ -20,7 +20,7 @@ subtest 'layout' => sub {
     'Class name for Layout widget object ok');
 
   my $ctx = render_ok($l);
-  cmp_deeply($ctx->item, bless({x => 1}, 'X'), "Item as expected");
+  is($ctx->item,          undef,           "Item is clean after render");
   is($ctx->stash->{titi}, "TestWidget $$", 'Support for +WidgetClass');
 };
 
@@ -49,17 +49,23 @@ subtest 'layout vs on_demand' => sub {
 subtest 'layout with overlay' => sub {
   my $l = setup_widget(
     'Layout',
-    { overlay => {prefix => 'my prefix'},
+    { overlay => {prefix => 'my prefix', id => [42]},
       layout  => [
         { type => 'CB',
-          cb   => sub { $_->stash(prefix => $_->prefix) }
+          cb   => sub { $_->stash(prefix => $_->prefix, id => [$_->id]) }
         },
       ],
     }
   );
 
   my $ctx = render_ok($l);
-  is($ctx->stash->{prefix}, 'my prefix', 'Prefix as expected inside layout');
+  cmp_deeply(
+    $ctx->stash,
+    {prefix => 'my prefix', id => [42]},
+    'Prefix and ID as expected inside layout'
+  );
+  is($ctx->prefix, '',    '... outside prefix is empty');
+  is($ctx->id,     undef, '... outside id is undef');
 };
 
 

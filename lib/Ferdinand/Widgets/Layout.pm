@@ -8,7 +8,7 @@ use Method::Signatures;
 extends 'Ferdinand::Widget';
 with 'Ferdinand::Roles::WidgetContainer';
 
-has 'overlay' => (isa => 'HashRef', is => 'ro');
+has 'overlay' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
 after setup_attrs => method($class:, $attrs, $meta) {
   $attrs->{overlay} = delete $meta->{overlay}
@@ -18,7 +18,10 @@ after setup_attrs => method($class:, $attrs, $meta) {
 method render_begin ($ctx) {
   my $o = $self->overlay;
 
-  return unless $o;
+  for (qw(item set model id)) {
+    $o->{$_} = $ctx->$_ unless $o->{$_};
+  }
+
   return $ctx->overlay(%$o);
 }
 
