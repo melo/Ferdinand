@@ -17,8 +17,10 @@ my $excp = exception {
     actions {
       list {
         links {
-          url 'Novo' => 'http://www.example.com/';
+          url 'Novo'   => 'http://www.example.com/';
           url 'Titalo' => sub { $_->params->{url} };
+          url 'x1'     => sub { 'undef' unless defined shift };
+          url 'x2' => sub { ref($_[1]) };
         };
       };
       create {
@@ -40,6 +42,8 @@ cmp_deeply(
             links => [
               {title => 'Novo',   url => 'http://www.example.com/'},
               {title => 'Titalo', url => ignore()},
+              {title => 'x1',     url => ignore()},
+              {title => 'x2',     url => ignore()},
             ],
           },
         ]
@@ -66,8 +70,27 @@ my $buf = $ctx->buffer;
 ok($buf, 'Got something from render');
 
 like($buf, qr{<div class="oplinks">}, '... proper div class for links');
-like($buf, qr{<a href="http://www.example.com/">Novo</a>}, '... first link ok');
+like(
+  $buf,
+  qr{<a href="http://www.example.com/">Novo</a>},
+  '... first link ok (scalar)'
+);
 like($buf, qr{<a href="xpto">Titalo</a>}, '... second link ok');
+like(
+  $buf,
+  qr{<a href="http://www.example.com/">Novo</a>},
+  '... second link ok (coderef)'
+);
+like(
+  $buf,
+  qr{<a href="undef">x1</a>},
+  '... third link ok (check first parameter)'
+);
+like(
+  $buf,
+  qr{<a href="Ferdinand::Widgets::Links">x2</a>},
+  '... fourth link ok (check second parameter)'
+);
 
 
 done_testing();

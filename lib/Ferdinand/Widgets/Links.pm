@@ -26,7 +26,7 @@ method render_self ($ctx) {
     my $u = $l->{url};
     if (ref($u) eq 'CODE') {
       local $_ = $ctx;
-      $u = $u->($self);
+      $u = $u->($ctx->item, $self);
     }
 
     push @sl, {url => $u, title => $l->{title}};
