@@ -143,9 +143,18 @@ subtest 'context overlay' => sub {
   cmp_deeply($c1->params, {a => 1, b => 2}, 'base param as expected');
   cmp_deeply($c1->stash,  {x => 9, y => 8}, 'base stash as expected');
 
+  is(
+    $c1->action_uri->as_string,
+    'http://example.com/something',
+    'action_uri ok'
+  );
+
   subtest 'test overlay context' => sub {
-    my $g =
-      $c1->overlay(set => bless([{a => 1}, {a => 2}], 'X'), stash => {});
+    my $g = $c1->overlay(
+      set        => bless([{a => 1}, {a => 2}], 'X'),
+      stash      => {},
+      action_uri => undef
+    );
 
     cmp_deeply(
       $c1->set,
@@ -159,6 +168,8 @@ subtest 'context overlay' => sub {
     is($c1->buffer, 'a1', 'Overlayed buffer is the same');
     $c1->buffer('a2');
     $c1->item(bless({a => 1, b => 2}, 'X'));
+
+    is($c1->action_uri, undef, 'action_uri deleted');
   };
 
   is($c1->buffer, 'a1a2', 'Buffer as expected after overlay cleanup');
@@ -170,6 +181,12 @@ subtest 'context overlay' => sub {
   );
   cmp_deeply($c1->stash, {x => 9, y => 8}, 'Stash back to pre-overlay value');
   is($c1->set, undef, 'Set back to pre-overlay value');
+
+  is(
+    $c1->action_uri->as_string,
+    'http://example.com/something',
+    'action_uri still ok'
+  );
 };
 
 

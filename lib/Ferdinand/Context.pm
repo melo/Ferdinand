@@ -52,7 +52,12 @@ method overlay () {
   my @saved;
   while (my ($k, $v) = splice(@_, 0, 2)) {
     push @saved, $k, $self->{$k};
-    $self->{$k} = $v;
+    if (defined $v) {
+      $self->{$k} = $v;
+    }
+    else {
+      delete $self->{$k};
+    }
   }
 
   return guard { hash_merge($self, @saved) };
