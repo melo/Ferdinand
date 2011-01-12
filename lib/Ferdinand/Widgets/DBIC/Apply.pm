@@ -12,8 +12,12 @@ method dbic_action ($ctx, $fields) {
   my $target = my $item = $ctx->item;
   $target ||= $ctx->set || $ctx->model->source->resultset;
   eval {
-    $ctx->stash->{dbic_row} = $target->apply($fields, $item);
-    $ctx->stash->{edit_done} = 1;
+    $target->result_source->schema->txn_do(
+      sub {
+        $ctx->stash->{dbic_row} = $target->apply($fields, $item);
+        $ctx->stash->{edit_done} = 1;
+      }
+    );
   };
   $ctx->add_error(exception => $@) if $@;
 }
