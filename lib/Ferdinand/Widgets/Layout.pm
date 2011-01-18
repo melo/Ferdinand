@@ -16,13 +16,13 @@ after setup_attrs => method($class:, $attrs, $meta) {
 };
 
 method render_begin ($ctx) {
-  my $o = $self->overlay;
+  my %o = %{$self->overlay};
 
   for (qw(item set model id)) {
-    $o->{$_} = $ctx->$_ unless $o->{$_};
+    $o{$_} = $ctx->$_ unless $o{$_};
   }
 
-  return $ctx->overlay(%$o);
+  return $ctx->overlay(%o);
 }
 
 

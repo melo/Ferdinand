@@ -58,7 +58,7 @@ subtest 'layout with overlay' => sub {
     }
   );
 
-  my $ctx = render_ok($l);
+  my $ctx = render_ok($l, {item => bless({}, 'X')});
   cmp_deeply(
     $ctx->stash,
     {prefix => 'my prefix', id => [42]},
@@ -66,6 +66,14 @@ subtest 'layout with overlay' => sub {
   );
   is($ctx->prefix, '',    '... outside prefix is empty');
   is($ctx->id,     undef, '... outside id is undef');
+
+  cmp_deeply(
+    $l->overlay,
+    { prefix => 'my prefix',
+      id     => [42],
+    },
+    '... overlay is pristine after rendering'
+  );
 };
 
 
