@@ -158,6 +158,10 @@ subtest 'hash_cleanup' => sub {
     hash_cleanup({a => [], b => {a => 1, b => undef}}, qw( b a )),
     {a => [], b => {a => 1}},
   );
+  cmp_deeply(
+    hash_cleanup({a => [], b => {a => 1, b => undef}, c => undef}),
+    {a => [], b => {a => 1}},
+  );
 };
 
 

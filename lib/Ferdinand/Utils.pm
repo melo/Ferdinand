@@ -174,9 +174,10 @@ sub hash_grep (&$) {
 }
 
 sub hash_cleanup {
-  my $h = shift;
+  my ($h, @fields) = @_;
+  @fields = keys %$h unless @fields;
 
-  for my $k (@_) {
+  for my $k (@fields) {
     next unless exists $h->{$k};
 
     my $v = $h->{$k};
