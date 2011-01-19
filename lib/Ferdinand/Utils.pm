@@ -11,7 +11,7 @@ our @EXPORT_OK = qw(
   read_data_files get_data_files
   render_template
   ghtml ehtml
-  hash_merge hash_select hash_grep
+  hash_merge hash_select hash_grep hash_cleanup
   expand_structure parse_structured_key select_structure
 );
 
@@ -171,6 +171,25 @@ sub hash_grep (&$) {
 
   return %out if wantarray;
   return \%out;
+}
+
+sub hash_cleanup {
+  my $h = shift;
+
+  for my $k (@_) {
+    next unless exists $h->{$k};
+
+    my $v = $h->{$k};
+    if (!defined $v) {
+      delete $h->{$k};
+    }
+    elsif (ref($v) eq 'HASH') {
+      hash_cleanup($v, keys %$v);
+      delete $h->{$k} unless %$v;
+    }
+  }
+
+  return $h;
 }
 
 

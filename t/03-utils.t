@@ -7,7 +7,7 @@ use Ferdinand::Utils qw(
   read_data_files get_data_files
   render_template
   ghtml ehtml
-  hash_merge hash_select hash_grep
+  hash_merge hash_select hash_grep hash_cleanup
   load_class load_widget
   expand_structure parse_structured_key select_structure
 );
@@ -145,6 +145,19 @@ subtest 'Hash grep' => sub {
 
   my %hg = hash_grep {/^t/} \%in;
   cmp_deeply(\%hg, {text => 'something'}, 'hash_grep in list context ok');
+};
+
+
+subtest 'hash_cleanup' => sub {
+  cmp_deeply(hash_cleanup({a => 1, b => undef}, qw( b c )), {a => 1});
+  cmp_deeply(
+    hash_cleanup({a => [], b => {a => undef}}, qw( b a )),
+    {a => []},
+  );
+  cmp_deeply(
+    hash_cleanup({a => [], b => {a => 1, b => undef}}, qw( b a )),
+    {a => [], b => {a => 1}},
+  );
 };
 
 
