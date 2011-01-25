@@ -1,7 +1,11 @@
 package Ferdinand::Model;
 
 use Ferdinand::Setup 'class';
-use Ferdinand::Utils qw( ehtml ghtml hash_merge parse_structured_key );
+use Ferdinand::Utils qw(
+  ehtml ghtml
+  hash_merge
+  parse_structured_key walk_structure
+);
 use Method::Signatures;
 
 
@@ -49,7 +53,8 @@ method render_field_read (:$ctx, :$field, :$item) {
   my $h = ghtml();
 
   $item = $ctx->item unless $item;
-  my $v = $self->field_value_str(ctx => $ctx, field => $field, item => $item);
+  my $f = $self->field_value_str(ctx => $ctx, field => $field, item => $item);
+  my $v = $f->[3];
 
   my $meta = $self->field_meta($field);
   my $type = $meta->{data_type} || '';
@@ -113,12 +118,13 @@ method render_field_write(:$ctx, :$field, :$item) {
   my $type = $meta->{data_type} || '';
   my $cls  = $meta->{cls_field_html};
   my $def  = $ctx->mode eq 'create' ? 1 : 0;
-  my $val  = $self->field_value_str(
+  my $f    = $self->field_value_str(
     ctx         => $ctx,
     field       => $field,
     item        => $item,
     use_default => $def
   );
+  my $val = $f->[3];
   $val = '' if $meta->{empty};
 
   my $prefix = $ctx->prefix;
@@ -180,28 +186,17 @@ method render_field_write(:$ctx, :$field, :$item) {
 
 method field_value (:$ctx, :$field, :$item) {
   $item = $ctx->item unless $item;
-  return unless $item;
 
-  my @path = parse_structured_key($field);
-
-  while ($item && @path) {
-    my $name = shift @path;
-    confess("FATAL: no support for list fields, ") if ref $name;
-
-    if (blessed($item) && $item->can($name)) { $item = $item->$name() }
-    elsif (ref($item) eq 'HASH') { $item = $item->{$name} }
-    else                         { $item = undef }
-  }
-
-  return $item if defined $item;
-  return;
+  return walk_structure($item, $field)
 }
 
 
 method field_value_str (:$ctx, :$field, :$item, :$use_default = 0) {
   my $meta = $self->field_meta($field);
   my $t    = $meta->{data_type} || '';
-  my $v    = $self->field_value(ctx => $ctx, field => $field, item => $item);
+  my $fv   = $self->field_value(ctx => $ctx, field => $field, item => $item);
+  
+  my $v    = $fv->[2];
   if (!$v && $use_default) {
     $v = $meta->{default_value};
     $v = $v->() if ref($v) eq 'CODE';
@@ -213,19 +208,19 @@ method field_value_str (:$ctx, :$field, :$item, :$use_default = 0) {
     $v = $f->($self);
   }
 
-  return '' unless defined $v;
-  return $v unless ref($v);
+  return [@$fv, ''] unless defined $v;
+  return [@$fv, $v] unless ref($v);
 
   my $class = blessed($v);
   if ($class eq 'DateTime') {
-    return $v->ymd('/') if $t eq 'date';
-    return $v->ymd('/') . ' ' . $v->hms;
+    return [@$fv, $v->ymd('/')] if $t eq 'date';
+    return [@$fv, $v->ymd('/') . ' ' . $v->hms];
   }
   elsif ($class eq 'Data::Currency') {
-    return $v->value;
+    return [@$fv, $v->value];
   }
 
-  return "$v";
+  return [@$fv, "$v"];
 }
 
 

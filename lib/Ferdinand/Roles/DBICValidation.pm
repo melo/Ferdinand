@@ -45,7 +45,8 @@ method _validate ($ctx, $fields) {
     my $mt   = $meta->{meta_type};
     my $req  = $meta->{is_required};
 
-    my $v = $ctx->field_value_str(field => $col, item => $fields);
+    my $fv = $ctx->field_value_str(field => $col, item => $fields);
+    my $v = $fv->[3];
     $v =~ s/^\s+|\s+$//g;
     my $lv = length($v);
 
@@ -108,7 +109,7 @@ func _extract_pk_values_from_item ($ctx, $item?) {
   return unless $item;
 
   return
-    map { $ctx->field_value_str(field => $_, item => $item) }
+    map { $ctx->field_value_str(field => $_, item => $item)->[3] }
     $item->result_source->primary_columns;
 }
 

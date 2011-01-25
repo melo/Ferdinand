@@ -39,7 +39,7 @@ __DATA__
     for my $col (@pk_cols) {
       my $val = $ctx->field_value_str(field => $col);
 ?>
-  <input type="hidden" name="[= $col =]" value="[= $val =]">
+  <input type="hidden" name="[= $col =]" value="[= $val->[3] =]">
 <?pl
     }
   }

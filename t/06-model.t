@@ -437,6 +437,7 @@ subtest 'field values', sub {
   $mock->set_always(stamp => $now);
   $mock->set_always(title => 'aa');
 
+  my $item;
   my $c1 = build_ctx(model => Ferdinand::Model->new);
   my $f1 = $c1->model;
   my %meta;
@@ -444,61 +445,118 @@ subtest 'field values', sub {
   $f1->set_field_meta(title => \%meta);
   $f1->set_field_meta(count => \%meta);
 
-  is($c1->field_value(field => 'stamp2', item => $mock),
-    undef, 'Field stamp2 not found in item arg');
+  cmp_deeply(
+    $c1->field_value(field => 'stamp2', item => $mock),
+    [$mock, 'stamp2', undef],
+    'Field stamp2 not found in item arg'
+  );
 
   %meta = (data_type => 'date');
-  is($c1->field_value(field => 'stamp'), undef, 'Field stamp not present');
-  is($c1->field_value_str(field => 'stamp'),
-    '', '... string version is a empty string');
+  cmp_deeply(
+    $c1->field_value(field => 'stamp'),
+    [undef, 'stamp', undef],
+    'Field stamp not present'
+  );
+  cmp_deeply(
+    $c1->field_value_str(field => 'stamp'),
+    [undef, 'stamp', undef, ''],
+    '... string version is a empty string'
+  );
 
-  is($c1->field_value(field => 'stamp', item => $mock),
-    $now, 'Field stamp found in item arg');
-  is($c1->field_value_str(field => 'stamp', item => $mock),
-    $now->ymd('/'), '... string version == current date');
+  cmp_deeply(
+    $c1->field_value(field => 'stamp', item => $mock),
+    [$mock, 'stamp', $now],
+    'Field stamp found in item arg'
+  );
+  cmp_deeply(
+    $c1->field_value_str(field => 'stamp', item => $mock),
+    [$mock, 'stamp', $now, $now->ymd('/')],
+    '... string version == current date'
+  );
 
   %meta = (data_type => 'datetime');
-  is(
+  cmp_deeply(
     $c1->field_value_str(field => 'stamp', item => $mock),
-    join(' ', $now->ymd('/'), $now->hms),
+    [$mock, 'stamp', $now, join(' ', $now->ymd('/'), $now->hms)],
     '... string version == current date/time'
   );
 
 
   %meta = (data_type => 'datetime', formatter => sub { $_->datetime });
-  is($c1->field_value_str(field => 'stamp', item => $mock),
-    $now->datetime, 'Formatter works');
+  cmp_deeply(
+    $c1->field_value_str(field => 'stamp', item => $mock),
+    [$mock, 'stamp', $now, $now->datetime],
+    'Formatter works'
+  );
 
   %meta = (
     data_type => 'int',
     formatter => sub {"xpto $_"},
   );
-  is($c1->field_value_str(field => 'count', item => {count => 42}),
-    "xpto 42", 'Formatter works for values > 0');
-  is($c1->field_value_str(field => 'count', item => {count => 0}),
-    "xpto 0", 'Formatter works for zero values');
-  is($c1->field_value_str(field => 'count', item => {count => undef}),
-    '', 'Formatter is not called for undef');
+  $item = {count => 42};
+  cmp_deeply(
+    $c1->field_value_str(field => 'count', item => $item),
+    [$item, 'count', 42, 'xpto 42'],
+    'Formatter works for values > 0'
+  );
+  $item = {count => 0};
+  cmp_deeply(
+    $c1->field_value_str(field => 'count', item => $item),
+    [$item, 'count', 0, 'xpto 0'],
+    'Formatter works for zero values'
+  );
+  $item = {count => undef};
+  cmp_deeply(
+    $c1->field_value_str(field => 'count', item => $item),
+    [$item, 'count', undef, ''],
+    'Formatter is not called for undef'
+  );
 
   %meta = (data_type => 'int');
-  is($c1->field_value_str(field => 'count', item => {count => 42}),
-    42, 'Formatter works for values > 0');
-  is($c1->field_value_str(field => 'count', item => {count => 0}),
-    0, 'Formatter works for zero values');
-  is($c1->field_value_str(field => 'count', item => {count => undef}),
-    '', 'Formatter is not called for undef');
+  $item = {count => 42};
+  cmp_deeply(
+    $c1->field_value_str(field => 'count', item => $item),
+    [$item, 'count', 42, 42],
+    'Formatter works for values > 0'
+  );
+  $item = {count => 0};
+  cmp_deeply(
+    $c1->field_value_str(field => 'count', item => $item),
+    [$item, 'count', 0, 0],
+    'Formatter works for zero values'
+  );
+  $item = {count => undef};
+  cmp_deeply(
+    $c1->field_value_str(field => 'count', item => $item),
+    [$item, 'count', undef, ''],
+    'Formatter is not called for undef'
+  );
 
   %meta = ();
-  is($c1->field_value(field => 'title', item => $mock),
-    'aa', 'Field title found in item arg');
+  cmp_deeply(
+    $c1->field_value(field => 'title', item => $mock),
+    [$mock, 'title', 'aa'],
+    'Field title found in item arg'
+  );
 
   %meta = (data_type => 'char');
-  is($c1->field_value_str(field => 'title', item => $mock),
-    'aa', 'Field title found in item arg');
-  is($c1->field_value(field => 'title', item => {title => 'aa'}),
-    'aa', 'Field title found in item arg');
-  is($c1->field_value_str(field => 'title', item => {title => 'aa'}),
-    'aa', 'Field title found in item arg');
+  cmp_deeply(
+    $c1->field_value_str(field => 'title', item => $mock),
+    [$mock, 'title', 'aa', 'aa'],
+    'Field title found in item arg'
+  );
+  $item = {title => 'aa'};
+  cmp_deeply(
+    $c1->field_value(field => 'title', item => $item),
+    [$item, 'title', 'aa'],
+    'Field title found in item arg'
+  );
+  $item = {title => 'aa'};
+  cmp_deeply(
+    $c1->field_value_str(field => 'title', item => $item),
+    [$item, 'title', 'aa', 'aa'],
+    'Field title found in item arg'
+  );
 
 
   $c1   = build_ctx(item => $mock, model => Ferdinand::Model->new);
@@ -508,44 +566,67 @@ subtest 'field values', sub {
   $f1->set_field_meta(title => \%meta);
   $f1->set_field_meta(count => \%meta);
 
-  is($c1->field_value(field => 'stamp'),
-    $now, 'Field stamp found in ctx item');
+  cmp_deeply(
+    $c1->field_value(field => 'stamp'),
+    [$mock, 'stamp', $now],
+    'Field stamp found in ctx item'
+  );
 
   %meta = (data_type => 'date');
-  is($c1->field_value_str(field => 'stamp'),
-    $now->ymd('/'), '... string version == current date');
+  cmp_deeply(
+    $c1->field_value_str(field => 'stamp'),
+    [$mock, 'stamp', $now, $now->ymd('/')],
+    '... string version == current date'
+  );
 
   %meta = (data_type => 'datetime');
-  is(
+  cmp_deeply(
     $c1->field_value_str(field => 'stamp'),
-    join(' ', $now->ymd('/'), $now->hms),
+    [$mock, 'stamp', $now, join(' ', $now->ymd('/'), $now->hms)],
     '... string version == current date/time'
   );
 
-  is($c1->field_value(field => 'stamp2'),
-    undef, 'Field stamp2 not found in ctx item');
+  cmp_deeply(
+    $c1->field_value(field => 'stamp2'),
+    [$mock, 'stamp2', undef],
+    'Field stamp2 not found in ctx item'
+  );
 
   %meta = ();
-  is($c1->field_value(field => 'title'),
-    'aa', 'Field title found in item arg');
-  is($c1->field_value_str(field => 'title'),
-    'aa', 'Field title found in item arg');
+  cmp_deeply(
+    $c1->field_value(field => 'title'),
+    [$mock, 'title', 'aa'],
+    'Field title found in item arg'
+  );
+  cmp_deeply(
+    $c1->field_value_str(field => 'title'),
+    [$mock, 'title', 'aa', 'aa'],
+    'Field title found in item arg'
+  );
 
 
-  is($c1->field_value_str(field => 'count', item => {}, use_default => 1),
-    '', 'No value found for field count');
+  $item = {};
+  cmp_deeply(
+    $c1->field_value_str(field => 'count', item => $item, use_default => 1),
+    [$item, 'count', undef, ''],
+    'No value found for field count'
+  );
 
   %meta = (default_value => 5);
-  is($c1->field_value_str(field => 'count', item => {}, use_default => 1),
-    5, 'Field count not found but default value was used');
+  cmp_deeply(
+    $c1->field_value_str(field => 'count', item => $item, use_default => 1),
+    [$item, 'count', undef, 5],
+    'Field count not found but default value was used'
+  );
 
   %meta = ();
-  is(
+  $item = {price => Data::Currency->new(42.5, 'EUR')};
+  cmp_deeply(
     $c1->field_value_str(
       field => 'price',
-      item  => {price => Data::Currency->new(42.5, 'EUR')}
+      item  => $item,
     ),
-    '42.5',
+    [$item, 'price', Data::Currency->new(42.5, 'EUR'), '42.5'],
     'Proper field value for currency'
   );
 };
@@ -567,19 +648,28 @@ subtest 'field values with live data' => sub {
   my $m = Ferdinand::Model->new();
   my $c = build_ctx(item => $i);
 
-  is($m->field_value(ctx => $c, field => 'title'),
-    'my title', 'Simple fields work ok (object)');
-  is($m->field_value(ctx => $c, field => 'a.name'),
-    'Mini Me', 'Complex fields work ok too (object)');
+  cmp_deeply(
+    $m->field_value(ctx => $c, field => 'title'),
+    [$i, 'title', 'my title'],
+    'Simple fields work ok (object)'
+  );
+  cmp_deeply(
+    $m->field_value(ctx => $c, field => 'a.name'),
+    [$i->a, 'name', 'Mini Me'],
+    'Complex fields work ok too (object)'
+  );
 
   $i = {title => 'another title', a => {name => 'Maxi Pain'}};
-  is(
+  cmp_deeply(
     $m->field_value(ctx => $c, field => 'title', item => $i),
-    'another title',
+    [$i, 'title', 'another title'],
     'Simple fields work ok (hash)'
   );
-  is($m->field_value(ctx => $c, field => 'a.name', item => $i),
-    'Maxi Pain', 'Complex fields work ok too (hash)');
+  cmp_deeply(
+    $m->field_value(ctx => $c, field => 'a.name', item => $i),
+    [$i->{a}, 'name', 'Maxi Pain'],
+    'Complex fields work ok too (hash)'
+  );
 };
 
 
