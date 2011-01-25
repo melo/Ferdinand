@@ -5,6 +5,7 @@ use Tenjin;
 use XML::Generator;
 use Class::MOP ();
 use Carp 'confess';
+use Scalar::Util 'blessed';
 
 our @EXPORT_OK = qw(
   load_class load_widget
@@ -13,6 +14,7 @@ our @EXPORT_OK = qw(
   ghtml ehtml
   hash_merge hash_select hash_grep hash_cleanup
   expand_structure parse_structured_key select_structure
+  walk_structure
 );
 
 
@@ -260,6 +262,26 @@ KEY: for my $k (@_) {
   }
 
   return expand_structure(\%values);
+}
+
+sub walk_structure {
+  my ($item, $field) = @_;
+
+  my @path = parse_structured_key($field);
+
+  my $top;
+  while ($item && @path) {
+    my $name = $field = shift @path;
+    $top = $item;
+    confess("FATAL: no support for list fields, ") if ref $name;
+
+    if (blessed($item) && $item->can($name)) { $item = $item->$name() }
+    elsif (ref($item) eq 'HASH') { $item = $item->{$name} }
+    else                         { $item = undef }
+  }
+
+  return [undef, pop(@path), undef] if @path;
+  return [$top, $field, $item];
 }
 
 
