@@ -30,9 +30,10 @@ subtest 'field metadata' => sub {
 
 subtest 'render_field output' => sub {
   my $i = Test::MockObject->new;
-  $i->set_always(v  => '<abcd & efgh>');
-  $i->set_always(e  => '!!');
-  $i->set_always(id => 1);
+  $i->set_always(v     => '<abcd & efgh>');
+  $i->set_always(e     => '!!');
+  $i->set_always(id    => 1);
+  $i->set_always(empty => '');
 
   my $c1 = build_ctx(item => $i, model => Ferdinand::Model->new);
 
@@ -82,6 +83,49 @@ subtest 'render_field output' => sub {
     'link_to value'
   );
 
+
+  ## Empty fields
+  %meta = (data_type => 'text', cls_field_html => 'aa');
+  $c1->model->set_field_meta(empty => \%meta);
+  is(
+    $c1->render_field(field => 'empty'),
+    '<div class="aa"></div>',
+    'empty values for type text'
+  );
+
+  delete $meta{data_type};
+  is(
+    $c1->render_field(field => 'empty'),
+    '<span class="aa"></span>',
+    'empty values with attrs'
+  );
+
+  delete $meta{cls_field_html};
+  is($c1->render_field(field => 'empty'), '', 'empty values, no attrs');
+
+
+  ## Non existing fields
+  %meta = (data_type => 'text', cls_field_html => 'aa');
+  $c1->model->set_field_meta(not_found => \%meta);
+  is(
+    $c1->render_field(field => 'not_found'),
+    '<div class="aa"></div>',
+    'field not_found for type text'
+  );
+
+  delete $meta{data_type};
+  is(
+    $c1->render_field(field => 'not_found'),
+    '<span class="aa"></span>',
+    'field not_found with attrs'
+  );
+
+  delete $meta{cls_field_html};
+  is($c1->render_field(field => 'not_found'), '',
+    'fields not_found, no attr');
+
+
+  ## blessed item
   $i = Test::MockObject->new;
   $i->set_always(x => '<ABCD & EFGH>');
   is(
@@ -171,8 +215,7 @@ subtest 'render_field_read', sub {
     '', 'xpto with meta type varchar');
 
   %meta = (data_type => 'text');
-  is($c1->render_field_read(field => 'xpto'),
-    '<div></div>', 'xpto text field');
+  is($c1->render_field_read(field => 'xpto'), '', 'xpto text field');
 
   %meta = (data_type => 'text', cls_field_html => 'x y z');
   is(

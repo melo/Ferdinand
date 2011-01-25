@@ -63,7 +63,7 @@ method render_field_read (:$ctx, :$field, :$item) {
   my $cls = $meta->{cls_field_html};
   $attrs{class} = $cls if $cls;
 
-  if (!defined $v) {
+  if (length($v) == 0) {
     return $h->div(\%attrs, '') if %attrs && $type eq 'text';
     return $h->span(\%attrs, '') if %attrs;
     return '';
