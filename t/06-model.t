@@ -29,11 +29,14 @@ subtest 'field metadata' => sub {
 
 
 subtest 'render_field output' => sub {
+  my $o = Test::MockObject->new;
+  $o->set_always(title => 'mini_me');
   my $i = Test::MockObject->new;
   $i->set_always(v     => '<abcd & efgh>');
   $i->set_always(e     => '!!');
   $i->set_always(id    => 1);
   $i->set_always(empty => '');
+  $i->set_always(o     => $o);
 
   my $c1 = build_ctx(item => $i, model => Ferdinand::Model->new);
 
@@ -57,6 +60,8 @@ subtest 'render_field output' => sub {
     'Single row value, with class'
   );
 
+
+  ## link_to
   $meta{link_to} = sub { shift->e };
   like_all(
     'link_to value + class',
@@ -81,6 +86,14 @@ subtest 'render_field output' => sub {
     $c1->render_field(%args),
     '<a href="!!">&lt;ABCD &amp; EFGH&gt;</a>',
     'link_to value'
+  );
+
+  %meta = (link_to => sub { shift->title });
+  $c1->model->set_field_meta('o.title' => \%meta);
+  is(
+    $c1->render_field(field => 'o.title'),
+    '<a href="mini_me">mini_me</a>',
+    'link_to with a structured field, proper first arg'
   );
 
 
