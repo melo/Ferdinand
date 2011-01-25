@@ -46,7 +46,7 @@ __DATA__
 <?pl   for my $row (@rows) { ?>
     <tr>
 <?pl     for my $col (@$col_names) {
-           my $html = $ctx->render_field(
+           my $html = $ctx->render_field_read(
               field => $col,
               item  => $row,
            );

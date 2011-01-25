@@ -58,37 +58,39 @@ subtest 'Ferdinand setup' => sub {
 subtest 'Render list action' => sub {
   my $ctx;
 
-  is(exception { $ctx = $map->render('list') },
-    undef, "Rendered list didn't die");
-  ok($ctx->buffer, '... got a buffer with something in it');
+  for my $mode (qw(view list create create_do edit edit_do)) {
+    is(exception { $ctx = $map->render('list', {mode => $mode}) },
+      undef, "Rendered list didn't die (mode $mode)");
 
-  my $buffer = $ctx->buffer;
+    my $buffer = $ctx->buffer;
+    ok($ctx->buffer, '... got a buffer with something in it');
 
-  like($buffer, qr{<th[^>]*>$_</th>}, "Buffer matches header '$_'")
-    for ('ID', 'Title', 'Slug', 'Published At', 'Visible');
+    like($buffer, qr{<th[^>]*>$_</th>}, "...... buffer matches header '$_'")
+      for ('ID', 'Title', 'Slug', 'Published At', 'Visible');
 
-  for my $row ($db->resultset('I')->all) {
-    my $id   = $row->id;
-    my $slug = $row->slug;
+    for my $row ($db->resultset('I')->all) {
+      my $id   = $row->id;
+      my $slug = $row->slug;
 
-    ok($row, "Got row $id");
-    like(
-      $buffer,
-      qr{<td><a href="http://example.com/items/$slug">$id</a></td>},
-      '... ID matches'
-    );
+      ok($row, "... Test with row $id");
+      like(
+        $buffer,
+        qr{<td><a href="http://example.com/items/$slug">$id</a></td>},
+        '...... ID matches'
+      );
 
-    like(
-      $buffer,
-      qr{<td><a href="http://example.com/items/$slug">$slug</a></td>},
-      '... Slug matches'
-    );
+      like(
+        $buffer,
+        qr{<td><a href="http://example.com/items/$slug">$slug</a></td>},
+        '...... Slug matches'
+      );
 
-    my $dmy = $row->published_at->dmy('/');
-    like($buffer, qr{<td>$dmy</td>}, '... Date published_at matches');
+      my $dmy = $row->published_at->dmy('/');
+      like($buffer, qr{<td>$dmy</td>}, '...... Date published_at matches');
 
-    my $visible = $row->visible;
-    like($buffer, qr{<td>$visible</td>}, '... Visibility matches');
+      my $visible = $row->visible;
+      like($buffer, qr{<td>$visible</td>}, '...... Visibility matches');
+    }
   }
 };
 
