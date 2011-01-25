@@ -216,9 +216,13 @@ method field_value_str (:$ctx, :$field, :$item, :$use_default = 0) {
   return '' unless defined $v;
   return $v unless ref($v);
 
-  if (blessed($v) eq 'DateTime') {
+  my $class = blessed($v);
+  if ($class eq 'DateTime') {
     return $v->ymd('/') if $t eq 'date';
     return $v->ymd('/') . ' ' . $v->hms;
+  }
+  elsif ($class eq 'Data::Currency') {
+    return $v->value;
   }
 
   return "$v";

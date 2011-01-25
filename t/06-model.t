@@ -5,6 +5,7 @@ use warnings;
 use Ferdinand::Tests;
 use Ferdinand::Model;
 use Test::MockObject;
+use Data::Currency;
 
 subtest 'field metadata' => sub {
   my $f1 = Ferdinand::Model->new;
@@ -242,7 +243,10 @@ subtest 'render_field_write', sub {
   like_all(
     'xpto bare input (with ctx prefix)',
     $c1->render_field_write(field => 'xpto'),
-    qr{<input }, qr{type="text"}, qr{name="x.xpto"}, qr{id="x.xpto"},
+    qr{<input },
+    qr{type="text"},
+    qr{name="x.xpto"},
+    qr{id="x.xpto"},
     qr{required="1"},
   );
   $c1->prefix('');
@@ -534,6 +538,16 @@ subtest 'field values', sub {
   %meta = (default_value => 5);
   is($c1->field_value_str(field => 'count', item => {}, use_default => 1),
     5, 'Field count not found but default value was used');
+
+  %meta = ();
+  is(
+    $c1->field_value_str(
+      field => 'price',
+      item  => {price => Data::Currency->new(42.5, 'EUR')}
+    ),
+    '42.5',
+    'Proper field value for currency'
+  );
 };
 
 
