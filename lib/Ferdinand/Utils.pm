@@ -2,6 +2,7 @@ package Ferdinand::Utils;
 
 use Ferdinand::Setup 'library';
 use Tenjin;
+use Encode;
 use XML::Generator;
 use Class::MOP ();
 use Carp 'confess';
@@ -12,7 +13,7 @@ our @EXPORT_OK = qw(
   read_data_files get_data_files
   render_template
   ghtml ehtml
-  hash_merge hash_select hash_grep hash_cleanup
+  hash_merge hash_select hash_grep hash_cleanup hash_decode
   expand_structure parse_structured_key select_structure
   walk_structure
 );
@@ -193,6 +194,18 @@ sub hash_cleanup {
   }
 
   return $h;
+}
+
+sub hash_decode {
+  my ($hash, $charset) = @_;
+  $charset = 'utf8' unless $charset;
+
+  my %decoded;
+  while (my ($k, $v) = each %$hash) {
+    $decoded{$k} = Encode::decode($charset, $v);
+  }
+
+  return \%decoded;
 }
 
 

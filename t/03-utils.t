@@ -7,7 +7,7 @@ use Ferdinand::Utils qw(
   read_data_files get_data_files
   render_template
   ghtml ehtml
-  hash_merge hash_select hash_grep hash_cleanup
+  hash_merge hash_select hash_grep hash_cleanup hash_decode
   load_class load_widget
   expand_structure parse_structured_key select_structure
   walk_structure
@@ -166,6 +166,16 @@ subtest 'hash_cleanup' => sub {
 };
 
 
+subtest 'hash_decode' => sub {
+  require Encode;
+  my $utf8_str = Encode::decode('iso-8859-1', 'áéíóú');
+  my $utf8_octets = Encode::encode('utf8', $utf8_str);
+
+  my $r = hash_decode({u => $utf8_octets});
+  is($r->{u}, $utf8_str, 'string decoded properly');
+};
+
+
 subtest 'load_* utils' => sub {
   my $c;
 
@@ -305,8 +315,8 @@ subtest 'walk_structure' => sub {
 
   for my $t (@test_cases) {
     my $in = $t->{in};
-    cmp_deeply(walk_structure($source, $in),
-      $t->{out}, "walked for '$in' ok");
+    cmp_deeply(walk_structure($source, $in), $t->{out},
+      "walked for '$in' ok");
   }
 };
 
