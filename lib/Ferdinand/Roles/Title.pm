@@ -22,9 +22,9 @@ method title ($ctx) {
   return $t->($ctx->item);
 }
 
-method render_title ($ctx) {
+method render_title ($ctx, $args = {}) {
   return unless my $t = $self->title($ctx);
-  return ghtml()->h1($t);
+  return ghtml()->h1($args, $t);
 }
 
 1;
