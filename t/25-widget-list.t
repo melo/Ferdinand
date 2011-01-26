@@ -22,6 +22,7 @@ subtest 'Ferdinand setup' => sub {
             dbic_set { $_->model->source->resultset };
             widget {
               type 'List';
+              attr title => 'mini me';
               columns {
                 link_to id    => $link_to_cb;
                 link_to title => $link_to_cb;
@@ -64,6 +65,18 @@ subtest 'Render list action' => sub {
 
     my $buffer = $ctx->buffer;
     ok($ctx->buffer, '... got a buffer with something in it');
+
+    like(
+      $buffer,
+      qr{<table[^>]*class="[^"]*\bw_list\b[^"]*">},
+      "...... table has proper w_list class"
+    );
+
+    like(
+      $buffer,
+      qr{<h1 class="w_list">mini me</h1>},
+      "...... title for table was found"
+    );
 
     like($buffer, qr{<th[^>]*>$_</th>}, "...... buffer matches header '$_'")
       for ('ID', 'Title', 'Slug', 'Published At', 'Visible');

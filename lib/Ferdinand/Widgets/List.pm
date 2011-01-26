@@ -28,9 +28,9 @@ __DATA__
 <?pl my $col_names = $widget->col_names; ?>
 <?pl my @rows = $ctx->set->all; ?>
 
-[== $widget->render_title($ctx) =]
+[== $widget->render_title($ctx, {class => "w_list"}) =]
 
-<table cellspacing="1" class="ordenada1">
+<table cellspacing="1" class="ordenada1 w_list">
   <thead>
     <tr>
 <?pl
