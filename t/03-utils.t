@@ -10,7 +10,7 @@ use Ferdinand::Utils qw(
   hash_merge hash_select hash_grep hash_cleanup hash_decode
   load_class load_widget
   expand_structure parse_structured_key select_structure
-  walk_structure
+  walk_structure find_structure
 );
 use Sample;
 
@@ -281,6 +281,32 @@ subtest 'select_structure' => sub {
     my $desc = join(', ', @{$t->{in}});
     cmp_deeply(select_structure($source, @{$t->{in}}),
       $t->{out}, "Selected '$desc' ok");
+  }
+};
+
+
+subtest 'find_structure' => sub {
+  my $source = {
+    a => {b => 1},
+    c => {d => {e => 2}},
+    f => 4,
+  };
+
+  my @test_cases = (
+    {in => 'a.b',   out => 1},
+    {in => 'c.g',   out => undef},
+    {in => 'g',     out => undef},
+    {in => 'f.h',   out => undef},
+    {in => 'a.g',   out => undef},
+    {in => 'c.d.e', out => 2},
+    {in => 'g.h',   out => undef},
+    {in => 'f',     out => 4},
+    {in => 'c.d',   out => {e => 2}},
+  );
+
+  for my $t (@test_cases) {
+    my $in = $t->{in};
+    cmp_deeply(find_structure($source, $in), $t->{out}, "Selected '$in' ok");
   }
 };
 

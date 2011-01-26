@@ -15,7 +15,7 @@ our @EXPORT_OK = qw(
   ghtml ehtml
   hash_merge hash_select hash_grep hash_cleanup hash_decode
   expand_structure parse_structured_key select_structure
-  walk_structure
+  walk_structure find_structure
 );
 
 
@@ -253,6 +253,26 @@ sub expand_structure {
 sub parse_structured_key {
   return
     map { /^(.+)\[(\d+)\]$/ ? ($1, \(my $i = $2)) : $_ } split(/[.]/, $_[0]);
+}
+
+sub find_structure {
+  my ($in, $k) = @_;
+
+  my (@path) = parse_structured_key($k);
+
+  my $s = $in;
+  while (@path) {
+    my $n = shift @path;
+
+    unless (defined($s) && ref($s) eq 'HASH' && exists $s->{$n}) {
+      $s = undef;
+      last;
+    }
+
+    $s = $s->{$n};
+  }
+
+  return $s;
 }
 
 sub select_structure {
