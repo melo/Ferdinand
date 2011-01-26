@@ -11,9 +11,8 @@ has 'title' => (
   isa => 'CodeRef|Str',
 );
 
-after setup_attrs => method ($attrs, $meta, $sys, $stash) {
-  $attrs->{title} = delete $meta->{title} if exists $meta->{title};
-};
+after setup_fields => method ($fields) { push @$fields, 'title' };
+
 
 method title ($ctx) {
   my $t = $self->{title};

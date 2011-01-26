@@ -15,10 +15,8 @@ has 'valid' => (
   },
 );
 
+after setup_fields => method ($fields) { push @$fields, 'valid' };
 
-after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
-  $attrs->{valid} = delete $meta->{valid} if exists $meta->{valid};
-};
 
 after render_self => method ($ctx) {
   my $fields = hash_grep { !/^btn_/ } $ctx->params;

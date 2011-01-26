@@ -16,6 +16,13 @@ has 'id' => (
 
 method setup ($class:, $meta, $sys, $stash) {
   my %attrs;
+
+  my @fields;
+  $class->setup_fields(\@fields);
+  for my $f (@fields) {
+    $attrs{$f} = delete $meta->{$f} if exists $meta->{$f};
+  }
+
   $class->setup_attrs(\%attrs, $meta, $sys, $stash);
 
   $attrs{id} = 'w_' . ++$stash->{widget_ids} unless exists $attrs{id};
@@ -29,6 +36,7 @@ method setup ($class:, $meta, $sys, $stash) {
 
 method setup_attrs ($class:, $attrs, $meta, $sys, $stash) {}
 method setup_done ($stash) {}
+method setup_fields ($fields) {}
 
 
 #########################################

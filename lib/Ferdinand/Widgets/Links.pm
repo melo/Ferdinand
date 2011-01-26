@@ -11,10 +11,7 @@ has 'links' => (
   is  => 'ro',
 );
 
-after setup_attrs => method ($class:, $attrs, $meta) {
-  $attrs->{links} = delete $meta->{links}
-    if exists $meta->{links};
-};
+after setup_fields => method ($fields) { push @$fields, 'links' };
 
 
 method render_self ($ctx) {

@@ -9,12 +9,8 @@ extends 'Ferdinand::Widget';
 
 has 'set' => (isa => 'CodeRef', is => 'ro', required => 1);
 
+after setup_fields => method ($fields) { push @$fields, 'set' };
 
-after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
-  for my $f (qw( set )) {
-    $attrs->{$f} = delete $meta->{$f} if exists $meta->{$f};
-  }
-};
 
 method render_self ($ctx) {
   local $_ = $ctx;

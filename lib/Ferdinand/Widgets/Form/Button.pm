@@ -22,14 +22,8 @@ has 'btn_id' => (
   }
 );
 
+after setup_fields => method($fields) {push @$fields, 'label', 'btn_id'};
 
-after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
-  ## Remove known attributes
-  for my $f (qw( label )) {
-    $attrs->{$f} = delete $meta->{$f}
-      if exists $meta->{$f};
-  }
-};
 
 method render_self ($ctx) {
   $ctx->buffer(render_template('button.pltj', {ctx => $ctx}));

@@ -10,10 +10,8 @@ with 'Ferdinand::Roles::WidgetContainer';
 
 has 'overlay' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
-after setup_attrs => method($class:, $attrs, $meta) {
-  $attrs->{overlay} = delete $meta->{overlay}
-    if exists $meta->{overlay};
-};
+after setup_fields => method ($fields) { push @$fields, 'overlay' };
+
 
 method render_begin ($ctx) {
   my %o = %{$self->overlay};

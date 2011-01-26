@@ -20,6 +20,8 @@ has 'on_demand' => (
   default => 0,
 );
 
+after setup_fields => method ($fields) { push @$fields, 'on_demand' };
+
 
 after setup_attrs => method ($class:, $attrs, $meta, $sys?, $stash = {}) {
   my $layout = delete $meta->{layout} || [];
@@ -34,9 +36,7 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys?, $stash = {}) {
     push @widgets, $widget_class->setup($widget_spec, $sys, $stash);
   }
 
-  $attrs->{layout}    = \@widgets;
-  $attrs->{on_demand} = delete $meta->{on_demand}
-    if exists $meta->{on_demand};
+  $attrs->{layout} = \@widgets;
 };
 
 
