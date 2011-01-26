@@ -2,7 +2,8 @@ package Ferdinand;
 # ABSTRACT: a very cool module
 
 use Ferdinand::Setup 'class';
-use Ferdinand::Utils qw( load_class load_widget expand_structure );
+use Ferdinand::Utils
+  qw( load_class load_widget expand_structure hash_decode );
 use Carp 'confess';
 use Method::Signatures;
 
@@ -49,7 +50,7 @@ method render ($obj, $args = {}) {
 
 
 method build_ctx ($attrs = {}) {
-  $attrs->{params} = expand_structure($attrs->{params})
+  $attrs->{params} = expand_structure(hash_decode($attrs->{params}))
     if exists $attrs->{params};
 
   return $self->context_class_name->new($attrs);
