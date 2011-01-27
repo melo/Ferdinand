@@ -21,15 +21,15 @@ has 'select_id' => (
   default => sub { join('_', shift->id, 'new') },
 );
 
-has 'btn_id' => (
+has 'btn_add_id' => (
   isa     => 'Str',
   is      => 'ro',
   lazy    => 1,
-  default => sub { join('_', 'btn', shift->select_id) },
+  default => sub { join('_', 'btn', 'add', shift->select_id) },
 );
 
 after setup_fields => method($fields) {
-  push @$fields, qw(prefix sufix options select_id btn_id);
+  push @$fields, qw(prefix sufix options select_id btn_add_id);
 };
 
 
@@ -60,7 +60,8 @@ method _get_elements ($ctx) {
   my $prefix = $self->prefix;
   my $elems  = find_structure($params, $prefix);
 
-  if ($params->{$self->btn_id}) {
+  ## add item
+  if ($params->{$self->btn_add_id}) {
     my $id = $params->{$self->select_id};
     if (!empty($id)) {
       my $elem = {__ID => $id};
@@ -93,7 +94,7 @@ __DATA__
     <option value="[= $_->{id} =]">[= $_->{text} =]</option>
 <?pl } ?>
   </select>
-  <input type="submit" name="[= $w->btn_id =]" value="Adicionar">
+  <input type="submit" name="[= $w->btn_add_id =]" value="Adicionar">
 
 <?pl while (my ($k, $v) = each %$elems) { ?>
   <input type="hidden" name="[= $k =]" value="[= $v =]">
