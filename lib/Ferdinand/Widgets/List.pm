@@ -11,6 +11,10 @@ extends 'Ferdinand::Widget';
 with 'Ferdinand::Roles::ColumnSet', 'Ferdinand::Roles::Title';
 
 method render_self ($ctx) {
+  $self->render_list($ctx);
+}
+
+method render_list ($ctx) {
   confess('List widget requires a valid set() in Context,')
     unless $ctx->set;
   $ctx->buffer(render_template('list.pltj', {ctx => $ctx}));
