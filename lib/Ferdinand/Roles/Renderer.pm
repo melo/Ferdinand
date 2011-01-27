@@ -17,6 +17,10 @@ sub render_begin { }
 sub render_end   { }
 
 method render_self ($ctx) {
+  $self->render_per_mode($ctx);
+}
+
+method render_per_mode ($ctx) {
   my $m = $ctx->mode;
   return $self->render_self_read(@_)  if $m eq 'view'   || $m eq 'list';
   return $self->render_self_write(@_) if $m eq 'create' || $m eq 'create_do';
