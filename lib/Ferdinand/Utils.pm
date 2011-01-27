@@ -17,6 +17,7 @@ our @EXPORT_OK = qw(
   hash_merge hash_select hash_grep hash_cleanup hash_decode
   expand_structure parse_structured_key select_structure
   walk_structure find_structure
+  dbicset_as_options
 );
 
 
@@ -324,5 +325,14 @@ sub walk_structure {
   return [$top, $field, $item];
 }
 
+
+##############
+# DBIC helpers
+
+sub dbicset_as_options {
+  my ($rs, $field) = @_;
+
+  return [map { {id => $_->id, text => $_->$field} } $rs->all];
+}
 
 1;

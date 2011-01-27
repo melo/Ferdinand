@@ -12,6 +12,7 @@ use Ferdinand::Utils qw(
   load_class load_widget
   expand_structure parse_structured_key select_structure
   walk_structure find_structure
+  dbicset_as_options
 );
 use Sample;
 
@@ -355,6 +356,19 @@ subtest 'empty' => sub {
   ok(empty(''),    'but "" is empty');
   ok(empty(undef), "and so is undef");
   ok(empty(),      "and no arg");
+};
+
+
+subtest 'dbicset_as_options' => sub {
+  require TDB;
+  my $db   = TDB->test_deploy;
+  my $i_rs = $db->resultset('I');
+
+  cmp_deeply(
+    dbicset_as_options($i_rs, 'title'),
+    [{id => 1, text => 'Title 1 & me'}, {id => 2, text => 'Title 2'}],
+    'dbicset_as_options ok'
+  );
 };
 
 
