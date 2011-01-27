@@ -229,5 +229,10 @@ method fetch ($id, $source) {
 }
 
 
+method column_meta_fixup () {
+  confess "Subclass $self needs to implement column_meta_fixup(), ";
+}
+
+
 __PACKAGE__->meta->make_immutable;
 1;
