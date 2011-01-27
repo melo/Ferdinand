@@ -4,21 +4,52 @@ package Ferdinand::Widgets::List;
 
 use Ferdinand::Setup 'class';
 use Method::Signatures;
-use Ferdinand::Utils qw(render_template);
+use Ferdinand::Utils qw(render_template find_structure);
 use Carp 'confess';
 
 extends 'Ferdinand::Widget';
 with 'Ferdinand::Roles::ColumnSet', 'Ferdinand::Roles::Title';
 
 method render_self ($ctx) {
-  $self->render_list($ctx);
+  $self->render_list($ctx, $self->_get_elems($ctx));
 }
 
-method render_list ($ctx) {
-  confess('List widget requires a valid set() in Context,')
-    unless $ctx->set;
-  $ctx->buffer(render_template('list.pltj', {ctx => $ctx}));
+method render_list ($ctx, $elems) {
+  $ctx->buffer(
+    render_template(
+      'list.pltj',
+      { ctx   => $ctx,
+        elems => $elems,
+      }
+    )
+  );
 }
+
+method _get_elems ($ctx) {
+  my $id = $self->id;
+  my $p  = $ctx->params;
+
+  my $elems;
+  if (find_structure($p, "${id}.init")) {
+    $elems = find_structure($p, "${id}.items");
+  }
+  elsif (my $rs = $ctx->set) {
+    my $cols = $self->col_names;
+    while (my $row = $rs->next) {
+      my %html;
+      for my $col (@$cols) {
+        $html{$col} = $ctx->render_field_read(
+          field => $col,
+          item  => $row,
+        );
+      }
+      push @$elems, \%html;
+    }
+  }
+
+  return $elems || [];
+}
+
 
 __PACKAGE__->meta->make_immutable;
 1;
@@ -26,11 +57,10 @@ __PACKAGE__->meta->make_immutable;
 __DATA__
 
 @@ list.pltj
-<?pl #@ARGS ctx ?>
+<?pl #@ARGS ctx, elems ?>
 <?pl my $model = $ctx->model; ?>
 <?pl my $widget = $ctx->widget; ?>
 <?pl my $col_names = $widget->col_names; ?>
-<?pl my @rows = $ctx->set->all; ?>
 
 [== $widget->render_title($ctx, {class => "w_list"}) =]
 
@@ -46,16 +76,11 @@ __DATA__
     </tr>
   </thead>
   <tbody>
-<?pl if (@rows) { ?>
-<?pl   for my $row (@rows) { ?>
+<?pl if (@$elems) { ?>
+<?pl   for my $row (@$elems) { ?>
     <tr>
-<?pl     for my $col (@$col_names) {
-           my $html = $ctx->render_field_read(
-              field => $col,
-              item  => $row,
-           );
-?>
-      <td>[== $html =]</td>
+<?pl     for my $col (@$col_names) { ?>
+      <td>[== $row->{$col} =]</td>
 <?pl     } ?>
     </tr>
 <?pl   } ?>
