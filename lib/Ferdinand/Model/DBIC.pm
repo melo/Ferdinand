@@ -24,6 +24,15 @@ our %meta_types = (
   datetime => 'date',
 );
 
+
+method fetch ($id, $source?) {
+  $source = $self->source unless $source;
+
+  $id = [$id] unless ref $id;
+  return $source->resultset->find(@$id);
+}
+
+
 method column_meta_fixup ($full_name, $defs = {}) {
   my %info;
   my $source = $self->source;

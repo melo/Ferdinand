@@ -42,6 +42,11 @@ more stuff
     ]
   );
 
+  my $rs = $db->resultset('I');
+  while (my $i = $rs->next) {
+    $i->create_related(a => {name => $i->title . ' - Mini Me'});
+  }
+
   return $db;
 }
 

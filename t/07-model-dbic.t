@@ -152,4 +152,25 @@ subtest 'metadata with live data' => sub {
 };
 
 
+subtest 'fetch' => sub {
+  my $db = test_db();
+  my $is = $db->source('I');
+  my $i1 = $is->resultset->first;
+  my $a1 = $db->resultset('A')->first;
+
+  my $m = Ferdinand::Model::DBIC->new(source => $is);
+
+  my $found;
+  is(exception { $found = $m->fetch($i1->id) },
+    undef, 'fetch() without source, no exception');
+  ok($found, '... found something');
+  cmp_deeply([$found->id], [$i1->id], '... with the expected id');
+
+  is(exception { $found = $m->fetch($a1->id, $db->source('A')) },
+    undef, 'fetch() with source A, no exception');
+  ok($found, '... found something');
+  cmp_deeply([$found->id], [$a1->id], '... with the expected id');
+};
+
+
 done_testing();

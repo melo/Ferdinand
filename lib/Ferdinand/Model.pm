@@ -224,5 +224,10 @@ method field_value_str (:$ctx, :$field, :$item, :$use_default = 0) {
 }
 
 
+method fetch ($id, $source) {
+  confess "Subclass $self needs to implement fetch(), ";
+}
+
+
 __PACKAGE__->meta->make_immutable;
 1;
