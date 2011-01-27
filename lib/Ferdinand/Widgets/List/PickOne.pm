@@ -1,4 +1,4 @@
-package Ferdinand::Widgets::PickOne;
+package Ferdinand::Widgets::List::PickOne;
 
 # ABSTRACT: a very cool module
 
@@ -7,7 +7,7 @@ use Method::Signatures;
 use Ferdinand::Utils qw(render_template find_structure);
 use Carp 'confess';
 
-extends 'Ferdinand::Widget';
+extends 'Ferdinand::Widgets::List';
 
 has 'prefix' => (isa => 'Str',            is => 'ro', required => 1);
 has 'column' => (isa => 'Str',            is => 'ro', required => 1);
@@ -15,6 +15,11 @@ has 'set'    => (isa => 'CodeRef', is => 'ro', required => 1);
 
 after setup_fields => method ($fields) {push @$fields, qw(prefix column set)};
 
+
+method render_self ($ctx) {
+  $self->render_list($ctx);
+  $self->render_per_mode($ctx);
+}
 
 method render_self_write ($ctx) {
   my $select_id = $self->id . '_new';
