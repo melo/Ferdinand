@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Ferdinand::Tests;
 use Ferdinand::Utils qw(
+  empty
   read_data_files get_data_files
   render_template
   ghtml ehtml
@@ -344,6 +345,16 @@ subtest 'walk_structure' => sub {
     cmp_deeply(walk_structure($source, $in), $t->{out},
       "walked for '$in' ok");
   }
+};
+
+
+subtest 'empty' => sub {
+  ok(!empty('1'),  '"1" is not empty');
+  ok(!empty('0'),  '"0" is not empty');
+  ok(!empty(0),    '0 is not empty either');
+  ok(empty(''),    'but "" is empty');
+  ok(empty(undef), "and so is undef");
+  ok(empty(),      "and no arg");
 };
 
 

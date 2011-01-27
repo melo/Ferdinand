@@ -9,6 +9,7 @@ use Carp 'confess';
 use Scalar::Util 'blessed';
 
 our @EXPORT_OK = qw(
+  empty
   load_class load_widget
   read_data_files get_data_files
   render_template
@@ -18,6 +19,12 @@ our @EXPORT_OK = qw(
   walk_structure find_structure
 );
 
+
+sub empty {
+  return 1 unless defined $_[0];
+  return 1 unless length $_[0];
+  return 0;
+}
 
 sub load_class {
   my ($class) = @_;
