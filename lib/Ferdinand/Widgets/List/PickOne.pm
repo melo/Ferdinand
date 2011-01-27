@@ -4,16 +4,33 @@ package Ferdinand::Widgets::List::PickOne;
 
 use Ferdinand::Setup 'class';
 use Method::Signatures;
-use Ferdinand::Utils qw(render_template find_structure);
+use Ferdinand::Utils
+  qw(render_template find_structure serialize_structure empty );
 use Carp 'confess';
 
 extends 'Ferdinand::Widgets::List';
 
-has 'prefix' => (isa => 'Str',            is => 'ro', required => 1);
-has 'column' => (isa => 'Str',            is => 'ro', required => 1);
-has 'set'    => (isa => 'CodeRef', is => 'ro', required => 1);
+has 'prefix'  => (isa => 'Str',     is => 'ro', required => 1);
+has 'sufix'   => (isa => 'Str',     is => 'ro');
+has 'options' => (isa => 'CodeRef', is => 'ro', required => 1);
 
-after setup_fields => method ($fields) {push @$fields, qw(prefix column set)};
+has 'select_id' => (
+  isa     => 'Str',
+  is      => 'ro',
+  lazy    => 1,
+  default => sub { join('_', shift->id, 'new') },
+);
+
+has 'btn_id' => (
+  isa     => 'Str',
+  is      => 'ro',
+  lazy    => 1,
+  default => sub { join('_', 'btn', shift->select_id) },
+);
+
+after setup_fields => method($fields) {
+  push @$fields, qw(prefix sufix options select_id btn_id);
+};
 
 
 method render_self ($ctx) {
@@ -22,56 +39,41 @@ method render_self ($ctx) {
 }
 
 method render_self_write ($ctx) {
-  my $select_id = $self->id . '_new';
-
-  my $set = $self->_get_set($ctx);
-  my $rows = $self->_get_options($ctx, $set);
-  my $elems = $self->_get_elements($ctx, $set, $select_id);
-
   $ctx->buffer(
     render_template(
       'picker.pltj',
       { ctx       => $ctx,
-        rows      => $rows,
-        elems     => $elems,
-        prefix    => $self->prefix,
-        select_id => $select_id,
+        elems     => $self->_get_elements($ctx),
+        options   => $self->_get_options($ctx),
       }
     )
   );
 }
 
-method _get_set ($ctx) {
-  my $set = $self->set;
-
+method _get_options ($ctx) {
   local $_ = $ctx;
-  $set = $set->($self);
-
-  return $set;
+  return $self->options->($self);
 }
 
-method _get_options ($ctx, $set) {
-  my $column = $self->column;
-
-  return [map { {id => $_->id, text => $_->$column} } $set->all];
-}
-
-method _get_elements ($ctx, $set, $select_id) {
+method _get_elements ($ctx) {
   my $params = $ctx->params;
   my $prefix = $self->prefix;
-  my $elems  = find_structure($params, $prefix) || [];
+  my $elems  = find_structure($params, $prefix);
 
-  if ($params->{"btn_$select_id"}) {
-    my ($col, $trouble) = $set->result_source->primary_columns;
-    confess("PickOne needs ResultSources with a single column primary key, ")
-      if $trouble;
-
-    push @$elems, {$col => $params->{$select_id}};
+  if ($params->{$self->btn_id}) {
+    my $id = $params->{$self->select_id};
+    if (!empty($id)) {
+      my $elem = {__ID => $id};
+      if (my $sufix = $self->sufix) {
+        $elem = {$sufix => $elem};
+      }
+      push @$elems, $elem;
+    }
   }
 
-  return $elems;
+  return serialize_structure({ $prefix => $elems }) if $elems && @$elems;
+  return {};
 }
-
 
 
 
@@ -81,23 +83,19 @@ __PACKAGE__->meta->make_immutable;
 __DATA__
 
 @@ picker.pltj
-<?pl #@ARGS ctx, rows, prefix, select_id, elems ?>
+<?pl #@ARGS ctx, elems, options ?>
+<?pl my $w = $ctx->widget; ?>
+<?pl my $prefix = $w->prefix; ?>
+
 <div class="w_pickone">
-  <select name="[= $select_id =]">
-<?pl for (@$rows) { ?>
+  <select name="[= $w->select_id =]">
+<?pl for (@$options) { ?>
     <option value="[= $_->{id} =]">[= $_->{text} =]</option>
 <?pl } ?>
   </select>
-  <input type="submit" name="btn_[= $select_id =]" value="Adicionar">
+  <input type="submit" name="[= $w->btn_id =]" value="Adicionar">
 
-<?pl
-  my $i = 0; for my $item (@$elems) {
-    for my $k (keys %$item) {
-?>
-  <input type="hidden" name="[= "${prefix}[${i}].${k}" =]" value="[= $item->{$k} =]">
-<?pl
-    }
-    $i++;
-  }
-?>
+<?pl while (my ($k, $v) = each %$elems) { ?>
+  <input type="hidden" name="[= $k =]" value="[= $v =]">
+<?pl } ?>
 </div>
