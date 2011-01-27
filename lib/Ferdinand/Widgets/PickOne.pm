@@ -4,65 +4,95 @@ package Ferdinand::Widgets::PickOne;
 
 use Ferdinand::Setup 'class';
 use Method::Signatures;
-use Ferdinand::Utils qw(render_template);
+use Ferdinand::Utils qw(render_template find_structure);
 use Carp 'confess';
 
 extends 'Ferdinand::Widget';
 
-has 'column' => (isa => 'Str', is => 'ro', required => 1);
+has 'prefix' => (isa => 'Str',            is => 'ro', required => 1);
+has 'column' => (isa => 'Str',            is => 'ro', required => 1);
+has 'set'    => (isa => 'CodeRef', is => 'ro', required => 1);
 
-after setup_fields => method ($fields) { push @$fields, 'column' };
+after setup_fields => method ($fields) {push @$fields, qw(prefix column set)};
 
 
-method render_self ($ctx) {
-  confess('List widget requires a valid set() in Context,')
-    unless $ctx->set;
-  $ctx->buffer(render_template('list.pltj', {ctx => $ctx}));
+method render_self_write ($ctx) {
+  my $select_id = $self->id . '_new';
+
+  my $set = $self->_get_set($ctx);
+  my $rows = $self->_get_options($ctx, $set);
+  my $elems = $self->_get_elements($ctx, $set, $select_id);
+
+  $ctx->buffer(
+    render_template(
+      'picker.pltj',
+      { ctx       => $ctx,
+        rows      => $rows,
+        elems     => $elems,
+        prefix    => $self->prefix,
+        select_id => $select_id,
+      }
+    )
+  );
 }
+
+method _get_set ($ctx) {
+  my $set = $self->set;
+
+  local $_ = $ctx;
+  $set = $set->($self);
+
+  return $set;
+}
+
+method _get_options ($ctx, $set) {
+  my $column = $self->column;
+
+  return [map { {id => $_->id, text => $_->$column} } $set->all];
+}
+
+method _get_elements ($ctx, $set, $select_id) {
+  my $params = $ctx->params;
+  my $prefix = $self->prefix;
+  my $elems  = find_structure($params, $prefix) || [];
+
+  if ($params->{"btn_$select_id"}) {
+    my ($col, $trouble) = $set->result_source->primary_columns;
+    confess("PickOne needs ResultSources with a single column primary key, ")
+      if $trouble;
+
+    push @$elems, {$col => $params->{$select_id}};
+  }
+
+  return $elems;
+}
+
+
+
 
 __PACKAGE__->meta->make_immutable;
 1;
 
 __DATA__
 
-@@ list.pltj
-<?pl #@ARGS ctx ?>
-<?pl my $model = $ctx->model; ?>
-<?pl my $widget = $ctx->widget; ?>
-<?pl my $col_names = $widget->col_names; ?>
-<?pl my @rows = $ctx->set->all; ?>
+@@ picker.pltj
+<?pl #@ARGS ctx, rows, prefix, select_id, elems ?>
+<div class="w_pickone">
+  <select name="[= $select_id =]">
+<?pl for (@$rows) { ?>
+    <option value="[= $_->{id} =]">[= $_->{text} =]</option>
+<?pl } ?>
+  </select>
+  <input type="submit" name="btn_[= $select_id =]" value="Adicionar">
 
-[== $widget->render_title($ctx) =]
-
-<table cellspacing="1" class="ordenada1">
-  <thead>
-    <tr>
 <?pl
-     for my $col (@$col_names) {
-       my $meta = $model->field_meta($col);
+  my $i = 0; for my $item (@$elems) {
+    for my $k (keys %$item) {
 ?>
-      <th[== $meta->{cls_list_html} =]>[= $meta->{label} =]</th>
-<?pl } ?>
-    </tr>
-  </thead>
-  <tbody>
-<?pl if (@rows) { ?>
-<?pl   for my $row (@rows) { ?>
-    <tr>
-<?pl     for my $col (@$col_names) {
-           my $html = $ctx->render_field_read(
-              field => $col,
-              item  => $row,
-           );
+  <input type="hidden" name="[= "${prefix}[${i}].${k}" =]" value="[= $item->{$k} =]">
+<?pl
+    }
+    $i++;
+  }
 ?>
-      <td>[== $html =]</td>
-<?pl     } ?>
-    </tr>
-<?pl   } ?>
-<?pl } ?>
-<?pl else {
-       my $n_cols = @$col_names; ?>
-    <tr><td colspan="[= $n_cols =]">Não existem registos para listar</td></tr>
-<?pl } ?>
-  </tbody>
-</table>
+</div>
