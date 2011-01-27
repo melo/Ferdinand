@@ -34,16 +34,8 @@ method _get_elems ($ctx) {
     $elems = find_structure($p, "${id}.items");
   }
   elsif (my $rs = $ctx->set) {
-    my $cols = $self->col_names;
     while (my $row = $rs->next) {
-      my %html;
-      for my $col (@$cols) {
-        $html{$col} = $ctx->render_field_read(
-          field => $col,
-          item  => $row,
-        );
-      }
-      push @$elems, \%html;
+      push @$elems, $self->_get_columns_from_item($ctx, $row);
     }
   }
 

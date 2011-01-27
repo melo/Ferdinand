@@ -50,4 +50,21 @@ after setup_check_self => method ($ctx) {
   }
 };
 
+method _get_columns_from_item ($ctx, $item) {
+  my $cols = $self->col_names;
+
+  $item = $ctx->item unless $item;
+
+  my %html;
+  for my $col (@$cols) {
+    $html{$col} = $ctx->render_field_read(
+      field => $col,
+      item  => $item,
+    );
+  }
+
+  return \%html;
+}
+
+
 1;
