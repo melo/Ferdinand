@@ -27,6 +27,18 @@ has 'uri_helper' => (
 );
 
 
+#################
+# Mode management
+
+method is_mode_read () {
+  return 1 if $self->mode =~ /^(?:list|view)?$/;
+  return;
+}
+
+method is_mode_write () {
+  return 1 if $self->mode =~ /^(?:edit|create)(?:_do)?$/;
+  return;
+}
 
 
 ##########################

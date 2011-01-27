@@ -67,6 +67,20 @@ subtest 'Basic tests' => sub {
 };
 
 
+subtest 'mode management' => sub {
+  for my $m (qw( view list )) {
+    my $c = _ctx(mode => $m);
+    ok($c->is_mode_read,   "For mode '$m', is_mode_read is true");
+    ok(!$c->is_mode_write, "For mode '$m', is_mode_write is false");
+  }
+  for my $m (qw( create create_do edit edit_do )) {
+    my $c = _ctx(mode => $m);
+    ok(!$c->is_mode_read, "For mode '$m', is_mode_read is false");
+    ok($c->is_mode_write, "For mode '$m', is_mode_write is true");
+  }
+};
+
+
 subtest 'context cloning' => sub {
   my $c1 = _ctx_full();
 
