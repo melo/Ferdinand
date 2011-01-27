@@ -16,7 +16,7 @@ our @EXPORT_OK = qw(
   ghtml ehtml
   hash_merge hash_select hash_grep hash_cleanup hash_decode
   expand_structure parse_structured_key select_structure
-  walk_structure find_structure
+  walk_structure find_structure serialize_structure
   dbicset_as_options
 );
 
@@ -257,6 +257,42 @@ sub expand_structure {
 
   return \%out;
 }
+
+sub serialize_structure {
+  my ($in) = @_;
+  my %map;
+
+  for my $k (keys %$in) {
+    my $v = $in->{$k};
+
+    my $t = ref($v);
+    if (!$t) {
+      $map{$k} = $v if defined $v;
+    }
+    elsif ($t eq 'HASH') {
+      my $data = serialize_structure($v);
+      while (my ($sk, $sv) = each %$data) {
+        $map{"$k.$sk"} = $sv;
+      }
+    }
+    elsif ($t eq 'ARRAY') {
+      my $c = 0;
+      for my $i (@$v) {
+        my $data = serialize_structure($i);
+        while (my ($sk, $sv) = each %$data) {
+          $map{"${k}[${c}].$sk"} = $sv;
+        }
+        $c++;
+      }
+    }
+    else {
+      confess("Reference of type '$t' is not supported, ");
+    }
+  }
+
+  return \%map;
+}
+
 
 sub parse_structured_key {
   return

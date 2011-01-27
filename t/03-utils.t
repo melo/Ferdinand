@@ -11,7 +11,7 @@ use Ferdinand::Utils qw(
   hash_merge hash_select hash_grep hash_cleanup hash_decode
   load_class load_widget
   expand_structure parse_structured_key select_structure
-  walk_structure find_structure
+  walk_structure find_structure serialize_structure
   dbicset_as_options
 );
 use Sample;
@@ -312,6 +312,32 @@ subtest 'find_structure' => sub {
   }
 };
 
+
+subtest 'serialize_structure' => sub {
+  my $in = {
+    a => 1,
+    b => [{c => 3, d => [{f => 6, g => 7}]}, {i => 0, j => ''}, {y => undef}],
+    k => 'aaa',
+    x => undef,
+  };
+  my $exp = {
+    'a'           => 1,
+    'b[0].c'      => 3,
+    'b[0].d[0].f' => 6,
+    'b[0].d[0].g' => 7,
+    'b[1].i'      => 0,
+    'b[1].j'      => '',
+    'k'           => 'aaa',
+  };
+
+  my $out = serialize_structure($in);
+  cmp_deeply($out, $exp, 'Serialize structure ok');
+
+  $out = expand_structure($out);
+  $out->{x} = undef;
+  $out->{b}[2] = {y => undef};
+  cmp_deeply($out, $in, '... and expand_structure() works too');
+};
 
 subtest 'walk_structure' => sub {
   my $source = {
