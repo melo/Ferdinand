@@ -14,7 +14,10 @@ after setup_fields => method ($fields) { push @$fields, 'item' };
 
 method render_self ($ctx) {
   local $_ = $ctx;
-  $ctx->item($self->item->($self, $ctx));
+  my $item = $self->item->($self, $ctx);
+
+  confess("Item not found") unless $item;
+  $ctx->item($item);
 }
 
 
