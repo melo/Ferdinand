@@ -329,7 +329,7 @@ sub walk_structure {
 ##############
 # DBIC helpers
 
-sub dbicset_as_options {
+sub dbicset_as_options ($$) {
   my ($rs, $field) = @_;
 
   return [map { {id => $_->id, text => $_->$field} } $rs->all];
