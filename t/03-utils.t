@@ -313,7 +313,7 @@ subtest 'find_structure' => sub {
 };
 
 
-subtest 'serialize_structure' => sub {
+subtest 'serialize_structure (hash)' => sub {
   my $in = {
     a => 1,
     b => [{c => 3, d => [{f => 6, g => 7}]}, {i => 0, j => ''}, {y => undef}],
@@ -331,13 +331,46 @@ subtest 'serialize_structure' => sub {
   };
 
   my $out = serialize_structure($in);
-  cmp_deeply($out, $exp, 'Serialize structure ok');
+  cmp_deeply($out, $exp, 'Serialize hash structure ok');
 
   $out = expand_structure($out);
   $out->{x} = undef;
   $out->{b}[2] = {y => undef};
   cmp_deeply($out, $in, '... and expand_structure() works too');
 };
+
+
+subtest 'serialize_structure (array)' => sub {
+  my $in = [
+    {a => 1},
+    { b =>
+        [{c => 3, d => [{f => 6, g => 7}]}, {i => 0, j => ''}, {y => undef}]
+    },
+    {k => 'aaa'},
+    {x => undef},
+  ];
+  my $exp = [
+    {'a' => 1},
+    { 'b[0].c'      => 3,
+      'b[0].d[0].f' => 6,
+      'b[0].d[0].g' => 7,
+      'b[1].i'      => 0,
+      'b[1].j'      => ''
+    },
+    {'k' => 'aaa'},
+    {},
+  ];
+
+  my $out = serialize_structure($in);
+  cmp_deeply($out, $exp, 'Serialize array structure ok');
+
+TODO: {
+    local $TODO = 'Make expand_structure work on listrefs';
+    eval {$out = expand_structure($out)};
+    cmp_deeply($out, $in, '... and expand_structure() works too');
+  }
+};
+
 
 subtest 'walk_structure' => sub {
   my $source = {

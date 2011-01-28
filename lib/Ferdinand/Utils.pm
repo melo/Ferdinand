@@ -260,39 +260,61 @@ sub expand_structure {
 
 sub serialize_structure {
   my ($in) = @_;
+  return unless defined $in;
+
+  my $t = ref($in);
+  return $in unless $t;
+
+  return _serialize_hash($in)  if $t eq 'HASH';
+  return _serialize_array($in) if $t eq 'ARRAY';
+
+  confess("Reference of type '$t' is not supported,");
+}
+
+sub _serialize_hash {
+  my ($in) = @_;
   my %map;
 
   for my $k (keys %$in) {
     my $v = $in->{$k};
+    next unless defined $v;
 
     my $t = ref($v);
     if (!$t) {
-      $map{$k} = $v if defined $v;
+      $map{$k} = $v;
+      next;
     }
-    elsif ($t eq 'HASH') {
-      my $data = serialize_structure($v);
+
+    my $data = serialize_structure($v);
+    if ($t eq 'HASH') {
       while (my ($sk, $sv) = each %$data) {
         $map{"$k.$sk"} = $sv;
       }
     }
-    elsif ($t eq 'ARRAY') {
+    else {
       my $c = 0;
-      for my $i (@$v) {
-        my $data = serialize_structure($i);
-        while (my ($sk, $sv) = each %$data) {
+      for my $i (@$data) {
+        while (my ($sk, $sv) = each %$i) {
           $map{"${k}[${c}].$sk"} = $sv;
         }
         $c++;
       }
-    }
-    else {
-      confess("Reference of type '$t' is not supported, ");
     }
   }
 
   return \%map;
 }
 
+sub _serialize_array {
+  my ($in) = @_;
+  my @out;
+
+  for my $i (@$in) {
+    push @out, serialize_structure($i);
+  }
+
+  return \@out;
+}
 
 sub parse_structured_key {
   return
