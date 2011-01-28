@@ -4,7 +4,7 @@ package Ferdinand::Widgets::List;
 
 use Ferdinand::Setup 'class';
 use Method::Signatures;
-use Ferdinand::Utils qw(render_template find_structure);
+use Ferdinand::Utils qw(render_template find_structure serialize_structure);
 use Carp 'confess';
 
 extends 'Ferdinand::Widget';
@@ -15,11 +15,14 @@ method render_self ($ctx) {
 }
 
 method render_list ($ctx, $elems) {
+  $elems = serialize_structure($elems);
+
   $ctx->buffer(
     render_template(
       'list.pltj',
       { ctx   => $ctx,
         elems => $elems,
+        state => serialize_structure({$self->id => {i => 1, e => $elems}}),
       }
     )
   );
@@ -30,8 +33,8 @@ method _get_elems ($ctx) {
   my $p  = $ctx->params;
 
   my $elems;
-  if (find_structure($p, "${id}.init")) {
-    $elems = find_structure($p, "${id}.items");
+  if (find_structure($p, "${id}.i")) {
+    $elems = find_structure($p, "${id}.e");
   }
   elsif (my $rs = $ctx->set) {
     while (my $row = $rs->next) {
@@ -49,7 +52,7 @@ __PACKAGE__->meta->make_immutable;
 __DATA__
 
 @@ list.pltj
-<?pl #@ARGS ctx, elems ?>
+<?pl #@ARGS ctx, elems, state ?>
 <?pl my $model = $ctx->model; ?>
 <?pl my $widget = $ctx->widget; ?>
 <?pl my $col_names = $widget->col_names; ?>
@@ -77,9 +80,14 @@ __DATA__
     </tr>
 <?pl   } ?>
 <?pl } ?>
-<?pl else {
-       my $n_cols = @$col_names; ?>
+<?pl else { my $n_cols = @$col_names; ?>
     <tr><td colspan="[= $n_cols =]">Não existem registos para listar</td></tr>
 <?pl } ?>
   </tbody>
 </table>
+
+<?pl if ($ctx->is_mode_write) { ?>
+<?pl   while (my ($k, $v) = each %$state) { ?>
+<input type="hidden" name="[= $k =]" value="[= $v =]">
+<?pl   } ?>
+<?pl } ?>
