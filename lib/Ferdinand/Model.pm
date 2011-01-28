@@ -49,7 +49,7 @@ method render_field (:$ctx, :$field, :$item) {
   return $self->render_field_write(@_) if $m eq 'edit'   || $m eq 'edit_do';
 }
 
-method render_field_read (:$ctx, :$field, :$item) {  
+method render_field_read (:$ctx, :$field, :$item) {
   my $h = ghtml();
 
   $item = $ctx->item unless $item;
