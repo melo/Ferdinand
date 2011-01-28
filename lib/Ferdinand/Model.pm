@@ -108,6 +108,7 @@ method render_field_read (:$ctx, :$field, :$item) {
     $v = ehtml($v);
   }
 
+  $v = $v->stringify if ref($v);
   return $v;
 }
 
