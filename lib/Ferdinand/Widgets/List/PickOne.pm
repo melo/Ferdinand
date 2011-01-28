@@ -67,21 +67,27 @@ method _process_buttons ($ctx) {
   ## add item
   if ($params->{$self->btn_add_id}) {
     my $id = $params->{$self->select_id};
-    if (!empty($id) && !exists $id_map{$id}) {
-      my $item = $ctx->model->fetch($id);
-      if ($item) {
-        $item = $self->_get_columns_from_item($ctx, $item);
-        $item->{__ADD} = $id;
-        $id_map{$id} = $item;
-
-        push @$elems, $item;
+    if (!empty($id)) {
+      my $item;
+      if (exists $id_map{$id}) {
+        $item = $id_map{$id};
       }
+      else {
+        $item = $ctx->model->fetch($id);
+        if ($item) {
+          $item = $self->_get_columns_from_item($ctx, $item);
+          $id_map{$id} = $item->{__ID};
+          push @$elems, $item;
+        }
+      }
+      $item->{__ACTION} = 'ADD' if $item;
     }
   }
 
   my @state;
   for my $item (@$elems) {
-    if (exists $item->{__ADD}) { push @state, {__ID => $item->{__ADD}} }
+    next unless my $action = $item->{__ACTION};
+    if ($action eq 'ADD') { push @state, {__ID => $item->{__ID}} }
   }
 
   return ($elems, serialize_structure({$self->prefix => \@state}), \%id_map);
