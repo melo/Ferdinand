@@ -34,48 +34,58 @@ after setup_fields => method($fields) {
 
 
 method render_self ($ctx) {
-  $self->render_list($ctx);
-  $self->render_per_mode($ctx);
+  my ($elems, $state, $id_map) = $self->_process_buttons($ctx);
+  $self->render_list($ctx, $elems);
+  $self->render_per_mode($ctx, $state, $id_map);
 }
 
-method render_self_write ($ctx) {
+method render_self_write ($ctx, $state, $id_map) {
   $ctx->buffer(
     render_template(
       'picker.pltj',
-      { ctx       => $ctx,
-        elems     => $self->_get_elements($ctx),
-        options   => $self->_get_options($ctx),
+      { ctx     => $ctx,
+        options => $self->_get_options($ctx, $id_map),
+        state   => $state,
       }
     )
   );
 }
 
-method _get_options ($ctx) {
+method _get_options ($ctx, $id_map) {
   local $_ = $ctx;
-  return $self->options->($self);
+  my $opts = $self->options->($self);
+  $opts = [grep { !exists $id_map->{$_->{id}} } @$opts];
+
+  return $opts;
 }
 
-method _get_elements ($ctx) {
+method _process_buttons ($ctx) {
   my $params = $ctx->params;
-  my $prefix = $self->prefix;
-  my $elems  = find_structure($params, $prefix);
+  my $elems  = $self->_get_elems($ctx);
+  my %id_map = map { $_->{__ID} => $_ } grep { exists $_->{__ID} } @$elems;
 
   ## add item
   if ($params->{$self->btn_add_id}) {
     my $id = $params->{$self->select_id};
-    if (!empty($id)) {
-      my $elem = {__ID => $id};
-      if (my $sufix = $self->sufix) {
-        $elem = {$sufix => $elem};
+    if (!empty($id) && !exists $id_map{$id}) {
+      my $item = $ctx->model->fetch($id);
+      if ($item) {
+        $item = $self->_get_columns_from_item($ctx, $item);
+        $item->{__ADD} = $id;
+        $id_map{$id} = $item;
+
+        push @$elems, $item;
       }
-      push @$elems, $elem;
     }
   }
 
-  return serialize_structure({ $prefix => $elems }) if $elems && @$elems;
-  return {};
-}
+  my @state;
+  for my $item (@$elems) {
+    if (exists $item->{__ADD}) { push @state, {__ID => $item->{__ADD}} }
+  }
 
+  return ($elems, serialize_structure({$self->prefix => \@state}), \%id_map);
+}
 
 
 __PACKAGE__->meta->make_immutable;
@@ -84,19 +94,19 @@ __PACKAGE__->meta->make_immutable;
 __DATA__
 
 @@ picker.pltj
-<?pl #@ARGS ctx, elems, options ?>
+<?pl #@ARGS ctx, options, state ?>
 <?pl my $w = $ctx->widget; ?>
-<?pl my $prefix = $w->prefix; ?>
 
 <div class="w_pickone">
   <select name="[= $w->select_id =]">
+<?pl push @$options, { id => '', text => '-- Vazio --' } unless @$options; ?>
 <?pl for (@$options) { ?>
     <option value="[= $_->{id} =]">[= $_->{text} =]</option>
 <?pl } ?>
   </select>
   <input type="submit" name="[= $w->btn_add_id =]" value="Adicionar">
 
-<?pl while (my ($k, $v) = each %$elems) { ?>
+<?pl while (my ($k, $v) = each %$state) { ?>
   <input type="hidden" name="[= $k =]" value="[= $v =]">
 <?pl } ?>
 </div>
