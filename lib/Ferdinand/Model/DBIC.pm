@@ -33,6 +33,22 @@ method fetch ($id, $source?) {
 }
 
 
+method id_for_item ($item) {
+  return unless defined $item;
+
+  if (ref($item) eq 'HASH') {
+    return $item->{__ID} if exists $item->{__ID};
+  }
+  else {
+    my @pk = $item->id;
+    return $pk[0] if scalar(@pk) == 1;
+    return \@pk;
+  }
+
+  return;
+}
+
+
 method column_meta_fixup ($full_name, $defs = {}) {
   my %info;
   my $source = $self->source;

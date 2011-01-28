@@ -173,4 +173,24 @@ subtest 'fetch' => sub {
 };
 
 
+subtest 'id_for_item' => sub {
+  my $db = test_db();
+  my $is = $db->source('I');
+  my ($i1, $i2) = $is->resultset->all;
+
+  my $m = Ferdinand::Model::DBIC->new(source => $is);
+
+  cmp_deeply([$m->id_for_item($_)], [$_->id], 'id_for_item ok for ' . $_->id)
+    for ($i1, $i2);
+  is($m->id_for_item({}), undef, 'hash without __ID, we get undef');
+  is($m->id_for_item({__ID => 42}), 42, 'hash with __ID, we get that value');
+
+  like(
+    exception { $m->id_for_item },
+    qr{id_for_item\(\) missing required argument \$item},
+    'no args, we get undef'
+  );
+};
+
+
 done_testing();

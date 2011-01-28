@@ -234,5 +234,10 @@ method column_meta_fixup () {
 }
 
 
+method id_for_item ($item) {
+  confess "Subclass $self needs to implement id_for_item(), ";
+}
+
+
 __PACKAGE__->meta->make_immutable;
 1;

@@ -182,6 +182,10 @@ method field_value_str () {
   $self->model->field_value_str(ctx => $self, @_);
 }
 
+method id_for_item ($item) {
+  return $self->model->id_for_item($item || $self->item);
+}
+
 
 ##################
 # Error management
