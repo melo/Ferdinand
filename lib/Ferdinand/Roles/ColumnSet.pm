@@ -62,6 +62,8 @@ method _get_columns_from_item ($ctx, $item) {
       item  => $item,
     );
   }
+  my $id = $ctx->id_for_item($item);
+  $html{__ID} = $id if defined $id;
 
   return \%html;
 }
