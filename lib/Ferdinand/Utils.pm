@@ -387,10 +387,20 @@ sub walk_structure {
 ##############
 # DBIC helpers
 
-sub dbicset_as_options ($$) {
-  my ($rs, $field) = @_;
+sub dbicset_as_options ($$;$) {
+  my ($rs, $field, $ctx) = @_;
 
-  return [map { {id => $_->id, text => $_->$field} } $rs->all];
+  my @options;
+  while (my $item = $rs->next) {
+    my $text =
+        $ctx
+      ? $ctx->field_value_str(item => $item, field => $field)->[3]
+      : $item->$field();
+
+    push @options, {id => $item->id, text => $text};
+  }
+
+  return \@options;
 }
 
 1;
