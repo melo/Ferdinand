@@ -16,13 +16,19 @@ method render_self ($ctx) {
 
 method render_list ($ctx, $elems) {
   $elems = serialize_structure($elems);
+  my $state = serialize_structure({$self->id => {i => 1, e => $elems}});
+
+  my $col_names = [@{$self->col_names}];
+  $self->_add_ops_column($ctx, $elems, $col_names)
+    if $self->_has_ops_column($ctx);
 
   $ctx->buffer(
     render_template(
       'list.pltj',
-      { ctx   => $ctx,
-        elems => $elems,
-        state => serialize_structure({$self->id => {i => 1, e => $elems}}),
+      { ctx       => $ctx,
+        elems     => $elems,
+        state     => $state,
+        col_names => $col_names,
       }
     )
   );
@@ -46,18 +52,29 @@ method _get_elems ($ctx) {
 }
 
 
+method _has_ops_column ($ctx) { return 0}
+method _get_ops_column ($ctx, $item, $n) {}
+
+method _add_ops_column ($ctx, $elems, $col_names) {
+  my $c = 0;
+  for my $item (@$elems) {
+    my $ops = $self->_get_ops_column($ctx, $item, $c++);
+    $item->{ops} = $ops || '';
+  }
+  push @$col_names, 'ops';
+}
+
+
 __PACKAGE__->meta->make_immutable;
 1;
 
 __DATA__
 
 @@ list.pltj
-<?pl #@ARGS ctx, elems, state ?>
+<?pl #@ARGS ctx, elems, col_names, state ?>
 <?pl my $model = $ctx->model; ?>
-<?pl my $widget = $ctx->widget; ?>
-<?pl my $col_names = $widget->col_names; ?>
 
-[== $widget->render_title($ctx, {class => "w_list"}) =]
+[== $ctx->widget->render_title($ctx, {class => "w_list"}) =]
 
 <table cellspacing="1" class="ordenada1 w_list">
   <thead>
@@ -72,16 +89,20 @@ __DATA__
   </thead>
   <tbody>
 <?pl if (@$elems) { ?>
-<?pl   for my $row (@$elems) { ?>
+<?pl   for my $row (@$elems) { my $class = $row->{__META}{class}; ?>
+<?pl     if ($class) { ?>
+    <tr class="[= $class =]">
+<?pl     } else { ?>
     <tr>
+<?pl     } ?>
 <?pl     for my $col (@$col_names) { ?>
       <td>[== $row->{$col} =]</td>
 <?pl     } ?>
     </tr>
 <?pl   } ?>
 <?pl } ?>
-<?pl else { my $n_cols = @$col_names; ?>
-    <tr><td colspan="[= $n_cols =]">Não existem registos para listar</td></tr>
+<?pl else { ?>
+    <tr><td colspan="[= scalar(@$col_names) =]">Não existem registos para listar</td></tr>
 <?pl } ?>
   </tbody>
 </table>
