@@ -20,6 +20,10 @@ method render_begin ($ctx) {
     $o{$_} = $ctx->$_ unless $o{$_};
   }
 
+  if (exists $o{prefix}) {
+    $o{params} = $ctx->params->{$o{prefix}} || {};
+  }
+
   return $ctx->overlay(%o);
 }
 
