@@ -366,7 +366,7 @@ subtest 'serialize_structure (array)' => sub {
 
 TODO: {
     local $TODO = 'Make expand_structure work on listrefs';
-    eval {$out = expand_structure($out)};
+    eval { $out = expand_structure($out) };
     cmp_deeply($out, $in, '... and expand_structure() works too');
   }
 };
