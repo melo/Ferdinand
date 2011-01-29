@@ -41,6 +41,27 @@ method is_mode_write () {
 }
 
 
+######################
+# HTML Buttons helpers
+
+method was_button_used ($btn, $prefix?) {
+  my $p = $self->params;
+
+  if ($prefix) {
+    my $re = qr{^${btn}_(.+)$};
+    for my $i (keys %$p) {
+      next unless $i =~ m/$re/;
+      return $1;
+    }
+  }
+  else {
+    return 1 if exists $p->{$btn};
+  }
+
+  return;
+}
+
+
 ##########################
 # Clone/overlay a context
 

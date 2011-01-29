@@ -319,6 +319,26 @@ subtest 'error mgmt', sub {
 };
 
 
+subtest 'was_button_used' => sub {
+  my $c1 = _ctx(
+    params => {
+      btn_simple => 'Cool',
+      btn_p1_1   => 'Done it',
+      btn_p2_aaa => 'Done it again',
+    }
+  );
+
+  ok($c1->was_button_used('btn_simple'), 'btn_simple is fine');
+  ok(
+    !$c1->was_button_used('btn_simple', 1),
+    '... unless you ask for prefix-match'
+  );
+
+  is($c1->was_button_used('btn_p1', 1), 1,     'prefix-match works fine');
+  is($c1->was_button_used('btn_p2', 1), 'aaa', '... even with string values');
+};
+
+
 done_testing();
 
 sub like_all {
