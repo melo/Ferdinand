@@ -390,12 +390,22 @@ sub walk_structure {
 sub dbicset_as_options ($$;$) {
   my ($rs, $field, $ctx) = @_;
 
+  my $get_field =
+    $ctx
+    ? sub { $ctx->field_value_str(item => $_[0], field => $_[1])->[3] }
+    : sub { my ($i, $f) = @_; $i->$f() };
+  my $get_text = sub { $get_field->(@_) || "<no $_[1]>" };
+
   my @options;
+  my $fmt = ref($field) ? shift @$field : undef;
   while (my $item = $rs->next) {
-    my $text =
-        $ctx
-      ? $ctx->field_value_str(item => $item, field => $field)->[3]
-      : $item->$field();
+    my $text;
+    if ($fmt) {
+      $text = sprintf($fmt, map { $get_text->($item, $_) } @$field);
+    }
+    else {
+      $text = $get_text->($item, $field);
+    }
 
     push @options, {id => $item->id, text => $text};
   }

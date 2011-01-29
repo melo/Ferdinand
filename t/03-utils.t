@@ -428,6 +428,15 @@ subtest 'dbicset_as_options' => sub {
     [{id => 1, text => 'Title 1 & me'}, {id => 2, text => 'Title 2'}],
     'dbicset_as_options ok'
   );
+
+  $i_rs->reset;
+  cmp_deeply(
+    dbicset_as_options($i_rs, ['%s (%s) - "%s"', 'title', 'visible', 'slug']),
+    [ {id => 1, text => 'Title 1 & me (V) - "title_1"'},
+      {id => 2, text => 'Title 2 (H) - "title_2"'}
+    ],
+    'dbicset_as_options ok'
+  );
 };
 
 
