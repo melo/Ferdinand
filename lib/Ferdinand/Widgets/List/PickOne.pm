@@ -139,7 +139,7 @@ method _get_ops_column ($ctx, $item, $n) {
 
   return $h->input(
     { name  => join('_', $self->btn_del_id, $n),
-      value => "Remover $action",
+      value => 'Remover',
       type  => 'submit'
     }
   ) if !$action || $action eq 'ADD';
@@ -147,7 +147,7 @@ method _get_ops_column ($ctx, $item, $n) {
   $item->{__META}{class} = 'item_removed';
   return $h->input(
     { name  => join('_', $self->btn_undel_id, $n),
-      value => "Adicionar $action",
+      value => 'Adicionar',
       type  => 'submit'
     }
   );
