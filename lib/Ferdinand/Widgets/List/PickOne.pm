@@ -134,9 +134,10 @@ method _process_buttons ($ctx) {
 
 method _has_ops_column { return 1 }
 method _get_ops_column ($ctx, $item, $n) {
-  my $h      = ghtml();
+  my $h = ghtml();
   my $action = $item->{__ACTION} || '';
 
+  $item->{__META}{class} = 'item_added' if $action eq 'ADD';
   return $h->input(
     { name  => join('_', $self->btn_del_id, $n),
       value => 'Remover',
