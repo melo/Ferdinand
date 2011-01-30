@@ -171,7 +171,7 @@ subtest 'context cloning' => sub {
 
 
 subtest 'context overlay' => sub {
-  my $c1 = _ctx_full();
+  my $c1 = _ctx_full(id => [1, 2, 3]);
 
   is($c1->parent, undef, 'parent is undef');
   $c1->buffer('a1');
@@ -179,6 +179,7 @@ subtest 'context overlay' => sub {
 
   is($c1->item, undef, 'Item is undef by default');
   is($c1->set,  undef, 'Set is undef by default');
+  cmp_deeply([$c1->id], [1, 2, 3], 'id as expected');
 
   cmp_deeply($c1->params, {a => 1, b => 2}, 'base param as expected');
   cmp_deeply($c1->stash,  {x => 9, y => 8}, 'base stash as expected');
@@ -193,7 +194,8 @@ subtest 'context overlay' => sub {
     my $g = $c1->overlay(
       set        => bless([{a => 1}, {a => 2}], 'X'),
       stash      => {},
-      action_uri => undef
+      action_uri => undef,
+      id         => [4, 5, 6],
     );
 
     cmp_deeply(
@@ -201,6 +203,7 @@ subtest 'context overlay' => sub {
       bless([{a => 1}, {a => 2}], 'X'),
       'Set with new value from overlay'
     );
+    cmp_deeply([$c1->id], [4, 5, 6], 'id is new as expected');
 
     cmp_deeply($c1->params, {a => 1, b => 2}, 'overlay param as expected');
     cmp_deeply($c1->stash, {}, 'overlay stash as expected');
@@ -221,6 +224,7 @@ subtest 'context overlay' => sub {
   );
   cmp_deeply($c1->stash, {x => 9, y => 8}, 'Stash back to pre-overlay value');
   is($c1->set, undef, 'Set back to pre-overlay value');
+  cmp_deeply([$c1->id], [1, 2, 3], 'id still same as expected');
 
   is(
     $c1->action_uri->as_string,
