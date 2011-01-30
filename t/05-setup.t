@@ -57,6 +57,8 @@ my $excp = exception {
         name('pop');
 
         layout {
+          dbic_optional_item { undef };
+
           title('My pop title');
           nest {
             title('A little subtitle');
@@ -146,6 +148,7 @@ cmp_deeply(
       },
       { name   => 'pop',
         layout => [
+          {type => 'DBIC::Item', item => ignore(), required => 0},
           {type => 'Title', title => 'My pop title',},
           { type   => 'Layout',
             layout => [{type => 'Title', title => 'A little subtitle'}],
@@ -293,15 +296,15 @@ subtest 'Pop action' => sub {
   isa_ok($action, 'Ferdinand::Action', '... proper class for action');
 
   my @widgets = $action->widgets;
-  is(scalar(@widgets), 2, 'Two widgets in this layout');
-  is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
+  is(scalar(@widgets), 3, 'Three widgets in this layout');
+  is(ref($widgets[1]), 'Ferdinand::Widgets::Title',
     'Expected type for first widget');
-  is($widgets[0]->title, 'My pop title', '... title text is ok');
+  is($widgets[1]->title, 'My pop title', '... title text is ok');
 
-  is(ref($widgets[1]), 'Ferdinand::Widgets::Layout',
+  is(ref($widgets[2]), 'Ferdinand::Widgets::Layout',
     'Expected type for second widget');
 
-  @widgets = $widgets[1]->widgets;
+  @widgets = $widgets[2]->widgets;
   is(ref($widgets[0]), 'Ferdinand::Widgets::Title',
     'Expected type for first subwidget');
   is($widgets[0]->title, 'A little subtitle', '... title text is ok');

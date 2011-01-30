@@ -12,7 +12,9 @@ our @EXPORT = qw(
   link_to col
   links url
 
-  dbic_source dbic_item dbic_set dbic_apply dbic_create dbic_update
+  dbic_source dbic_set dbic_item dbic_optional_item
+  dbic_apply dbic_create dbic_update
+
   form button label on_click
 
   cat_ferdinand_setup
@@ -90,11 +92,16 @@ sub prefix ($&) {
 
 ### DBIC widgets shortcuts
 sub dbic_source (&) { _add_setup {type => 'DBIC::Source', source => $_[0]} }
-sub dbic_item (&)   { _add_setup {type => 'DBIC::Item',   item   => $_[0]} }
 sub dbic_set (&)    { _add_setup {type => 'DBIC::Set',    set    => $_[0]} }
-sub dbic_apply (&)  { _add_setup {type => 'DBIC::Apply',  valid  => $_[0]} }
-sub dbic_create (&) { _add_setup {type => 'DBIC::Create', valid  => $_[0]} }
-sub dbic_update (&) { _add_setup {type => 'DBIC::Update', valid  => $_[0]} }
+sub dbic_item (&)   { _add_setup {type => 'DBIC::Item',   item   => $_[0]} }
+
+sub dbic_optional_item (&) {
+  _add_setup {type => 'DBIC::Item', item => $_[0], required => 0};
+}
+
+sub dbic_apply (&)  { _add_setup {type => 'DBIC::Apply',  valid => $_[0]} }
+sub dbic_create (&) { _add_setup {type => 'DBIC::Create', valid => $_[0]} }
+sub dbic_update (&) { _add_setup {type => 'DBIC::Update', valid => $_[0]} }
 
 
 ### Widget setup and main attributes
