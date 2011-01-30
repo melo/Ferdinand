@@ -9,11 +9,16 @@ use Carp 'confess';
 extends 'Ferdinand::Widget';
 with 'Ferdinand::Roles::ColumnSet', 'Ferdinand::Roles::Title';
 
-method render_self_read ($ctx) {
-  ## FIXME: better to skip with warning?
-  confess('Record widget requires a valid item() in Context,')
-    unless $ctx->item;
+has 'not_found_msg' => (
+  isa     => 'Str',
+  is      => 'ro',
+  default => 'Não existem registos para listar',
+);
 
+after setup_fields => method($fields) {push @$fields, qw(not_found_msg)};
+
+
+method render_self_read ($ctx) {
   $ctx->buffer(render_template('view.pltj', {ctx => $ctx}));
 }
 
@@ -36,23 +41,31 @@ __DATA__
 [== $widget->render_title($ctx) =]
 
 <table cellspacing="1">
+<?pl if ($ctx->item) { ?>
 	<colgroup>
 		<col width="20%"></col>
 		<col width="80%"></col>
 	</colgroup>
-    <tbody>
+  <tbody>
 <?pl  for my $col (@$col_names) {
         my $meta = $model->field_meta($col);
         my $html = $ctx->render_field(field => $col);
 ?>
-        <tr>
-            <th>[= $meta->{label} =]:</th>
-            <td>[== $html =]</td>
-        </tr>
+    <tr>
+      <th>[= $meta->{label} =]:</th>
+      <td>[== $html =]</td>
+    </tr>
 <?pl  } ?>
-    </tbody>
+  </tbody>
+<?pl } else { ?>
+	<colgroup>
+		<col width="100%"></col>
+	</colgroup>
+  <tbody>
+    <tr><td>[= $widget->not_found_msg =]</td></tr>
+  </tbody>
+<?pl } ?>
 </table>
-
 
 @@ form.pltj
 <?pl #@ARGS ctx ?>
@@ -70,24 +83,23 @@ __DATA__
 		<col width="20%"></col>
 		<col width="80%"></col>
 	</colgroup>
-    <tbody>
-<?pl  for my $col (@$col_names) {
-        my $meta = $model->field_meta($col);
-        my $err  = $ctx->error_for($col);
-        my $html = $ctx->render_field(
-          field => $col,
-          item  => ($params->{submited}? $params : $ctx->item),
-        );
+  <tbody>
+<?pl   for my $col (@$col_names) {
+         my $meta = $model->field_meta($col);
+         my $err  = $ctx->error_for($col);
+         my $html = $ctx->render_field(
+           field => $col,
+           item  => ($params->{submited}? $params : $ctx->item),
+         );
 ?>
-        <tr>
-            <th[== $err? ' class="errof"' : '' =]>[= $meta->{label} =]:</th>
-<?pl if ($err) { ?>
-            <td>[== $html =] <span class="errom">[= $err =]</span></td>
-<?pl } ?>
-<?pl else { ?>
-            <td>[== $html =]</td>
-<?pl } ?>
-        </tr>
-<?pl  } ?>
-    </tbody>
+    <tr>
+      <th[== $err? ' class="errof"' : '' =]>[= $meta->{label} =]:</th>
+<?pl     if ($err) { ?>
+      <td>[== $html =] <span class="errom">[= $err =]</span></td>
+<?pl     } else { ?>
+      <td>[== $html =]</td>
+<?pl     } ?>
+    </tr>
+<?pl   } ?>
+  </tbody>
 </table>
