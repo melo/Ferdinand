@@ -171,10 +171,30 @@ method buffer_merge ($buffer?) {
 #############
 # Model links
 
-has 'model' => (isa => 'Ferdinand::Model', is => 'rw');
-has 'item'  => (isa => 'Object',           is => 'rw');
-has 'set'   => (isa => 'Object',           is => 'rw');
-has 'id'    => (isa => 'ArrayRef',         is => 'bare');
+has 'model' => (
+  isa       => 'Ferdinand::Model',
+  is        => 'rw',
+  clearer   => 'clear_model',
+  predicate => 'has_model',
+);
+has 'item' => (
+  isa       => 'Object',
+  is        => 'rw',
+  clearer   => 'clear_item',
+  predicate => 'has_item',
+);
+has 'set' => (
+  isa       => 'Object',
+  is        => 'rw',
+  clearer   => 'clear_set',
+  predicate => 'has_set',
+);
+has 'id' => (
+  isa       => 'ArrayRef',
+  is        => 'bare',
+  clearer   => 'clear_id',
+  predicate => 'has_id',
+);
 
 has 'prefix' => (isa => 'Str', is => 'rw', default => '');
 

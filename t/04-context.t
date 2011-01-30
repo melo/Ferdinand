@@ -5,6 +5,7 @@ use warnings;
 use Ferdinand;
 use Ferdinand::Tests;
 use Ferdinand::Action;
+use Ferdinand::Model;
 use Test::MockObject;
 
 sub _ctx {
@@ -64,6 +65,31 @@ subtest 'Basic tests' => sub {
 
   $c1->prefix('z');
   is($c1->prefix, 'z', 'prefix as expected');
+};
+
+
+subtest 'model, item, set and id clearer and predicates' => sub {
+  my $c = _ctx(
+    id    => [1, 2, 3],
+    model => Ferdinand::Model->new,
+    set  => bless({}, 'X'),
+    item => bless({}, 'X'),
+  );
+
+  ok($c->has_id,    'has_id ok');
+  ok($c->has_set,   'has_set ok');
+  ok($c->has_item,  'has_item ok');
+  ok($c->has_model, 'has_model ok');
+
+  is(exception { $c->clear_id },    undef, 'clear_id ok');
+  is(exception { $c->clear_set },   undef, 'clear_set ok');
+  is(exception { $c->clear_item },  undef, 'clear_item ok');
+  is(exception { $c->clear_model }, undef, 'clear_model ok');
+
+  ok(!$c->has_id,    'has_id ok');
+  ok(!$c->has_set,   'has_set ok');
+  ok(!$c->has_item,  'has_item ok');
+  ok(!$c->has_model, 'has_model ok');
 };
 
 
