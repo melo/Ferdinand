@@ -16,9 +16,10 @@ after setup_fields => method ($fields) { push @$fields, 'overlay' };
 method render_begin ($ctx) {
   my %o = %{$self->overlay};
 
-  for (qw(item set model id)) {
-    $o{$_} = $ctx->$_ unless $o{$_};
-  }
+  $o{id} = [$ctx->id] if $ctx->has_id && !exists $o{id};
+  $o{set}   = $ctx->set   unless exists $o{set};
+  $o{item}  = $ctx->item  unless exists $o{item};
+  $o{model} = $ctx->model unless exists $o{model};
 
   if (exists $o{prefix}) {
     $o{params} = $ctx->params->{$o{prefix}} || {};
