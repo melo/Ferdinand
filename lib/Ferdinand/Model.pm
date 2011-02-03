@@ -191,6 +191,9 @@ method render_field_write(:$ctx, :$field, :$item) {
 method field_value (:$ctx, :$field, :$item) {
   $item = $ctx->item unless $item;
 
+  my $p = $ctx->prefix;
+  $field = "$p.$field" if $p && !blessed($item);
+
   return walk_structure($item, $field)
 }
 

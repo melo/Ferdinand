@@ -624,6 +624,28 @@ subtest 'field values', sub {
     'Field title found in item arg'
   );
 
+  ## field_value + context prefix
+  $c1 = build_ctx(prefix => 'x', model => Ferdinand::Model->new);
+  %meta = (data_type => 'char');
+  is($c1->prefix, 'x', 'Test field_value() with a context with prefix');
+  cmp_deeply(
+    $c1->field_value(field => 'title', item => $mock),
+    [$mock, 'title', 'aa'],
+    '... with blessed item, disregard prefix'
+  );
+  $item = {title => 'aa'};
+  cmp_deeply(
+    $c1->field_value(field => 'title', item => $item),
+    [undef, 'title', undef],
+    '... with HashRef item, use prefix => not found => undef'
+  );
+  $item = {x => {title => 'aa'}};
+  cmp_deeply(
+    $c1->field_value(field => 'title', item => $item),
+    [$item->{x}, 'title', 'aa'],
+    '... with HashRef item, use prefix => found => ok'
+  );
+
 
   $c1   = build_ctx(item => $mock, model => Ferdinand::Model->new);
   $f1   = $c1->model;
