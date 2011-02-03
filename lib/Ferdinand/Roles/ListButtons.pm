@@ -4,7 +4,7 @@ package Ferdinand::Roles::ListButtons;
 
 use Ferdinand::Setup 'role';
 use Method::Signatures;
-use Ferdinand::Utils qw(render_template serialize_structure empty ghtml );
+use Ferdinand::Utils qw(render_template serialize_structure ghtml );
 use Carp 'confess';
 
 has 'prefix' => (isa => 'Str', is => 'ro', required => 1);
@@ -69,40 +69,42 @@ method _process_buttons ($ctx) {
 
   ## add item
   if ($ctx->was_button_used($self->btn_add_id)) {
-    my $id = $self->_get_id($ctx);
-    if (!empty($id) && !exists $id_map{$id}) {
-      my $item = $ctx->model->fetch($id);
-      if ($item) {
-        $item = $self->_get_columns_from_item($ctx, $item);
-        $id_map{$id} = $item->{__ID};
-        push @$elems, $item;
-      }
-      $item->{__ACTION} = 'ADD' if $item;
-    }
+    $self->_btn_add_action($ctx, $elems, \%id_map);
   }
 
   ## del item
   elsif (defined(my $pos_d = $ctx->was_button_used($self->btn_del_id, 1))) {
-    my $item = $elems->[$pos_d];
-    if ($item) {
-      my $action = $item->{__ACTION} || '';
-      if (!$action) { $action = 'DEL' }
-      elsif ($action eq 'ADD') { $action = 'IGN' }
-      $item->{__ACTION} = $action;
-    }
+    $self->_btn_del_action($ctx, $elems, \%id_map, $pos_d);
   }
 
   ## undel item
   elsif (defined(my $pos_u = $ctx->was_button_used($self->btn_undel_id, 1))) {
-    my $item = $elems->[$pos_u];
-    if ($item) {
-      my $action = delete $item->{__ACTION};
-      if ($action && $action eq 'IGN') { $item->{__ACTION} = 'ADD' }
-    }
+    $self->_btn_undel_action($ctx, $elems, \%id_map, $pos_u);
   }
 
   return ($elems, \%id_map);
 }
+
+method _btn_add_action   ($ctx, $elems, $id_map) {}
+
+method _btn_del_action   ($ctx, $elems, $id_map, $pos) {
+  my $item = $elems->[$pos];
+  if ($item) {
+    my $action = $item->{__ACTION} || '';
+    if (!$action) { $action = 'DEL' }
+    elsif ($action eq 'ADD') { $action = 'IGN' }
+    $item->{__ACTION} = $action;
+  }
+}
+
+method _btn_undel_action ($ctx, $elems, $id_map, $pos) {
+  my $item = $elems->[$pos];
+  if ($item) {
+    my $action = delete $item->{__ACTION};
+    if ($action && $action eq 'IGN') { $item->{__ACTION} = 'ADD' }
+  }
+}
+
 
 method _has_ops_column { return 1 }
 method _get_ops_column ($ctx, $item, $n) {
@@ -125,8 +127,6 @@ method _get_ops_column ($ctx, $item, $n) {
     }
   );
 }
-
-method _get_id ($ctx) {}
 
 
 1;

@@ -4,7 +4,7 @@ package Ferdinand::Widgets::List::PickOne;
 
 use Ferdinand::Setup 'class';
 use Method::Signatures;
-use Ferdinand::Utils qw(render_template);
+use Ferdinand::Utils qw(render_template empty);
 use Carp 'confess';
 
 extends 'Ferdinand::Widgets::List';
@@ -33,16 +33,25 @@ method render_self_write ($ctx, $elems, $id_map) {
   );
 }
 
+method _btn_add_action ($ctx, $elems, $id_map) {
+  my $id = $ctx->params->{$self->select_id};
+  if (!empty($id) && !exists $id_map->{$id}) {
+    my $item = $ctx->model->fetch($id);
+    if ($item) {
+      $item = $self->_get_columns_from_item($ctx, $item);
+      $id_map->{$id} = $item->{__ID};
+      push @$elems, $item;
+    }
+    $item->{__ACTION} = 'ADD' if $item;
+  }
+}
+
 method _get_options ($ctx, $id_map) {
   local $_ = $ctx;
   my $opts = $self->options->($self);
   $opts = [grep { !exists $id_map->{$_->{id}} } @$opts];
 
   return $opts;
-}
-
-method _get_id ($ctx) {
-  return $ctx->params->{$self->select_id};
 }
 
 
