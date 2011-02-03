@@ -61,7 +61,7 @@ __PACKAGE__->meta->make_immutable;
 __DATA__
 
 @@ picker.pltj
-<?pl #@ARGS ctx, options, actions ?>
+<?pl #@ARGS ctx, options ?>
 <?pl my $w = $ctx->widget; ?>
 
 <div class="w_pickone">
