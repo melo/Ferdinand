@@ -321,6 +321,16 @@ subtest 'render_field_write', sub {
     qr{value="aa"},
   );
 
+  %meta = (fixed => 1);
+  is(
+    $c1->render_field_write(
+      field => 'xpto',
+      item  => {xpto => 'aa'}
+    ),
+    'aa',
+    'xpto with fixed meta',
+  );
+
   %meta = (empty => 1);
   like_all(
     'xpto with previous value + empty meta => empty',

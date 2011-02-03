@@ -37,6 +37,8 @@ my $excp = exception {
               skip_if_empty => 1,
               label         => 'Password FTW',
             };
+            fixed 'Ypto';
+            fixed 'Xpto', {x => 1};
           };
         };
       };
@@ -57,7 +59,7 @@ my $excp = exception {
         name('pop');
 
         layout {
-          dbic_optional_item { undef };
+          dbic_optional_item {undef};
 
           title('My pop title');
           nest {
@@ -126,6 +128,8 @@ cmp_deeply(
                 skip_if_empty => 1,
                 label         => 'Password FTW',
               },
+              'Ypto' => {fixed => 1},
+              'Xpto' => {fixed => 1, x => 1},
             ],
           },
         ]
@@ -148,8 +152,8 @@ cmp_deeply(
       },
       { name   => 'pop',
         layout => [
-          {type => 'DBIC::Item', item => ignore(), required => 0},
-          {type => 'Title', title => 'My pop title',},
+          {type => 'DBIC::Item', item  => ignore(), required => 0},
+          {type => 'Title',      title => 'My pop title',},
           { type   => 'Layout',
             layout => [{type => 'Title', title => 'A little subtitle'}],
           },
@@ -216,8 +220,11 @@ subtest 'List actions', sub {
   is($h->id,     'w_4',            '... and ID matches');
 
   my $col_names = $l->col_names;
-  cmp_deeply($col_names,
-    [qw( id title slug created_at last_update_at is_visible password )]);
+  cmp_deeply(
+    $col_names,
+    [ qw( id title slug created_at last_update_at is_visible password Ypto Xpto )
+    ]
+  );
 
   my $cols = $l->col_meta;
   cmp_deeply(
@@ -283,6 +290,27 @@ subtest 'List actions', sub {
       _line         => ignore(),
     },
     'Meta for password ok'
+  );
+  cmp_deeply(
+    $cols->{Ypto},
+    { is_required => 0,
+      label       => 'Ypto',
+      fixed       => 1,
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
+    },
+    'Meta for Ypto ok'
+  );
+  cmp_deeply(
+    $cols->{Xpto},
+    { is_required => 0,
+      label       => 'Xpto',
+      fixed       => 1,
+      x           => 1,
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
+    },
+    'Meta for Xpto ok'
   );
 
   is($l->id, 'w_5', 'List widget ID matches');

@@ -116,6 +116,9 @@ method render_field_read (:$ctx, :$field, :$item) {
 method render_field_write(:$ctx, :$field, :$item) {
   my $h    = ghtml();
   my $meta = $self->field_meta($field);
+
+  return $self->render_field_read(@_) if $meta->{fixed};
+
   my $type = $meta->{data_type} || '';
   my $cls  = $meta->{cls_field_html};
   my $def  = $ctx->mode eq 'create' ? 1 : 0;

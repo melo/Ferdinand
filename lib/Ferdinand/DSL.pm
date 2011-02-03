@@ -9,7 +9,7 @@ our @EXPORT = qw(
   title header nest prefix execute
   widget type attr
   columns cols
-  link_to col
+  fixed link_to col
   links url
 
   dbic_source dbic_set dbic_item dbic_optional_item
@@ -120,6 +120,7 @@ sub cols { _add_setup columns => [@_] }
 sub columns (&) { _add_setup columns => _cb_setup(@_, []) }
 
 sub link_to ($$;$) { _add_setup $_[0] => {%{$_[2] || {}}, link_to => $_[1]} }
+sub fixed ($;$)    { _add_setup $_[0] => {%{$_[1] || {}}, fixed   => 1} }
 sub col ($;$) { _add_setup @_ }
 
 
