@@ -30,15 +30,25 @@ has 'btn_undel_id' => (
   default => sub { join('_', 'btn', 'undel', shift->id) },
 );
 
+has 'btns_to_check' => (
+  isa     => 'ArrayRef',
+  is      => 'ro',
+  default => sub { [] }
+);
+
 after setup_fields => method($fields) {
   push @$fields, qw( prefix btn_add_id btn_del_id btn_undel_id );
 };
 
+after setup_attrs => method($class:, $attrs, $meta, $sys, $stash) {
+  push @{$attrs->{btns_to_check}}, 'btn_add', \'btn_del', \'btn_undel';
+};
+
 
 method render_self ($ctx) {
-  my ($elems, $id_map) = $self->_process_buttons($ctx);
+  my ($elems, $id_map, $btns) = $self->_process_buttons($ctx);
   $self->render_list($ctx, $elems);
-  $self->render_per_mode($ctx, $elems, $id_map);
+  $self->render_per_mode($ctx, $elems, $id_map, $btns);
 }
 
 after 'render_self_write' => method($ctx, $elems) {
@@ -66,28 +76,35 @@ method _get_actions ($ctx, $elems) {
 method _process_buttons ($ctx) {
   my $elems = $self->_get_elems($ctx);
   my %id_map = map { $_->{__ID} => $_ } grep { exists $_->{__ID} } @$elems;
+  my %btns_used;
+  my $btns_to_check = $self->btns_to_check;
 
-  ## add item
-  if ($ctx->was_button_used($self->btn_add_id)) {
-    $self->_btn_add_action($ctx, $elems, \%id_map);
+  for (@$btns_to_check) {
+    my $btn = $_; ## local copy, not alias
+    my @check_args;
+    if (ref $btn) {
+      $btn = $$btn;
+      push @check_args, 1;
+    }
+    my $btn_id = "${btn}_id";
+    unshift @check_args, $self->$btn_id();
+
+    my $arg = $ctx->was_button_used(@check_args);
+    next unless defined $arg;
+
+    my $btn_action = "_${btn}_action";
+    $self->$btn_action($ctx, $elems, \%id_map, $arg);
+
+    $btns_used{$btn} = 1;
+    last;    ## There can be only one ... button pressed
   }
 
-  ## del item
-  elsif (defined(my $pos_d = $ctx->was_button_used($self->btn_del_id, 1))) {
-    $self->_btn_del_action($ctx, $elems, \%id_map, $pos_d);
-  }
-
-  ## undel item
-  elsif (defined(my $pos_u = $ctx->was_button_used($self->btn_undel_id, 1))) {
-    $self->_btn_undel_action($ctx, $elems, \%id_map, $pos_u);
-  }
-
-  return ($elems, \%id_map);
+  return ($elems, \%id_map, \%btns_used);
 }
 
-method _btn_add_action   ($ctx, $elems, $id_map) {}
+method _btn_add_action ($ctx, $elems, $id_map) {}
 
-method _btn_del_action   ($ctx, $elems, $id_map, $pos) {
+method _btn_del_action ($ctx, $elems, $id_map, $pos) {
   my $item = $elems->[$pos];
   if ($item) {
     my $action = $item->{__ACTION} || '';
