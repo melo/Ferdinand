@@ -4,6 +4,7 @@ use Ferdinand::Setup 'class';
 use Ferdinand::Utils qw(
   ehtml ghtml
   hash_merge
+  empty
   parse_structured_key walk_structure
 );
 use Method::Signatures;
@@ -53,10 +54,23 @@ method render_field_read (:$ctx, :$field, :$item) {
   my $h = ghtml();
 
   $item = $ctx->item unless $item;
-  my $f = $self->field_value_str(ctx => $ctx, field => $field, item => $item);
-  my $v = $f->[3];
 
+  my ($f, $v);
   my $meta = $self->field_meta($field);
+  if (exists $meta->{value}) {
+    $v = $meta->{value};
+    if (ref($v) eq 'CODE') {
+      local $_ = $ctx;
+      $v = $v->($item);
+    }
+    $v = '' if empty($v);
+    $f = [$item, $field, $v, $v];
+  }
+  else {
+    $f = $self->field_value_str(ctx => $ctx, field => $field, item => $item);
+    $v = $f->[3];
+  }
+
   my $type = $meta->{data_type} || '';
 
   my %attrs;

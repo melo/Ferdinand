@@ -189,6 +189,12 @@ subtest 'render_field_read', sub {
   is($c1->render_field_read(field => 'xpto', item => {xpto => 'aa'}),
     'aa', 'xpto with previous value');
 
+  %meta = (value => 42);
+  is($c1->render_field_read(field => 'xpto'),
+    '42', 'meta value with constant ok');
+  %meta = (value => sub {$$});
+  is($c1->render_field_read(field => 'xpto'), $$, 'meta value with sub ok');
+
   %meta = (cls_field_html => 'x y z');
   is(
     $c1->render_field_read(
