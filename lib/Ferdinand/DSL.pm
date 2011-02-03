@@ -15,7 +15,7 @@ our @EXPORT = qw(
   dbic_source dbic_set dbic_item dbic_optional_item
   dbic_apply dbic_create dbic_update
 
-  form button label on_click
+  form buttons button label on_click
 
   cat_ferdinand_setup
 );
@@ -127,6 +127,9 @@ sub col ($;$) { _add_setup @_ }
 ### Forms
 sub form (&) { _add_setup {type => 'Form', layout => _cb_setup(@_, [])} }
 
+sub buttons (&) {
+  _add_setup {type => 'Form::Buttons', layout => _cb_setup(@_, [])};
+}
 sub button (&) { _add_setup _cb_setup(@_, {type => 'Form::Button'}) }
 sub label ($) { _add_setup label => $_[0] }
 
