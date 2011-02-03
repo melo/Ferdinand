@@ -66,7 +66,12 @@ method _get_actions ($ctx, $elems) {
   my @actions;
   for my $item (@$elems) {
     next unless my $action = $item->{__ACTION};
-    push @actions, {__ID => $item->{__ID}, __ACTION => $action};
+    if (exists $item->{__ID}) {
+      push @actions, {__ID => $item->{__ID}, __ACTION => $action};
+    }
+    else {
+      push @actions, $item;
+    }
   }
 
   return serialize_structure({$self->prefix => \@actions});
