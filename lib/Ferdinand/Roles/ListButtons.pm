@@ -13,21 +13,21 @@ has 'btn_add_id' => (
   isa     => 'Str',
   is      => 'ro',
   lazy    => 1,
-  default => sub { join('_', 'btn', 'add', shift->select_id) },
+  default => sub { join('_', 'btn', 'add', shift->id) },
 );
 
 has 'btn_del_id' => (
   isa     => 'Str',
   is      => 'ro',
   lazy    => 1,
-  default => sub { join('_', 'btn', 'del', shift->select_id) },
+  default => sub { join('_', 'btn', 'del', shift->id) },
 );
 
 has 'btn_undel_id' => (
   isa     => 'Str',
   is      => 'ro',
   lazy    => 1,
-  default => sub { join('_', 'btn', 'undel', shift->select_id) },
+  default => sub { join('_', 'btn', 'undel', shift->id) },
 );
 
 after setup_fields => method($fields) {
