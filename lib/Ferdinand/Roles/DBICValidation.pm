@@ -2,7 +2,7 @@ package Ferdinand::Roles::DBICValidation;
 
 use Ferdinand::Setup 'role';
 use Method::Signatures;
-use Ferdinand::Utils qw(hash_select hash_grep);
+use Ferdinand::Utils qw(hash_select hash_grep empty);
 use DateTime::Format::MySQL;
 
 requires 'dbic_action';
@@ -46,24 +46,24 @@ method _validate ($ctx, $fields) {
     my $fv = $ctx->field_value_str(field => $col, item => $fields);
     my $v = $fv->[3];
     $v =~ s/^\s+|\s+$//g;
-    my $lv = length($v);
+    my $is_empty = empty($v);
 
-    if ($meta->{skip_if_empty} && $lv == 0) {
+    if ($meta->{skip_if_empty} && $is_empty) {
       delete $fields->{$col};
       next;
     }
 
-    if ($req && $mt eq 'text' && $lv == 0) {
+    if ($req && $mt eq 'text' && $is_empty) {
       $ctx->add_error($col => 'Campo obrigatório');
     }
 
-    if ($lv > 0 && $t eq 'datetime') {
+    if (!$is_empty && $t eq 'datetime') {
       $v =~ s{/}{-}g;
       eval { $v = DateTime::Format::MySQL->parse_datetime($v) };
       $ctx->add_error($col => "Data/Hora inválida ($@)") if $@;
     }
 
-    if ($lv > 0 && $t eq 'date') {
+    if (!$is_empty && $t eq 'date') {
       $v =~ s{/}{-}g;
       eval { $v = DateTime::Format::MySQL->parse_date($v) };
       $ctx->add_error($col => "Data inválida ($@)") if $@;
