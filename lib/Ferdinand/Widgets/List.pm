@@ -74,7 +74,7 @@ __DATA__
 <?pl #@ARGS ctx, elems, col_names, state ?>
 <?pl my $model = $ctx->model; ?>
 
-[== $ctx->widget->render_title($ctx, {class => "w_list"}) =]
+[== $ctx->widget->render_title($ctx) =]
 
 <table cellspacing="1" class="ordenada1 w_list">
   <thead>

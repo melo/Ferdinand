@@ -74,7 +74,7 @@ subtest 'Render list action' => sub {
 
     like(
       $buffer,
-      qr{<h1 class="w_list">mini me</h1>},
+      qr{<h1 class="w_title">mini me</h1>},
       "...... title for table was found"
     );
 

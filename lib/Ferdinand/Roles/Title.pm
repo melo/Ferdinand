@@ -1,7 +1,7 @@
 package Ferdinand::Roles::Title;
 
 use Ferdinand::Setup 'role';
-use Ferdinand::Utils 'ghtml';
+use Ferdinand::Utils qw(ghtml hash_merge);
 use Method::Signatures;
 
 requires 'setup_attrs';
@@ -11,7 +11,13 @@ has 'title' => (
   isa => 'CodeRef|Str',
 );
 
-after setup_fields => method ($fields) { push @$fields, 'title' };
+has 'title_class' => (
+  is      => 'ro',
+  isa     => 'Str',
+  default => 'w_title',
+);
+
+after setup_fields => method($fields) {push @$fields, qw(title title_class)};
 
 
 method title ($ctx) {
@@ -24,6 +30,9 @@ method title ($ctx) {
 
 method render_title ($ctx, $args = {}) {
   return unless my $t = $self->title($ctx);
+
+  $args = hash_merge({}, class => $self->title_class, %$args);
+
   return ghtml()->h1($args, $t);
 }
 
