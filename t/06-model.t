@@ -477,6 +477,18 @@ subtest 'render_field_write', sub {
     qr{<option value="b">B</option>},
   );
 
+  %meta =
+    (options => sub { [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}] });
+  like_all(
+    'xpto select',
+    $c1->render_field_write(field => 'xpto'),
+    qr{<select },
+    qr{name="xpto"},
+    qr{id="xpto"},
+    qr{<option value="a">A</option>},
+    qr{<option value="b">B</option>},
+  );
+
   %meta = (
     options => [{id => 'a', name => 'AA'}, {id => 'b', name => 'BB'}],
     cls_field_html => 'x y z'

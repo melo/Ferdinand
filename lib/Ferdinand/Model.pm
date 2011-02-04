@@ -149,6 +149,10 @@ method render_field_write(:$ctx, :$field, :$item) {
   }
 
   if (my $opt = $meta->{options}) {
+    if (ref($opt) eq 'CODE') {
+      local $_ = $ctx;
+      $opt = $opt->($item);
+    }
     my @inner;
     for my $opt (@$opt) {
       my $id = $opt->{id};
