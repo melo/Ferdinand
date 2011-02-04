@@ -155,8 +155,8 @@ method render_field_write(:$ctx, :$field, :$item) {
     }
 
     my @inner;
-    push @inner, $h->option($meta->{empty_option})
-      if exists $meta->{empty_option};
+    push @inner, $h->option($meta->{empty_option} || '')
+      if exists $meta->{empty_option} || $meta->{is_nullable};
 
     for my $opt (@$opt) {
       my $id = $opt->{id};
