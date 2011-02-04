@@ -437,6 +437,9 @@ subtest 'dbicset_as_options' => sub {
     ],
     'dbicset_as_options ok'
   );
+
+  cmp_deeply(dbicset_as_options(undef, 'title'),
+    [], 'No resultset, empty options');
 };
 
 

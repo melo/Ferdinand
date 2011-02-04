@@ -390,6 +390,8 @@ sub walk_structure {
 sub dbicset_as_options ($$;$) {
   my ($rs, $field, $ctx) = @_;
 
+  return [] unless $rs;
+
   my $get_field =
     $ctx
     ? sub { $ctx->field_value_str(item => $_[0], field => $_[1])->[3] }
