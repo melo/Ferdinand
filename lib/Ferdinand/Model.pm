@@ -153,7 +153,11 @@ method render_field_write(:$ctx, :$field, :$item) {
       local $_ = $ctx;
       $opt = $opt->($item);
     }
+
     my @inner;
+    push @inner, $h->option($meta->{empty_option})
+      if exists $meta->{empty_option};
+
     for my $opt (@$opt) {
       my $id = $opt->{id};
       my %oattrs = (value => $id);
