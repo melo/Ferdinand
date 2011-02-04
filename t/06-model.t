@@ -328,13 +328,18 @@ subtest 'render_field_write', sub {
   );
 
   %meta = (fixed => 1);
-  is(
+  like_all(
+    'xpto with fixed meta',
     $c1->render_field_write(
       field => 'xpto',
       item  => {xpto => 'aa'}
     ),
-    'aa',
-    'xpto with fixed meta',
+    qr{^<input },
+    qr{type="hidden"},
+    qr{name="xpto"},
+    qr{id="xpto"},
+    qr{value="aa"},
+    qr{>aa$},
   );
 
   %meta = (empty => 1);

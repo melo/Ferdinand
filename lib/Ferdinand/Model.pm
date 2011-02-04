@@ -55,21 +55,11 @@ method render_field_read (:$ctx, :$field, :$item) {
 
   $item = $ctx->item unless $item;
 
-  my ($f, $v);
   my $meta = $self->field_meta($field);
-  if (exists $meta->{value}) {
-    $v = $meta->{value};
-    if (ref($v) eq 'CODE') {
-      local $_ = $ctx;
-      $v = $v->($item);
-    }
-    $v = '' if empty($v);
-    $f = [$item, $field, $v, $v];
-  }
-  else {
-    $f = $self->field_value_str(ctx => $ctx, field => $field, item => $item);
-    $v = $f->[3];
-  }
+  my $f = $self->_get_fixed_value($ctx, $item, $field, $meta);
+  $f = $self->field_value_str(@_, item => $item)
+    unless $f;
+  my $v = $f->[3];
 
   my $type = $meta->{data_type} || '';
 
@@ -128,20 +118,20 @@ method render_field_read (:$ctx, :$field, :$item) {
 
 
 method render_field_write(:$ctx, :$field, :$item) {
-  my $h    = ghtml();
+  my $h = ghtml();
+
   my $meta = $self->field_meta($field);
-
-  return $self->render_field_read(@_) if $meta->{fixed};
-
   my $type = $meta->{data_type} || '';
   my $cls  = $meta->{cls_field_html};
   my $def  = $ctx->mode eq 'create' ? 1 : 0;
-  my $f    = $self->field_value_str(
+
+  my $f = $self->_get_fixed_value($ctx, $item, $field, $meta);
+  $f = $self->field_value_str(
     ctx         => $ctx,
     field       => $field,
     item        => $item,
     use_default => $def
-  );
+  ) unless $f;
   my $val = $f->[3];
   $val = '' if $meta->{empty};
 
@@ -195,7 +185,26 @@ method render_field_write(:$ctx, :$field, :$item) {
   $attrs{type}     = 'text' unless $attrs{type};
   $attrs{value}    = $val;
 
-  return $h->input(\%attrs);
+  my $html = '';
+  if ($meta->{fixed}) {    ## fixed meta
+    $attrs{type} = 'hidden';
+    $html = $self->render_field_read(@_, item => $item);
+  }
+
+  return $h->input(\%attrs) . $html;
+}
+
+method _get_fixed_value ($ctx, $item, $field, $meta) {
+  return unless exists $meta->{value};
+
+  my $v = $meta->{value};
+  if (ref($v) eq 'CODE') {
+    local $_ = $ctx;
+    $v = $v->($item);
+  }
+  $v = '' if empty($v);
+
+  return [$item, $field, $v, $v, 1];
 }
 
 
