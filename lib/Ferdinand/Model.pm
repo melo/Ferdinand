@@ -83,7 +83,7 @@ method render_field_read (:$ctx, :$field, :$item) {
   if ($opts) {
     for my $o (@$opts) {
       next unless $v eq $o->{id};
-      $v = $o->{name};
+      $v = $o->{text};
       last;
     }
   }
@@ -158,7 +158,7 @@ method render_field_write(:$ctx, :$field, :$item) {
       my $id = $opt->{id};
       my %oattrs = (value => $id);
       $oattrs{selected} = 1 if $val && $val eq $id;
-      push @inner, $h->option(\%oattrs, $opt->{name});
+      push @inner, $h->option(\%oattrs, $opt->{text});
     }
     return $h->select(\%attrs, @inner);
   }

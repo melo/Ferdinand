@@ -98,8 +98,8 @@ method column_meta_fixup ($full_name, $defs = {}) {
       my $opts = $info{options} = [];
 
       for my $opt (@{$ci->{extra}{options}}) {
-        $opt = {id => $opt, name => $opt} unless ref($opt) eq 'HASH';
-        $opt->{name} = $opt->{id} unless $opt->{name};
+        $opt = {id => $opt, text => $opt} unless ref($opt) eq 'HASH';
+        $opt->{text} = $opt->{id} unless $opt->{text};
         push @$opts, $opt;
       }
     }

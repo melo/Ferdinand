@@ -141,9 +141,9 @@ TODO: {
       size          => 1,
       default_value => 'H',
       options       => [
-        {id => 'H', name => 'H'},
-        {id => 'V', name => 'V'},
-        {id => 'Z', name => 'ZZ'},
+        {id => 'H', text => 'H'},
+        {id => 'V', text => 'V'},
+        {id => 'Z', text => 'ZZ'},
       ],
       is_required => 1,
       meta_type   => 'text',

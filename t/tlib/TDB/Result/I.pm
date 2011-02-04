@@ -45,7 +45,7 @@ __PACKAGE__->add_columns(
     size          => 1,
     is_nullable   => 0,
     default_value => 'H',
-    extra => {options => ['H', {id => 'V'}, {id => 'Z', name => 'ZZ'}]},
+    extra => {options => ['H', {id => 'V'}, {id => 'Z', text => 'ZZ'}]},
   },
 );
 

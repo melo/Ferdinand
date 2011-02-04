@@ -263,12 +263,12 @@ subtest 'render_field_read', sub {
     'xpto text field + value'
   );
 
-  %meta = (options => [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}]);
+  %meta = (options => [{id => 'a', text => 'A'}, {id => 'b', text => 'B'}]);
   is($c1->render_field_read(field => 'xpto'),
     '', 'xpto field with options, no value');
 
   %meta = (
-    options => [{id => 'a', name => 'AA'}, {id => 'b', name => 'BB'}],
+    options => [{id => 'a', text => 'AA'}, {id => 'b', text => 'BB'}],
     cls_field_html => 'x y z'
   );
   is(
@@ -277,7 +277,7 @@ subtest 'render_field_read', sub {
     'xpto field with options + class'
   );
 
-  %meta = (options => [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}]);
+  %meta = (options => [{id => 'a', text => 'A'}, {id => 'b', text => 'B'}]);
   is(
     $c1->render_field_read(
       field => 'xpto',
@@ -466,7 +466,7 @@ subtest 'render_field_write', sub {
     qr{id="xpto"},
   );
 
-  %meta = (options => [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}]);
+  %meta = (options => [{id => 'a', text => 'A'}, {id => 'b', text => 'B'}]);
   like_all(
     'xpto select',
     $c1->render_field_write(field => 'xpto'),
@@ -478,7 +478,7 @@ subtest 'render_field_write', sub {
   );
 
   %meta =
-    (options => sub { [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}] });
+    (options => sub { [{id => 'a', text => 'A'}, {id => 'b', text => 'B'}] });
   like_all(
     'xpto select',
     $c1->render_field_write(field => 'xpto'),
@@ -490,7 +490,7 @@ subtest 'render_field_write', sub {
   );
 
   %meta = (
-    options => [{id => 'a', name => 'AA'}, {id => 'b', name => 'BB'}],
+    options => [{id => 'a', text => 'AA'}, {id => 'b', text => 'BB'}],
     cls_field_html => 'x y z'
   );
   like_all(
@@ -504,7 +504,7 @@ subtest 'render_field_write', sub {
     qr{<option value="b">BB</option>},
   );
 
-  %meta = (options => [{id => 'a', name => 'A'}, {id => 'b', name => 'B'}]);
+  %meta = (options => [{id => 'a', text => 'A'}, {id => 'b', text => 'B'}]);
   like_all(
     'xpto select',
     $c1->render_field_write(
