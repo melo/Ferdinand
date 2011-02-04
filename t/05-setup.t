@@ -39,6 +39,8 @@ my $excp = exception {
             };
             fixed 'Ypto';
             fixed 'Xpto', {x => 1};
+            pick_one 'Zpto_s' => sub { [] };
+            pick_one 'Zpto_o' => [], {x => 1};
           };
         };
       };
@@ -128,8 +130,10 @@ cmp_deeply(
                 skip_if_empty => 1,
                 label         => 'Password FTW',
               },
-              'Ypto' => {fixed => 1},
-              'Xpto' => {fixed => 1, x => 1},
+              'Ypto'   => {fixed   => 1},
+              'Xpto'   => {fixed   => 1, x => 1},
+              'Zpto_s' => {options => ignore()},
+              'Zpto_o' => {options => [], x => 1},
             ],
           },
         ]
@@ -222,7 +226,7 @@ subtest 'List actions', sub {
   my $col_names = $l->col_names;
   cmp_deeply(
     $col_names,
-    [ qw( id title slug created_at last_update_at is_visible password Ypto Xpto )
+    [ qw( id title slug created_at last_update_at is_visible password Ypto Xpto Zpto_s Zpto_o )
     ]
   );
 
@@ -306,6 +310,27 @@ subtest 'List actions', sub {
     { is_required => 0,
       label       => 'Xpto',
       fixed       => 1,
+      x           => 1,
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
+    },
+    'Meta for Xpto ok'
+  );
+  cmp_deeply(
+    $cols->{Zpto_s},
+    { is_required => 0,
+      label       => 'Zpto S',
+      options     => ignore(),
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => ignore(),
+    },
+    'Meta for Xpto ok'
+  );
+  cmp_deeply(
+    $cols->{Zpto_o},
+    { is_required => 0,
+      label       => 'Zpto O',
+      options     => [],
       x           => 1,
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => ignore(),
