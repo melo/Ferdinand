@@ -77,7 +77,7 @@ __DATA__
 <?pl my $w = $ctx->widget; ?>
 
 <div class="w_list_add_ops">
-  <input type="submit" name="[= $w->btn_add_id =]" value="Dá-lhe, Tono!">
+  <input type="submit" name="[= $w->btn_add_id =]" value="Adicionar">
 </div>
 
 @@ no_form_ops.pltj
