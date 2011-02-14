@@ -17,12 +17,6 @@ has 'mode' => (isa => 'Str', is => 'ro', default => 'view');
 ## TODO: use self_uri or some other less-Catalyst name
 has 'action_uri' => (isa => 'URI', is => 'ro');
 
-## TODO: this is too App specific, maybe move back to per-app Context class?
-has 'uri_helper' => (
-  isa => 'Object',
-  is  => 'ro',
-);
-
 
 #################
 # Mode management
