@@ -12,6 +12,9 @@ has 'overlay' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
 after setup_fields => method ($fields) { push @$fields, 'overlay' };
 
+method setup_check_begin ($ctx, $guards) {
+  push @$guards, $ctx->snapshot;
+}
 
 method render_begin ($ctx) {
   my %o = %{$self->overlay};
