@@ -17,6 +17,8 @@ has 'id' => (
 method setup ($class:, $meta, $sys, $stash) {
   my %attrs;
 
+  $class->setup_init($meta, $sys, $stash);
+
   my @fields;
   $class->setup_fields(\@fields);
   for my $f (@fields) {
@@ -34,6 +36,7 @@ method setup ($class:, $meta, $sys, $stash) {
   return $self;
 }
 
+method setup_init ($class:, $meta, $sys, $stash) {}
 method setup_attrs ($class:, $attrs, $meta, $sys, $stash) {}
 method setup_done ($stash) {}
 method setup_fields ($fields) {}
