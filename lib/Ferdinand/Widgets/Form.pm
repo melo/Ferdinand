@@ -32,7 +32,7 @@ __DATA__
 @@ form.pltj
 <?pl #@ARGS ctx, content ?>
 
-<form action="[= $ctx->action_uri->path =]" method="POST" accept-charset="utf-8">
+<form action="[= $ctx->action_uri->path =]" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
 <?pl
   if (my $item = $ctx->item) {
     my @pk_cols = $ctx->model->primary_columns;
