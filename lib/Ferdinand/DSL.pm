@@ -17,8 +17,6 @@ our @EXPORT = qw(
 
   form buttons button label on_click
   add_form
-
-  cat_ferdinand_setup
 );
 
 
@@ -146,9 +144,6 @@ sub add_form (&) {
   _add_setup layout => _cb_setup(@_, []);
   _add_setup on_demand => 1;
 }
-
-### Extras
-sub cat_ferdinand_setup (&) { caller()->ferdinand(_cb_setup(@_)) }
 
 
 1;
