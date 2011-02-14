@@ -39,6 +39,13 @@ method field_meta ($name) {
   return {};
 }
 
+method build_field_meta (:$name, :$meta = {}, :$source?, :$field?) {
+  $meta = $self->column_meta_fixup($field, $meta, $source)
+    if $source && $field;
+
+  $self->set_field_meta($name, $meta);
+}
+
 
 ##################
 # Render of fields
