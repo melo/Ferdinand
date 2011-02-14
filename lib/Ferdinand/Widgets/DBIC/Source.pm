@@ -20,7 +20,7 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
 };
 
 
-after setup_check => method ($ctx) {
+after setup_check_self => method ($ctx) {
   $ctx->model($self->model);
 };
 
