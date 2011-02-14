@@ -46,7 +46,7 @@ method setup_fields ($fields) {}
 # Check the tree setup: a visitor pattern
 
 method setup_check ($ctx) {
-  my @guards;
+  my @guards = ($ctx->overlay(widget => $self));
 
   $self->setup_check_begin($ctx, \@guards);
   $self->setup_check_self($ctx);
