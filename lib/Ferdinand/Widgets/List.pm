@@ -96,7 +96,9 @@ __DATA__
     <tr>
 <?pl     } ?>
 <?pl     for my $col (@$col_names) { ?>
-      <td>[== $row->{$col} =]</td>
+<?pl       my $meta = $model->field_meta($col); ?>
+<?pl       my $cc = $meta->{col_class}; ?>
+      <td[== $cc? qq{ class="$cc"} :  '' =]>[== $row->{$col} =]</td>
 <?pl     } ?>
     </tr>
 <?pl   } ?>
