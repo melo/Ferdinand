@@ -87,6 +87,24 @@ method overlay () {
   return guard { hash_merge($self, @saved) };
 }
 
+method snapshot () {
+  my @saved;
+
+  my @fields = qw( model set item id prefix );
+  push @saved, $_, $self->{$_} for @fields;
+
+  while (my ($k, $v) = splice(@_, 0, 2)) {
+    if (defined $v) {
+      $self->{$k} = $v;
+    }
+    else {
+      delete $self->{$k};
+    }
+  }
+
+  return guard { hash_merge($self, @saved) };
+}
+
 
 ############################
 # Context stash manipulation
