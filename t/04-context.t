@@ -44,8 +44,6 @@ sub _ctx_full {
 subtest 'Basic tests' => sub {
   my $c1 = _ctx_full(params => {a => 1, b => 2, 'c.a[1].b' => 'taxi'});
 
-  isa_ok($c1->map,        'Ferdinand::Map');
-  isa_ok($c1->action,     'Ferdinand::Action');
   isa_ok($c1->action_uri, 'URI');
 
   is($c1->widget, undef, 'Widget is undef');
@@ -126,9 +124,7 @@ subtest 'context cloning' => sub {
     cmp_deeply($c2->params, {a => 1, b => 2}, 'cloned param as expected');
     cmp_deeply($c2->stash,  {x => 9, y => 8}, 'cloned stash as expected');
 
-    for my $attr (qw( map action widget uri_helper )) {
-      is($c2->$attr, $c1->$attr, "Cloned context '$attr' is the same");
-    }
+    is($c2->widget, $c1->widget, "Cloned context 'widget' is the same");
 
     $c2->item(bless({a => 1, b => 2}, 'X'));
     $c2->set(bless([{a => 1}, {a => 2}], 'X'));
