@@ -267,7 +267,7 @@ method fetch ($id, $source) {
 }
 
 
-method column_meta_fixup () {
+method column_meta_fixup ($full_name, $defs = {}, $source?) {
   confess "Subclass $self needs to implement column_meta_fixup(), ";
 }
 

@@ -49,9 +49,9 @@ method id_for_item ($item) {
 }
 
 
-method column_meta_fixup ($full_name, $defs = {}) {
+method column_meta_fixup ($full_name, $defs = {}, $source?) {
   my %info;
-  my $source = $self->source;
+  $source ||= $self->source;
 
   ### Deal with nested fields
   my @path = parse_structured_key($full_name);
