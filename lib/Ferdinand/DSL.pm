@@ -12,6 +12,8 @@ our @EXPORT = qw(
   fixed link_to col pick_one
   links url
 
+  skip_unless_item
+
   dbic_source dbic_set dbic_item dbic_optional_item
   dbic_apply dbic_create dbic_update
 
@@ -79,6 +81,14 @@ sub header ($)  { _add_setup {header => $_[0], type => 'Header'} }
 sub execute (&) { _add_setup {cb     => $_[0], type => 'CB'} }
 
 sub nest (&) { _add_setup {type => 'Layout', layout => _cb_setup(@_, [])} }
+
+sub skip_unless_item (&) {
+  _add_setup {
+    type => 'Layout::Optional',
+    skip => 'item',
+    layout => _cb_setup(@_, [])
+  };
+}
 
 sub prefix ($&) {
   _add_setup {
