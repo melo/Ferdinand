@@ -20,7 +20,12 @@ has 'on_demand' => (
   default => 0,
 );
 
-after setup_fields => method ($fields) { push @$fields, 'on_demand' };
+has 'skip' => (
+  isa => 'CodeRef',
+  is  => 'ro',
+);
+
+after setup_fields => method ($fields) { push @$fields, 'on_demand', 'skip' };
 
 
 after setup_attrs => method ($class:, $attrs, $meta, $sys?, $stash = {}) {
@@ -48,8 +53,16 @@ after setup_check_self => method ($ctx) {
 after render_self => method($ctx) {
   return if $self->on_demand;
 
+  {
+    my $skip = $self->skip;
+    local $_ = $ctx;
+    return if $skip && $skip->($self);
+  }
+
   $self->render_widgets($ctx);
 };
+
+
 
 
 method render_widgets ($ctx) {

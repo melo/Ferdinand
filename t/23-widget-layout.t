@@ -46,6 +46,32 @@ subtest 'layout vs on_demand' => sub {
 };
 
 
+subtest 'layout vs skip' => sub {
+  ## Test with context without item
+  my $item = bless({x => 1}, 'X');
+  my $l = setup_widget(
+    'Layout',
+    { skip   => sub { !defined($_->item) },
+      layout => [
+        { type => 'CB',
+          cb   => sub { $_->item($item) }
+        },
+      ],
+    }
+  );
+
+  my $ctx = render_ok($l);
+  is($ctx->item, undef, "Item empty as expected");
+
+  $l->render_widgets($ctx);
+  is($ctx->item, $item, "Item as expected");
+
+  ## Test with context with item
+  $ctx = render_ok($l, {item => $item});
+  is($ctx->item, $item, "Item found as expected");
+};
+
+
 subtest 'layout with overlay' => sub {
   my $l = setup_widget(
     'Layout',

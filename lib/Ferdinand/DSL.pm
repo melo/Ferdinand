@@ -84,9 +84,9 @@ sub nest (&) { _add_setup {type => 'Layout', layout => _cb_setup(@_, [])} }
 
 sub skip_unless_item (&) {
   _add_setup {
-    type => 'Layout::Optional',
-    skip => 'item',
-    layout => _cb_setup(@_, [])
+    type => 'Layout',
+    skip => sub { !defined($_->item) },
+    layout => _cb_setup(@_, []),
   };
 }
 
