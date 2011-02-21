@@ -234,6 +234,7 @@ subtest 'List actions', sub {
   cmp_deeply(
     $cols->{id},
     { name        => 'id',
+      field       => 'id',
       data_type   => "integer",
       is_nullable => 0,
       is_required => 1,
@@ -248,6 +249,7 @@ subtest 'List actions', sub {
   cmp_deeply(
     $cols->{title},
     { name        => 'title',
+      field       => 'title',
       data_type   => "varchar",
       is_required => '',
       is_nullable => 1,
@@ -264,6 +266,7 @@ subtest 'List actions', sub {
   cmp_deeply(
     $cols->{slug},
     { name        => 'slug',
+      field       => 'slug',
       data_type   => "varchar",
       is_nullable => 0,
       is_required => 1,
@@ -281,6 +284,7 @@ subtest 'List actions', sub {
   cmp_deeply(
     $cols->{is_visible},
     { name        => 'is_visible',
+      field       => 'is_visible',
       is_required => 0,
       label       => "Is Visible",
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
@@ -291,6 +295,7 @@ subtest 'List actions', sub {
   cmp_deeply(
     $cols->{password},
     { name          => 'password',
+      field         => 'password',
       empty         => 1,
       skip_if_empty => 1,
       is_required   => 0,
@@ -303,6 +308,7 @@ subtest 'List actions', sub {
   cmp_deeply(
     $cols->{Ypto},
     { name        => 'Ypto',
+      field       => 'Ypto',
       is_required => 0,
       label       => 'Ypto',
       fixed       => 1,
@@ -314,6 +320,7 @@ subtest 'List actions', sub {
   cmp_deeply(
     $cols->{Xpto},
     { name        => 'Xpto',
+      field       => 'Xpto',
       is_required => 0,
       label       => 'Xpto',
       fixed       => 1,
@@ -326,6 +333,7 @@ subtest 'List actions', sub {
   cmp_deeply(
     $cols->{Zpto_s},
     { name        => 'Zpto_s',
+      field       => 'Zpto_s',
       is_required => 0,
       label       => 'Zpto S',
       options     => ignore(),
@@ -337,6 +345,7 @@ subtest 'List actions', sub {
   cmp_deeply(
     $cols->{Zpto_o},
     { name        => 'Zpto_o',
+      field       => 'Zpto_o',
       is_required => 0,
       label       => 'Zpto O',
       options     => [],

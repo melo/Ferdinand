@@ -123,6 +123,7 @@ TODO: {
   cmp_deeply(
     $cm->{title},
     { name        => 'title',
+      field       => 'title',
       data_type   => 'varchar',
       label       => 'Title',
       size        => 100,
@@ -137,6 +138,7 @@ TODO: {
   cmp_deeply(
     $cm->{visible},
     { name          => 'visible',
+      field         => 'visible',
       data_type     => "char",
       is_nullable   => 0,
       label         => "Visible",
@@ -157,6 +159,7 @@ TODO: {
   cmp_deeply(
     $cm->{published_at},
     { name          => 'published_at',
+      field         => 'published_at',
       cls_list      => ["{sorter: 'eu_date'}"],
       cls_list_html => " class=\"{sorter: 'eu_date'}\"",
       data_type     => "date",
@@ -176,6 +179,7 @@ TODO: {
   cmp_deeply(
     $cm->{slug},
     { name        => 'slug',
+      field       => 'slug',
       data_type   => "varchar",
       is_nullable => 0,
       label       => "Slug",

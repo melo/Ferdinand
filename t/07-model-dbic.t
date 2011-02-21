@@ -72,6 +72,7 @@ subtest 'metadata with live data' => sub {
   cmp_deeply(
     $m->field_meta('title'),
     { name        => 'title',
+      field       => 'title',
       data_type   => "varchar",
       is_nullable => 1,
       is_required => "",
@@ -87,6 +88,7 @@ subtest 'metadata with live data' => sub {
   cmp_deeply(
     $m->field_meta('slug'),
     { name        => 'slug',
+      field       => 'slug',
       data_type   => "varchar",
       is_nullable => 0,
       is_required => 1,
@@ -103,6 +105,7 @@ subtest 'metadata with live data' => sub {
   cmp_deeply(
     $m->field_meta('body'),
     { name        => 'body',
+      field       => 'body',
       data_type   => "text",
       is_required => 1,
       label       => "Body",
@@ -116,6 +119,7 @@ subtest 'metadata with live data' => sub {
   cmp_deeply(
     $m->field_meta('a.name'),
     { name        => 'a.name',
+      field       => 'a.name',
       data_type   => "varchar",
       size        => 100,
       is_required => 1,
@@ -131,6 +135,7 @@ subtest 'metadata with live data' => sub {
   cmp_deeply(
     $m->field_meta('a.listed_but_doesnt_exist'),
     { name        => 'a.listed_but_doesnt_exist',
+      field       => 'a.listed_but_doesnt_exist',
       is_required => 0,
       label       => "Listed But Doesnt Exist",
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
@@ -142,6 +147,7 @@ subtest 'metadata with live data' => sub {
   cmp_deeply(
     $m->field_meta('no_relation.field'),
     { name        => 'no_relation.field',
+      field       => 'no_relation.field',
       is_required => 0,
       label       => "Field",
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),

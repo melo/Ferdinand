@@ -40,6 +40,7 @@ cmp_deeply(
   $x->col_meta,
   { col1 => {
       name        => 'col1',
+      field       => 'col1',
       label       => 'Col1',
       is_required => 0,
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
@@ -47,6 +48,7 @@ cmp_deeply(
     },
     col2 => {
       name        => 'col2',
+      field       => 'col2',
       label       => 'Col2',
       is_required => 0,
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
@@ -54,6 +56,7 @@ cmp_deeply(
     },
     col3 => {
       name        => 'col3',
+      field       => 'col3',
       a           => 1,
       b           => 2,
       label       => 'Col3',
@@ -63,6 +66,7 @@ cmp_deeply(
     },
     col4 => {
       name        => 'col4',
+      field       => 'col4',
       c           => 'a',
       d           => 'b',
       label       => 'Col4',
@@ -71,9 +75,9 @@ cmp_deeply(
       _line       => re(qr{^\d+$}),
     },
     xol5 => {
-      name        => 'col5',
+      name        => 'xol5',
+      field       => 'col5',
       label       => 'Col5',
-      as          => 'xol5',
       is_required => 0,
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => re(qr{^\d+$}),
@@ -116,6 +120,7 @@ my $h = $x->col_meta;
 cmp_deeply(
   $h->{id},
   { name        => 'id',
+    field       => 'id',
     data_type   => "integer",
     meta_type   => 'numeric',
     is_nullable => 0,
@@ -129,6 +134,7 @@ cmp_deeply(
 cmp_deeply(
   $h->{slug},
   { name        => 'slug',
+    field       => 'slug',
     data_type   => "varchar",
     meta_type   => 'text',
     is_nullable => 0,
@@ -147,6 +153,7 @@ my $fmt = delete $h->{published_at}{formatter};
 cmp_deeply(
   $h->{published_at},
   { name          => 'published_at',
+    field         => 'published_at',
     cls_list      => ["{sorter: 'eu_date'}"],
     cls_list_html => " class=\"{sorter: 'eu_date'}\"",
     data_type     => "date",
@@ -166,6 +173,7 @@ cmp_deeply($h->{published_at}{default_value}->(),
 cmp_deeply(
   $h->{html},
   { name        => 'html',
+    field       => 'html',
     data_type   => "text",
     meta_type   => 'text',
     label       => "Html",
