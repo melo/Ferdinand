@@ -33,6 +33,9 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
 
     $info = $model->column_meta_fixup($name, $info) if $model;
 
+    $info->{name} = $name;
+    $name = $info->{as} if exists $info->{as};
+
     push @names, $name;
     $meta{$name} = $info;
   }

@@ -122,7 +122,8 @@ TODO: {
   );
   cmp_deeply(
     $cm->{title},
-    { data_type   => 'varchar',
+    { name        => 'title',
+      data_type   => 'varchar',
       label       => 'Title',
       size        => 100,
       is_required => '',
@@ -135,7 +136,8 @@ TODO: {
   );
   cmp_deeply(
     $cm->{visible},
-    { data_type     => "char",
+    { name          => 'visible',
+      data_type     => "char",
       is_nullable   => 0,
       label         => "Visible",
       size          => 1,
@@ -154,7 +156,8 @@ TODO: {
   );
   cmp_deeply(
     $cm->{published_at},
-    { cls_list      => ["{sorter: 'eu_date'}"],
+    { name          => 'published_at',
+      cls_list      => ["{sorter: 'eu_date'}"],
       cls_list_html => " class=\"{sorter: 'eu_date'}\"",
       data_type     => "date",
       formatter     => ignore(),
@@ -172,7 +175,8 @@ TODO: {
     DateTime->today(), '...... default_value evals to the expected value');
   cmp_deeply(
     $cm->{slug},
-    { data_type   => "varchar",
+    { name        => 'slug',
+      data_type   => "varchar",
       is_nullable => 0,
       label       => "Slug",
       link_to     => ignore(),

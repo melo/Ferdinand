@@ -233,7 +233,8 @@ subtest 'List actions', sub {
   my $cols = $l->col_meta;
   cmp_deeply(
     $cols->{id},
-    { data_type   => "integer",
+    { name        => 'id',
+      data_type   => "integer",
       is_nullable => 0,
       is_required => 1,
       label       => "ID",
@@ -246,7 +247,8 @@ subtest 'List actions', sub {
   );
   cmp_deeply(
     $cols->{title},
-    { data_type   => "varchar",
+    { name        => 'title',
+      data_type   => "varchar",
       is_required => '',
       is_nullable => 1,
       label       => "Title",
@@ -261,7 +263,8 @@ subtest 'List actions', sub {
   );
   cmp_deeply(
     $cols->{slug},
-    { data_type   => "varchar",
+    { name        => 'slug',
+      data_type   => "varchar",
       is_nullable => 0,
       is_required => 1,
       label       => "Slug",
@@ -277,7 +280,8 @@ subtest 'List actions', sub {
   );
   cmp_deeply(
     $cols->{is_visible},
-    { is_required => 0,
+    { name        => 'is_visible',
+      is_required => 0,
       label       => "Is Visible",
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => ignore(),
@@ -286,7 +290,8 @@ subtest 'List actions', sub {
   );
   cmp_deeply(
     $cols->{password},
-    { empty         => 1,
+    { name          => 'password',
+      empty         => 1,
       skip_if_empty => 1,
       is_required   => 0,
       label         => 'Password FTW',
@@ -297,7 +302,8 @@ subtest 'List actions', sub {
   );
   cmp_deeply(
     $cols->{Ypto},
-    { is_required => 0,
+    { name        => 'Ypto',
+      is_required => 0,
       label       => 'Ypto',
       fixed       => 1,
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
@@ -307,7 +313,8 @@ subtest 'List actions', sub {
   );
   cmp_deeply(
     $cols->{Xpto},
-    { is_required => 0,
+    { name        => 'Xpto',
+      is_required => 0,
       label       => 'Xpto',
       fixed       => 1,
       x           => 1,
@@ -318,7 +325,8 @@ subtest 'List actions', sub {
   );
   cmp_deeply(
     $cols->{Zpto_s},
-    { is_required => 0,
+    { name        => 'Zpto_s',
+      is_required => 0,
       label       => 'Zpto S',
       options     => ignore(),
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
@@ -328,7 +336,8 @@ subtest 'List actions', sub {
   );
   cmp_deeply(
     $cols->{Zpto_o},
-    { is_required => 0,
+    { name        => 'Zpto_o',
+      is_required => 0,
       label       => 'Zpto O',
       options     => [],
       x           => 1,

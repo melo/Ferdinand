@@ -25,8 +25,9 @@ my $l = setup_widget(
         columns => [
           'col1',
           'col2',
-          'col3' => {a => 1,   b => 2},
-          'col4' => {c => 'a', d => 'b'},
+          'col3' => {a  => 1,   b => 2},
+          'col4' => {c  => 'a', d => 'b'},
+          'col5' => {as => 'xol5'},
         ],
       }
     ],
@@ -34,22 +35,25 @@ my $l = setup_widget(
 );
 my $x = $l->layout->[1];
 
-cmp_deeply($x->col_names, [qw( col1 col2 col3 col4 )], 'Column names');
+cmp_deeply($x->col_names, [qw( col1 col2 col3 col4 xol5 )], 'Column names');
 cmp_deeply(
   $x->col_meta,
   { col1 => {
+      name        => 'col1',
       label       => 'Col1',
       is_required => 0,
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => re(qr{^\d+$}),
     },
     col2 => {
+      name        => 'col2',
       label       => 'Col2',
       is_required => 0,
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => re(qr{^\d+$}),
     },
     col3 => {
+      name        => 'col3',
       a           => 1,
       b           => 2,
       label       => 'Col3',
@@ -58,9 +62,18 @@ cmp_deeply(
       _line       => re(qr{^\d+$}),
     },
     col4 => {
+      name        => 'col4',
       c           => 'a',
       d           => 'b',
       label       => 'Col4',
+      is_required => 0,
+      _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+      _line       => re(qr{^\d+$}),
+    },
+    xol5 => {
+      name        => 'col5',
+      label       => 'Col5',
+      as          => 'xol5',
       is_required => 0,
       _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
       _line       => re(qr{^\d+$}),
@@ -101,7 +114,8 @@ is(scalar(@$n), 6, 'Five columns in our Set');
 my $h = $x->col_meta;
 cmp_deeply(
   $h->{id},
-  { data_type   => "integer",
+  { name        => 'id',
+    data_type   => "integer",
     meta_type   => 'numeric',
     is_nullable => 0,
     label       => "ID",
@@ -113,7 +127,8 @@ cmp_deeply(
 );
 cmp_deeply(
   $h->{slug},
-  { data_type   => "varchar",
+  { name        => 'slug',
+    data_type   => "varchar",
     meta_type   => 'text',
     is_nullable => 0,
     label       => "Slug",
@@ -130,7 +145,8 @@ cmp_deeply(
 my $fmt = delete $h->{published_at}{formatter};
 cmp_deeply(
   $h->{published_at},
-  { cls_list      => ["{sorter: 'eu_date'}"],
+  { name          => 'published_at',
+    cls_list      => ["{sorter: 'eu_date'}"],
     cls_list_html => " class=\"{sorter: 'eu_date'}\"",
     data_type     => "date",
     meta_type     => 'date',
@@ -148,7 +164,8 @@ cmp_deeply($h->{published_at}{default_value}->(),
 
 cmp_deeply(
   $h->{html},
-  { data_type   => "text",
+  { name        => 'html',
+    data_type   => "text",
     meta_type   => 'text',
     label       => "Html",
     format      => "html",
