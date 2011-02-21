@@ -28,10 +28,11 @@ after setup_attrs => method ($class:, $attrs, $meta, $sys, $stash) {
   my @names;
   my %meta;
   while (@$cols_spec) {
-    my $name = shift @$cols_spec;
+    my $fn = my $name = shift @$cols_spec;
     my $info = ref($cols_spec->[0]) eq 'HASH' ? shift @$cols_spec : {};
 
-    $info = $model->column_meta_fixup($name, $info) if $model;
+    $fn = $info->{field} if exists $info->{field};
+    $info = $model->column_meta_fixup($fn, $info) if $model;
 
     $info->{name} = $name;
     $name = $info->{as} if exists $info->{as};

@@ -98,6 +98,7 @@ $l = setup_widget(
           'published_at',
           'visible',
           'html',
+          'my_html' => {field => 'html'},
         ],
       }
     ],
@@ -109,7 +110,7 @@ ok($x, 'Got a widget object');
 isa_ok($x, 'Ferdinand::Widgets::X', '... of the expected type');
 
 my $n = $x->col_names;
-is(scalar(@$n), 6, 'Five columns in our Set');
+is(scalar(@$n), 7, 'Seven columns in our Set');
 
 my $h = $x->col_meta;
 cmp_deeply(
@@ -173,7 +174,22 @@ cmp_deeply(
     _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
     _line       => re(qr{^\d+$}),
   },
-  '... column id as expected'
+  '... column html as expected'
+);
+
+cmp_deeply(
+  $h->{my_html},
+  { name        => 'my_html',
+    field       => 'html',
+    data_type   => "text",
+    meta_type   => 'text',
+    label       => "Html",
+    format      => "html",
+    is_required => 1,
+    _file       => re(qr{Ferdinand/Roles/ColumnSet.pm}),
+    _line       => re(qr{^\d+$}),
+  },
+  '... column my_html as expected'
 );
 
 
