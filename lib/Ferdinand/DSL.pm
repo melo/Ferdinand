@@ -17,7 +17,7 @@ our @EXPORT = qw(
   dbic_source dbic_set dbic_item dbic_optional_item
   dbic_apply dbic_create dbic_update
 
-  form buttons button label on_click
+  form buttons button label form_state on_click
   add_form
 );
 
@@ -142,6 +142,8 @@ sub buttons (&) {
 }
 sub button (&) { _add_setup _cb_setup(@_, {type => 'Form::Button'}) }
 sub label ($) { _add_setup label => $_[0] }
+
+sub form_state (&) { _add_setup {type => 'State', cb => $_[0]} }
 
 sub on_click (&) {
   _add_setup layout => _cb_setup(@_, []);
