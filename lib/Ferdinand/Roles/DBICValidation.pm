@@ -43,6 +43,9 @@ method _validate ($ctx, $fields) {
     my $mt   = $meta->{meta_type};
     my $req  = $meta->{is_required};
 
+    ## No meta, skip col validation
+    next unless $t;
+
     my $fv = $ctx->field_value_str(field => $col, item => $fields);
     my $v = $fv->[3];
     $v =~ s/^\s+|\s+$//g;
