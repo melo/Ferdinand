@@ -4,6 +4,7 @@ package Ferdinand::Widgets::Form::Button;
 
 use Ferdinand::Setup 'class';
 use Ferdinand::Utils 'render_template';
+use Text::Unaccent 'unac_string';
 use Method::Signatures;
 
 extends 'Ferdinand::Widget';
@@ -17,6 +18,7 @@ has 'btn_id' => (
   default => method () {
     my $l = lc($self->label);
     $l =~ s/ /_/g;
+    $l = unac_string('utf8', $l);
 
     return join('_', 'btn', $self->id, $l);
   }
