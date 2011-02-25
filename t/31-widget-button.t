@@ -19,7 +19,7 @@ is(
         create {
           form {
             button {
-              label 'My label create';
+              label 'My label create for ú';
               on_click {
                 execute sub { $_->stash->{clicked} = 1 };
               };
@@ -50,9 +50,9 @@ sub test_create_form {
   my $buffer = $ctx->buffer;
 
   like($buffer, qr{type="submit"}, 'button with expected type');
-  like($buffer, qr{$_="btn_w_2_my_label_create"}, "button with expected $_")
+  like($buffer, qr{$_="btn_w_2_my_label_create_for_u"}, "button with expected $_")
     for ('name', 'id');
-  like($buffer, qr{value="My label create"}, 'button with expected label');
+  like($buffer, qr{value="My label create for ú"}, 'button with expected label');
   like(
     $buffer,
     qr{<input type="hidden" name="submited" value="1">},
@@ -84,7 +84,7 @@ subtest 'Render create form' => sub {
       $ctx = $map->render(
         'create',
         { mode       => 'create_do',
-          params     => {btn_w_2_my_label_create => 1},
+          params     => {btn_w_2_my_label_create_for_u => 1},
           action_uri => URI->new('http://example.com/something'),
         }
       );
