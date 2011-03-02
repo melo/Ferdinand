@@ -4,6 +4,10 @@ use Ferdinand::Setup 'class';
 use Ferdinand::Utils qw( hash_merge );
 use Guard 'guard';
 use Method::Signatures;
+use namespace::clean -except => 'meta';
+
+with 'Ferdinand::Roles::ErrorRegistry';
+
 
 #################
 # Main attributes
@@ -235,24 +239,6 @@ method field_value_str () {
 method id_for_item ($item) {
   return $self->model->id_for_item($item || $self->item);
 }
-
-
-##################
-# Error management
-
-has 'errors' => (
-  traits  => ['Hash'],
-  is      => 'bare',
-  isa     => 'HashRef',
-  default => sub { {} },
-  handles => {
-    add_error    => 'set',
-    error_for    => 'get',
-    has_errors   => 'count',
-    errors       => 'kv',
-    clear_errors => 'clear',
-  },
-);
 
 
 __PACKAGE__->meta->make_immutable;
