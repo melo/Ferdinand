@@ -16,7 +16,7 @@ has 'errors' => (
     add_error    => 'set',
     error_for    => 'get',
     has_errors   => 'count',
-    errors       => 'kv',
+    errors       => 'elements',
     clear_errors => 'clear',
   },
 );

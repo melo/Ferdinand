@@ -333,12 +333,12 @@ subtest 'error mgmt', sub {
   $c1->add_error(x => 42);
   ok($c1->has_errors, 'Found errors in context');
   is($c1->error_for('x'), 42, '... found error for x field');
-  cmp_deeply([$c1->errors], [[x => 42]], '... kv has proper errors');
+  cmp_deeply([$c1->errors], [x => 42], '... kv has proper errors');
 
   $c1->add_error(x => 84);
   ok($c1->has_errors, 'Found errors in context');
   is($c1->error_for('x'), 84, '... found error for x field');
-  cmp_deeply([$c1->errors], [[x => 84]], '... kv has proper errors');
+  cmp_deeply([$c1->errors], [x => 84], '... kv has proper errors');
 
   $c1->clear_errors;
   ok(!$c1->has_errors, 'No errors after clear_errors()');
