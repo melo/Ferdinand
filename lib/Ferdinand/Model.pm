@@ -83,7 +83,7 @@ method render_field_read (:$ctx, :$field, :$item) {
   my $url;
   if ($url = $meta->{link_to}) {
     local $_ = $ctx;
-    $url = $url->($f->[0], $v);
+    $url = $url->($f->[0], $v, $item);
   }
 
   my $opts = $meta->{options};

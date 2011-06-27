@@ -96,6 +96,13 @@ subtest 'render_field output' => sub {
     'link_to with a structured field, proper first arg'
   );
 
+  %meta = (link_to => sub { $_[2]->e });
+  is(
+    $c1->render_field(field => 'o.title'),
+    '<a href="!!">mini_me</a>',
+    'link_to with a structured field, proper third arg'
+  );
+
 
   ## Empty fields
   %meta = (data_type => 'text', cls_field_html => 'aa');
