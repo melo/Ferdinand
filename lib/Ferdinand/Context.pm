@@ -62,11 +62,11 @@ method was_button_used ($btn, $prefix?) {
 
 has 'parent' => (isa => 'Ferdinand::Context', is => 'ro');
 
-method clone () {
+method clone (@_) {
   return ref($self)->new(%$self, @_, buffer => '', parent => $self);
 }
 
-method DEMOLISH () {
+method DEMOLISH (@_) {
   my $p = $self->parent;
   return unless $p;
 
@@ -76,7 +76,7 @@ method DEMOLISH () {
   $p->buffer($b);
 }
 
-method overlay () {
+method overlay (@_) {
   my @saved;
   while (my ($k, $v) = splice(@_, 0, 2)) {
     push @saved, $k, $self->{$k};
@@ -91,7 +91,7 @@ method overlay () {
   return guard { hash_merge($self, @saved) };
 }
 
-method snapshot () {
+method snapshot (@_) {
   my @saved;
 
   my @fields = qw( model set item id prefix );
@@ -119,7 +119,7 @@ has 'stash' => (
   default => sub { {} },
 );
 
-method stash () {
+method stash (@_) {
   my $s = $self->{stash};
   hash_merge($s, @_) if @_;
 
@@ -144,7 +144,7 @@ method clear_buffer () {
   return $b;
 }
 
-method buffer () {
+method buffer (@_) {
   if (@_) {
     local $" = '';
     $self->{buffer} .= "@_";
@@ -216,23 +216,23 @@ method id () {
   return @{$self->{id}};
 }
 
-method render_field () {
+method render_field (@_) {
   $self->model->render_field(ctx => $self, @_);
 }
 
-method render_field_read () {
+method render_field_read (@_) {
   $self->model->render_field_read(ctx => $self, @_);
 }
 
-method render_field_write () {
+method render_field_write (@_) {
   $self->model->render_field_write(ctx => $self, @_);
 }
 
-method field_value () {
+method field_value (@_) {
   $self->model->field_value(ctx => $self, @_);
 }
 
-method field_value_str () {
+method field_value_str (@_) {
   $self->model->field_value_str(ctx => $self, @_);
 }
 
